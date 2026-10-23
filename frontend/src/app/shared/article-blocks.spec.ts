@@ -1,12 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
   articleImageUrl,
+  hasArticleImages,
   articleReadingBlocks,
   parseArticleBlocks,
   serializeArticleBlocks,
 } from './article-blocks';
 
 describe('visual article paragraphs', () => {
+  it('selects illustrated reading only for an attached, safe image', () => {
+    expect(hasArticleImages('Párrafo.\n\n![Foto](</uploads/photo.jpg>)')).toBe(true);
+    expect(hasArticleImages('Párrafo sin imagen.')).toBe(false);
+    expect(hasArticleImages('Párrafo.\n\n![Foto](<javascript:alert(1)>)')).toBe(false);
+    expect(hasArticleImages('![Foto](</uploads/photo.jpg>)')).toBe(false);
+  });
   it('keeps each image and credit with its paragraph, including after reordering', () => {
     const blocks = [
       {

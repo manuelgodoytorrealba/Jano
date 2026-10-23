@@ -16,6 +16,8 @@ import {
   ResearchProjectSummary,
 } from '../../../core/api/research.api';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
+import { ArticleReadingComponent } from '../../../shared/article-reading/article-reading.component';
+import { hasArticleImages } from '../../../shared/article-blocks';
 import { ResearchGraphComponent } from './research-graph.component';
 
 type PublicationTab = 'content' | 'knowledge-map' | 'entities' | 'sources' | 'related';
@@ -24,12 +26,19 @@ type PublicationSection = ResearchOutlineSection & { depth: number };
 @Component({
   standalone: true,
   selector: 'app-research-publication-workspace',
-  imports: [RouterLink, FormsModule, RichTextComponent, ResearchGraphComponent],
+  imports: [
+    RouterLink,
+    FormsModule,
+    RichTextComponent,
+    ArticleReadingComponent,
+    ResearchGraphComponent,
+  ],
   templateUrl: './research-publication-workspace.component.html',
   styleUrl: './research-publication-workspace.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchPublicationWorkspaceComponent {
+  readonly hasArticleImages = hasArticleImages;
   private readonly router = inject(Router);
   private readonly researchApi = inject(ResearchApi);
 

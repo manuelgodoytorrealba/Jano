@@ -86,7 +86,11 @@
               <img [src]="section.imageUrl" [alt]="section.title" />
             }
             @if (sectionContent(section); as content) {
-              <app-rich-text [text]="content" previewAccess="admin" />
+              @if (hasArticleImages(content)) {
+                <app-article-reading [content]="content" previewAccess="admin" />
+              } @else {
+                <app-rich-text [text]="content" previewAccess="admin" />
+              }
             } @else {
               <p class="publication__section-empty">
                 Esta sección todavía no tiene texto editorial.

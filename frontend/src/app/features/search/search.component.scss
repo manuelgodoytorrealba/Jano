@@ -198,3 +198,56 @@ summary {
     font-size: 14px;
   }
 }
+
+.principal {
+  position: relative;
+  transition: border-color 160ms ease;
+}
+.principal:hover {
+  border-color: var(--color-text-muted);
+}
+.principal h2 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+}
+.principal details {
+  position: relative;
+  z-index: 1;
+}
+.principal:has(h2 a:focus-visible) {
+  outline: 2px solid var(--color-text-muted);
+  outline-offset: 4px;
+}
+.result-arrow {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
+.principal h2 a {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+.principal .result-arrow {
+  width: 32px;
+  height: 32px;
+}
+.connection .result-arrow {
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+}
+@media (max-width: 700px) {
+  .principal .result-arrow {
+    width: 26px;
+    height: 26px;
+  }
+}

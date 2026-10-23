@@ -23,7 +23,7 @@ import {
   template: ` <div class="article-editor">
     <p>
       Cada bloque es un párrafo con una imagen opcional. Conserva los enlaces a entidades con
-      [[slug|texto]]. Guarda con el botón de la traducción.
+      [[slug|texto]]. Guarda los cambios con el botón del editor.
     </p>
     @if (error) {
       <p role="alert">{{ error }}</p>
@@ -95,7 +95,9 @@ import {
                 (change)="upload(block, $event)"
             /></label>
             @if (!entityId) {
-              <small>Guarda primero el artículo para subir imágenes.</small>
+              <small
+                >Puedes asociar una imagen por URL. La subida requiere una entidad guardada.</small
+              >
             }
             @if (block.imageUrl) {
               <button type="button" (click)="block.imageUrl = ''; emit()">

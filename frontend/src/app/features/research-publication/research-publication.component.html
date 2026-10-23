@@ -210,7 +210,12 @@
                 }
               </nav>
             </aside>
-            <div class="publication__prose">
+            <div
+              class="publication__prose"
+              [class.publication__prose--illustrated]="
+                hasArticleImages(section?.drafts?.[0]?.currentRevision?.content || '')
+              "
+            >
               @if (section) {
                 <button
                   type="button"
@@ -282,7 +287,12 @@
                     }
                   </div>
                   @if (section.drafts[0]?.currentRevision?.content) {
-                    <app-rich-text [text]="section.drafts[0].currentRevision!.content" />
+                    @let content = section.drafts[0].currentRevision!.content;
+                    @if (hasArticleImages(content)) {
+                      <app-article-reading [content]="content" />
+                    } @else {
+                      <app-rich-text [text]="content" />
+                    }
                   } @else if (section.objective || section.notes) {
                     <p class="publication__section-summary">
                       {{ section.objective || section.notes }}

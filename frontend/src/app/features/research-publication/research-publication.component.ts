@@ -26,6 +26,8 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/i18n.pipe';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
+import { ArticleReadingComponent } from '../../shared/article-reading/article-reading.component';
+import { hasArticleImages } from '../../shared/article-blocks';
 import { AppChromeRailService } from '../../shared/ui/app-chrome/app-chrome-rail.service';
 
 type PublicationTab = 'content' | 'index' | 'connections' | 'sources';
@@ -53,12 +55,14 @@ type PublicationView =
     TranslatePipe,
     GraphComponent,
     RichTextComponent,
+    ArticleReadingComponent,
   ],
   templateUrl: './research-publication.component.html',
   styleUrl: './research-publication.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchPublicationComponent implements OnDestroy {
+  readonly hasArticleImages = hasArticleImages;
   private readonly route = inject(ActivatedRoute);
   private readonly navigation = inject(NavigationMemoryService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);

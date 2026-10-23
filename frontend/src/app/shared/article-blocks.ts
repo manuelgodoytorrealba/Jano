@@ -34,6 +34,10 @@ export function parseArticleBlocks(content: string): ArticleBlock[] {
   return blocks;
 }
 
+export function hasArticleImages(content: string): boolean {
+  return parseArticleBlocks(content).some((block) => !!block.imageUrl);
+}
+
 export function serializeArticleBlocks(blocks: ArticleBlock[]): string {
   return blocks
     .map((block) => {

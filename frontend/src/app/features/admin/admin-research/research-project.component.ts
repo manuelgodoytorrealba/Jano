@@ -31,6 +31,8 @@ import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.co
 import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
+import { AdminArticleBlocksComponent } from '../admin-entity-form/admin-article-blocks.component';
+import { hasArticleImages } from '../../../shared/article-blocks';
 import { ResearchSectionAssistantComponent } from './research-section-assistant.component';
 import { ResearchEntitiesWorkspaceComponent } from './research-entities-workspace.component';
 import { ResearchPublicationWorkspaceComponent } from './research-publication-workspace.component';
@@ -54,6 +56,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
     ResearchMaterialReaderComponent,
     MaterialContextMenuComponent,
     RichTextComponent,
+    AdminArticleBlocksComponent,
     ResearchSectionAssistantComponent,
     ResearchEntitiesWorkspaceComponent,
     ResearchPublicationWorkspaceComponent,
@@ -64,6 +67,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchProjectComponent implements OnDestroy {
+  readonly hasArticleImages = hasArticleImages;
   private readonly api = inject(ResearchApi);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly libraryApi = inject(LibraryApi);

@@ -1,3 +1,4 @@
+import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterLink, convertToParamMap } from '@angular/router';
 import { By } from '@angular/platform-browser';
@@ -159,6 +160,7 @@ async function createFixture(
     imports: [ResearchProjectComponent],
     providers: [
       { provide: ResearchApi, useValue: api },
+      { provide: AdminEntitiesApi, useValue: {} },
       {
         provide: LibraryApi,
         useValue: {
@@ -626,6 +628,33 @@ describe('ResearchProjectComponent', () => {
       objective: 'Explicar el método analítico',
       notes: active.notes,
     });
+  });
+
+  it('edits an illustrated draft without losing the paragraph image or credit', async () => {
+    const active = section();
+    const fixture = await createFixture(
+      { getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })) },
+      true,
+      'index',
+    );
+    fixture.componentInstance.updateDraftContent(
+      project as unknown as ResearchProject,
+      active,
+      'Texto original.\n\n![Crédito](</uploads/denim.jpg>)',
+    );
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const editor = fixture.nativeElement.querySelector('app-admin-article-blocks');
+    expect(editor).not.toBeNull();
+    const textarea = editor.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.value = 'Texto corregido.';
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+    expect(fixture.componentInstance.draftContent(active)).toContain('Texto corregido.');
+    expect(fixture.componentInstance.draftContent(active)).toContain(
+      '![Cr%C3%A9dito](</uploads/denim.jpg>)',
+    );
+    fixture.componentInstance.ngOnDestroy();
   });
 
   it('keeps unsaved Draft text isolated by Section', async () => {

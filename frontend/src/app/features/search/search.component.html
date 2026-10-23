@@ -59,8 +59,10 @@
               </p>
               <h2>
                 <a [routerLink]="resultLink(item)"
-                  >{{ item.title }} <span aria-hidden="true">↗</span></a
-                >
+                  >{{ item.title }}
+                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19 19 5M5 5h14v14" /></svg
+                ></a>
               </h2>
               @if (item.summary) {
                 <p class="summary">{{ item.summary }}</p>
@@ -84,15 +86,19 @@
                   <span class="metadata">{{ item.relationType }}</span>
                 }
                 <a [routerLink]="resultLink(item)" [queryParams]="{ workspace: 'graph' }"
-                  >{{ item.title.split(' → ')[0] }} ↗</a
-                >
+                  >{{ item.title.split(' → ')[0] }}
+                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19 19 5M5 5h14v14" /></svg
+                ></a>
                 @if (item.summary) {
                   <p>{{ item.summary }}</p>
                 }
                 @if (item.toSlug) {
                   <a class="connection-target" [routerLink]="['/entity', item.toSlug]"
-                    >{{ item.relationWithTitle || item.title.split(' → ')[1] || item.toSlug }} ↗</a
-                  >
+                    >{{ item.relationWithTitle || item.title.split(' → ')[1] || item.toSlug }}
+                    <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 19 19 5M5 5h14v14" /></svg
+                  ></a>
                 }
               </article>
             }
@@ -137,7 +143,9 @@
                       <p>{{ item.summary }}</p>
                     }
                   </div>
-                  <span aria-hidden="true">↗</span>
+                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19 19 5M5 5h14v14" />
+                  </svg>
                 </a>
               }
             }

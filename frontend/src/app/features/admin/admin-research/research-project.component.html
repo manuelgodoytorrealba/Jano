@@ -623,129 +623,136 @@
                       </button>
                     }
                   </details>
-                  <div
-                    class="research-project__draft-toolbar"
-                    role="toolbar"
-                    aria-label="Formato del Draft"
-                  >
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'heading')"
-                      [class.is-active]="draftEditor.isFormatActive('heading')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('heading')"
-                      aria-label="Encabezado nivel 2"
-                      title="Encabezado nivel 2"
+                  @if (hasArticleImages(draftContent(section))) {
+                    <app-admin-article-blocks
+                      [content]="draftContent(section)"
+                      (contentChange)="updateDraftContent(project, section, $event)"
+                    />
+                  } @else {
+                    <div
+                      class="research-project__draft-toolbar"
+                      role="toolbar"
+                      aria-label="Formato del Draft"
                     >
-                      H2
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'bold')"
-                      [class.is-active]="draftEditor.isFormatActive('bold')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('bold')"
-                      aria-label="Negrita"
-                      title="Negrita (⌘/Ctrl+B)"
-                    >
-                      <strong>B</strong>
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'italic')"
-                      [class.is-active]="draftEditor.isFormatActive('italic')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('italic')"
-                      aria-label="Cursiva"
-                      title="Cursiva (⌘/Ctrl+I)"
-                    >
-                      <em>I</em>
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'bullet-list')"
-                      [class.is-active]="draftEditor.isFormatActive('bullet-list')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('bullet-list')"
-                      aria-label="Lista con viñetas"
-                      title="Lista con viñetas"
-                    >
-                      • Lista
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'number-list')"
-                      [class.is-active]="draftEditor.isFormatActive('number-list')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('number-list')"
-                      aria-label="Lista numerada"
-                      title="Lista numerada"
-                    >
-                      1. Lista
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="formatDraft(draftEditor, 'quote')"
-                      [class.is-active]="draftEditor.isFormatActive('quote')"
-                      [attr.aria-pressed]="draftEditor.isFormatActive('quote')"
-                      aria-label="Cita"
-                      title="Cita"
-                    >
-                      “ ”
-                    </button>
-                    <button
-                      type="button"
-                      (mousedown)="$event.preventDefault()"
-                      (click)="draftEditor.openEntityPicker($any($event.currentTarget))"
-                      aria-label="Enlace a Entidad"
-                      title="Enlace a una Entidad"
-                    >
-                      ↗
-                    </button>
-                    <details class="research-project__toolbar-help">
-                      <summary aria-label="Abrir ayuda de formato">?</summary>
-                      <div>
-                        <strong>Ayudas de escritura</strong>
-                        <p>
-                          Selecciona texto y pulsa una acción. El formato se guarda con el Draft.
-                        </p>
-                        <dl>
-                          <div>
-                            <dt>H2</dt>
-                            <dd>Encabezado de sección</dd>
-                          </div>
-                          <div>
-                            <dt>B / I</dt>
-                            <dd>Negrita y cursiva</dd>
-                          </div>
-                          <div>
-                            <dt>Listas</dt>
-                            <dd>Viñetas o pasos numerados</dd>
-                          </div>
-                          <div>
-                            <dt>“ ”</dt>
-                            <dd>Cita o pasaje destacado</dd>
-                          </div>
-                          <div>
-                            <dt>↗</dt>
-                            <dd>Enlace interno a una Entidad</dd>
-                          </div>
-                        </dl>
-                      </div>
-                    </details>
-                  </div>
-                  <app-rich-text
-                    #draftEditor
-                    class="research-project__draft-editor"
-                    [text]="draftEditorContent(section)"
-                    [editable]="true"
-                    placeholder="Empieza a articular aquí la narrativa de esta sección…"
-                    previewAccess="admin"
-                    (textChange)="updateDraftContent(project, section, $event)"
-                    (textRender)="refreshDraftEditor(section, $event)"
-                    (keydown)="handleDraftShortcut($event, draftEditor)"
-                  />
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'heading')"
+                        [class.is-active]="draftEditor.isFormatActive('heading')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('heading')"
+                        aria-label="Encabezado nivel 2"
+                        title="Encabezado nivel 2"
+                      >
+                        H2
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'bold')"
+                        [class.is-active]="draftEditor.isFormatActive('bold')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('bold')"
+                        aria-label="Negrita"
+                        title="Negrita (⌘/Ctrl+B)"
+                      >
+                        <strong>B</strong>
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'italic')"
+                        [class.is-active]="draftEditor.isFormatActive('italic')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('italic')"
+                        aria-label="Cursiva"
+                        title="Cursiva (⌘/Ctrl+I)"
+                      >
+                        <em>I</em>
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'bullet-list')"
+                        [class.is-active]="draftEditor.isFormatActive('bullet-list')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('bullet-list')"
+                        aria-label="Lista con viñetas"
+                        title="Lista con viñetas"
+                      >
+                        • Lista
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'number-list')"
+                        [class.is-active]="draftEditor.isFormatActive('number-list')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('number-list')"
+                        aria-label="Lista numerada"
+                        title="Lista numerada"
+                      >
+                        1. Lista
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="formatDraft(draftEditor, 'quote')"
+                        [class.is-active]="draftEditor.isFormatActive('quote')"
+                        [attr.aria-pressed]="draftEditor.isFormatActive('quote')"
+                        aria-label="Cita"
+                        title="Cita"
+                      >
+                        “ ”
+                      </button>
+                      <button
+                        type="button"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="draftEditor.openEntityPicker($any($event.currentTarget))"
+                        aria-label="Enlace a Entidad"
+                        title="Enlace a una Entidad"
+                      >
+                        ↗
+                      </button>
+                      <details class="research-project__toolbar-help">
+                        <summary aria-label="Abrir ayuda de formato">?</summary>
+                        <div>
+                          <strong>Ayudas de escritura</strong>
+                          <p>
+                            Selecciona texto y pulsa una acción. El formato se guarda con el Draft.
+                          </p>
+                          <dl>
+                            <div>
+                              <dt>H2</dt>
+                              <dd>Encabezado de sección</dd>
+                            </div>
+                            <div>
+                              <dt>B / I</dt>
+                              <dd>Negrita y cursiva</dd>
+                            </div>
+                            <div>
+                              <dt>Listas</dt>
+                              <dd>Viñetas o pasos numerados</dd>
+                            </div>
+                            <div>
+                              <dt>“ ”</dt>
+                              <dd>Cita o pasaje destacado</dd>
+                            </div>
+                            <div>
+                              <dt>↗</dt>
+                              <dd>Enlace interno a una Entidad</dd>
+                            </div>
+                          </dl>
+                        </div>
+                      </details>
+                    </div>
+                    <app-rich-text
+                      #draftEditor
+                      class="research-project__draft-editor"
+                      [text]="draftEditorContent(section)"
+                      [editable]="true"
+                      placeholder="Empieza a articular aquí la narrativa de esta sección…"
+                      previewAccess="admin"
+                      (textChange)="updateDraftContent(project, section, $event)"
+                      (textRender)="refreshDraftEditor(section, $event)"
+                      (keydown)="handleDraftShortcut($event, draftEditor)"
+                    />
+                  }
                   <footer>
                     <p aria-live="polite">{{ draftMessage }}</p>
                     <button

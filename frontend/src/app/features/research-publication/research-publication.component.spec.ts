@@ -213,6 +213,22 @@ describe('Public research reading', () => {
     }
   });
 
+  it('renders an interleaved image with its paragraph, credit and enlarge action', async () => {
+    const illustrated = structuredClone(publication);
+    illustrated.outlineSections[0].drafts[0].currentRevision!.content =
+      'Introducción.\n\n## Pruébalo así\n\nUn vaquero y una camiseta.\n\n![Levi%20Strauss](</uploads/denim.jpg>)\n\nCierre.';
+    getPublished.mockReturnValue(of(illustrated));
+    const fixture = create();
+    await fixture.whenStable();
+    const reading = fixture.nativeElement.querySelector('app-article-reading') as HTMLElement;
+    expect(reading).not.toBeNull();
+    expect(reading.textContent).toContain('Pruébalo así');
+    expect(reading.querySelector('figure img')?.getAttribute('src')).toBe('/uploads/denim.jpg');
+    expect(reading.querySelector('figcaption')?.textContent).toContain('Levi Strauss');
+    (reading.querySelector('.image-button') as HTMLButtonElement).click();
+    expect(reading.querySelector('dialog')?.open).toBe(true);
+  });
+
   it('keeps the chosen chapter across tabs and puts its identity in the return URL', () => {
     const fixture = create();
     const c = fixture.componentInstance;
