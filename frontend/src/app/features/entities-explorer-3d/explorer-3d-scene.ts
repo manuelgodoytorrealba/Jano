@@ -495,7 +495,7 @@ export class Explorer3dScene {
     if (complete) this.completeEntryAnimation();
   }
 
-  private completeEntryAnimation(): void {
+  completeEntryAnimation(): void {
     if (!this.isEntryAnimationRunning) return;
 
     for (const card of this.cards) {

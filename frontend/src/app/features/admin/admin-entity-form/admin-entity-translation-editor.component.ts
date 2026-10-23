@@ -1,3 +1,4 @@
+import { AdminArticleBlocksComponent } from './admin-article-blocks.component';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -40,7 +41,7 @@ export type AdminEntityTranslationDraftState = {
 @Component({
   standalone: true,
   selector: 'app-admin-entity-translation-editor',
-  imports: [FormsModule, RichTextComponent],
+  imports: [FormsModule, RichTextComponent, AdminArticleBlocksComponent],
   templateUrl: './admin-entity-translation-editor.component.html',
   styleUrls: ['./admin-entity-translation-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

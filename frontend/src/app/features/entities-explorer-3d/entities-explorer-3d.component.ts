@@ -230,16 +230,31 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
   @HostListener('window:keydown', ['$event'])
   onWindowKeyDown(event: KeyboardEvent): void {
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (
+      event.defaultPrevented ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    )
+      return;
     if (event.key === 'Escape' && this.infoOpen) {
       event.preventDefault();
       this.closeInfoPanel();
       return;
     }
 
-    if (!this.keyboardNavigationActive) return;
-    if (this.isEntryInteractionLocked()) return;
+    const pageArrow = event.key === 'ArrowLeft' || event.key === 'ArrowRight';
+    if (!pageArrow && !this.keyboardNavigationActive) return;
+    if (this.infoOpen && this.infoModal) return;
     if (this.shouldIgnoreKeyboardEvent(event)) return;
+    if (pageArrow) {
+      event.preventDefault();
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('.app-chrome__nav')) target.blur();
+      this.scene.completeEntryAnimation();
+    } else if (this.isEntryInteractionLocked()) return;
 
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
@@ -439,8 +454,13 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     const target = event.target as HTMLElement | null;
     if (!target) return false;
 
-    return !!target.closest(
-      'input, textarea, select, button, a, [contenteditable]:not([contenteditable="false"]), [role="combobox"], [role="listbox"], [role="slider"], [role="tablist"], [role="menu"]',
+    const pageArrow = event.key === 'ArrowLeft' || event.key === 'ArrowRight';
+    return (
+      !!target.ownerDocument.querySelector('dialog[open]') ||
+      !!target.closest(
+        'input, textarea, select, button, [contenteditable]:not([contenteditable="false"]), [role="combobox"], [role="listbox"], [role="slider"], [role="tablist"], [role="menu"]' +
+          (pageArrow ? '' : ', a'),
+      )
     );
   }
 

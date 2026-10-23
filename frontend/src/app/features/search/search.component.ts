@@ -1,14 +1,28 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, distinctUntilChanged, map, of, shareReplay, switchMap } from 'rxjs';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+  startWith,
+  Subject,
+  combineLatest,
+} from 'rxjs';
 import { SearchApi, SearchResponse, SearchResult, SearchSection } from '../../core/api/search.api';
 import { SeoService } from '../../core/seo/seo.service';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { AppLoadingComponent } from '../../shared/ui/app-loading/app-loading.component';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type SearchViewModel = SearchResponse & {
   error: boolean;
+  loading: boolean;
 };
 
 type SearchFilter = 'ALL' | SearchResult['resultType'];
@@ -16,7 +30,7 @@ type SearchFilter = 'ALL' | SearchResult['resultType'];
 @Component({
   standalone: true,
   selector: 'app-search',
-  imports: [AsyncPipe, JanoMediaComponent],
+  imports: [AsyncPipe, JanoMediaComponent, RouterLink, AppLoadingComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,23 +38,27 @@ type SearchFilter = 'ALL' | SearchResult['resultType'];
 export class SearchComponent {
   private readonly api = inject(SearchApi);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   readonly i18n = inject(I18nService);
   readonly activeFilter = signal<SearchFilter>('ALL');
   readonly expandedSections = signal<Set<string>>(new Set());
   readonly filters: SearchFilter[] = ['ALL', 'ENTITY', 'RESEARCH', 'RELATION'];
-  searchInput = this.route.snapshot.queryParamMap.get('q') ?? '';
 
   readonly q$ = this.route.queryParamMap.pipe(
     map((params) => (params.get('q') ?? '').trim()),
     distinctUntilChanged(),
   );
 
-  readonly vm$ = this.q$.pipe(
-    switchMap((q) => {
-      const locale = this.i18n.locale();
-      this.searchInput = q;
+  readonly retry$ = new Subject<void>();
+
+  readonly vm$ = combineLatest([
+    this.q$,
+    this.retry$.pipe(startWith(undefined)),
+    toObservable(this.i18n.locale),
+  ]).pipe(
+    switchMap(([q, , locale]) => {
+      this.activeFilter.set('ALL');
+      this.expandedSections.set(new Set());
       this.seo.setPageMeta({
         title: q ? `Search "${q}" | JANO` : 'Search | JANO',
         description: q
@@ -59,35 +77,63 @@ export class SearchComponent {
           map((response) => ({
             ...response,
             error: false,
+            loading: false,
           })),
           catchError(() =>
-            of({ query: q, total: 0, items: [], groups: {}, sections: [], error: true }),
+            of({
+              query: q,
+              total: 0,
+              items: [],
+              groups: {},
+              sections: [],
+              error: true,
+              loading: false,
+            }),
           ),
+          startWith({
+            query: q,
+            total: 0,
+            items: [],
+            groups: {},
+            sections: [],
+            error: false,
+            loading: !!q,
+          }),
         );
     }),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  go(result: SearchResult): void {
-    if (result.resultType === 'RESEARCH') {
-      void this.router.navigate(['/research'], { queryParams: { focus: result.id } });
-      return;
-    }
-
-    if (result.resultType === 'RELATION') {
-      void this.router.navigate(['/entity', result.fromSlug], {
-        queryParams: { workspace: 'graph' },
-      });
-      return;
-    }
-
-    void this.router.navigate(['/entity', result.slug]);
+  resultLink(result: SearchResult): string[] {
+    return result.resultType === 'RESEARCH'
+      ? ['/research', result.id]
+      : [
+          '/entity',
+          result.resultType === 'RELATION' ? (result.fromSlug ?? result.slug) : result.slug,
+        ];
   }
 
-  submitSearch(event: Event, query: string): void {
-    event.preventDefault();
-    const value = query.trim();
-    void this.router.navigate(['/search'], value ? { queryParams: { q: value } } : undefined);
+  typeLabel(result: SearchResult): string {
+    return result.resultType === 'ENTITY'
+      ? entityTypeLabel(result.type, this.i18n)
+      : this.filterLabel(result.resultType);
+  }
+
+  reason(result: SearchResult): string {
+    const fields = result.matchedFields ?? [];
+    const field = ['title', 'summary', 'content', 'slug', 'relation_text'].find((key) =>
+      fields.includes(key),
+    );
+    return this.i18n.t(`search.reason.${field ?? 'related'}`);
+  }
+
+  principal(vm: SearchViewModel): SearchResult | undefined {
+    return (
+      vm.items.find((item) => item.resultType !== 'RELATION') ??
+      vm.sections
+        ?.flatMap((section) => section.items ?? [])
+        .find((item) => item.resultType !== 'RELATION')
+    );
   }
 
   setFilter(filter: SearchFilter): void {
@@ -97,7 +143,9 @@ export class SearchComponent {
   sections(vm: SearchViewModel): SearchSection[] {
     const filter = this.activeFilter();
     return (vm.sections ?? []).filter(
-      (section) => filter === 'ALL' || section.items?.some((item) => item.resultType === filter),
+      (section) =>
+        !!section.items?.length &&
+        (filter === 'ALL' || section.items.some((item) => item.resultType === filter)),
     );
   }
 
@@ -108,8 +156,8 @@ export class SearchComponent {
           0);
   }
 
-  visibleItems(section: SearchSection): SearchResult[] {
-    const items = section.items ?? [];
+  visibleItems(section: SearchSection, vm: SearchViewModel): SearchResult[] {
+    const items = (section.items ?? []).filter((item) => item.id !== this.principal(vm)?.id);
     return this.expandedSections().has(section.key) ? items : items.slice(0, 2);
   }
 
@@ -127,7 +175,7 @@ export class SearchComponent {
   }
 
   sectionLabel(section: SearchSection): string {
-    return section.key === 'research' ? this.i18n.t('search.filter.research') : section.title;
+    return this.filterLabel(section.items?.[0]?.resultType ?? 'ALL');
   }
 
   filterLabel(filter: SearchFilter): string {

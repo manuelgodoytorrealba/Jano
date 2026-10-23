@@ -1,125 +1,149 @@
 <main class="search-page">
   @if (vm$ | async; as vm) {
-    <header class="search-hero">
-      <span class="search-eyebrow">{{ i18n.t('search.title') }}</span>
+    <header>
+      <span class="eyebrow">{{ i18n.t('search.title') }}</span>
       <h1>
-        @if (vm.query) {
-          {{ i18n.t('search.resultsFor') }} “{{ vm.query }}”
-        } @else {
-          {{ i18n.t('search.explore') }}
-        }
+        {{
+          vm.query ? i18n.t('search.resultsFor') + ' “' + vm.query + '”' : i18n.t('search.explore')
+        }}
       </h1>
-      @if (vm.query && !vm.error) {
-        <p>{{ vm.total }} {{ i18n.t('search.results') }}</p>
-      }
     </header>
-
-    <form class="search-query-form" (submit)="submitSearch($event, searchInput.value)">
-      <label class="sr-only" for="search-query">{{ i18n.t('search.headerPlaceholder') }}</label>
-      <input
-        #searchInput
-        id="search-query"
-        class="ds-input search-query-form__input"
-        type="search"
-        [value]="vm.query"
-        [placeholder]="i18n.t('search.headerPlaceholder')"
-        [attr.aria-label]="i18n.t('search.headerPlaceholder')"
-      />
-      <button type="submit" class="search-query-form__submit">{{ i18n.t('search.title') }}</button>
-    </form>
-
-    @if (vm.error) {
-      <p class="search-state" role="alert">{{ i18n.t('search.error') }}</p>
+    @if (vm.loading) {
+      <app-loading [label]="i18n.t('search.searching') + ' · ' + vm.query" [skeleton]="true" />
+    } @else if (vm.error) {
+      <div role="alert">
+        <p>{{ i18n.t('search.error') }}</p>
+        <button type="button" (click)="retry$.next()">{{ i18n.t('search.retry') }}</button>
+      </div>
     } @else if (!vm.query) {
-      <p class="search-state">{{ i18n.t('search.empty') }}</p>
+      <p>{{ i18n.t('search.empty') }}</p>
     } @else if (!vm.total) {
-      <p class="search-state">{{ i18n.t('search.noResults') }}</p>
+      <p role="status">{{ i18n.t('search.noResults') }}</p>
     } @else {
       <nav class="search-filters" [attr.aria-label]="i18n.t('search.filterAria')">
         @for (filter of filters; track filter) {
-          <button
-            type="button"
-            class="search-filter"
-            [class.is-active]="activeFilter() === filter"
-            (click)="setFilter(filter)"
-          >
-            <span class="search-filter__icon" aria-hidden="true">
-              @switch (filter) {
-                @case ('ENTITY') {
-                  ♙
-                }
-                @case ('RESEARCH') {
-                  ◉
-                }
-                @case ('RELATION') {
-                  ⛓
-                }
-                @default {
-                  ✦
-                }
-              }
-            </span>
-            <span>{{ filterLabel(filter) }}</span>
-            <strong>{{ count(vm, filter) }}</strong>
-          </button>
-        }
-      </nav>
-
-      <div class="search-results">
-        @for (section of sections(vm); track section.key) {
-          @if (section.items?.length) {
-            <section class="search-section">
-              <header class="search-section__head">
-                <div>
-                  <span class="search-eyebrow">{{ sectionLabel(section) }}</span>
-                  <h2>{{ sectionLabel(section) }}</h2>
-                </div>
-                @if (canExpand(section)) {
-                  <button
-                    type="button"
-                    class="search-show-all"
-                    (click)="toggleSection(section.key)"
-                  >
-                    {{
-                      expandedSections().has(section.key)
-                        ? i18n.t('mySpace.showLess')
-                        : i18n.t('search.viewAll')
-                    }}
-                    ({{ section.total }}) <span aria-hidden="true">→</span>
-                  </button>
-                }
-              </header>
-
-              <div class="search-section__list">
-                @for (item of visibleItems(section); track item.id) {
-                  <button
-                    type="button"
-                    class="search-result"
-                    [class.search-result--research]="item.resultType === 'RESEARCH'"
-                    (click)="go(item)"
-                  >
-                    <app-jano-media
-                      class="search-result__media"
-                      [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
-                      usage="thumbnail"
-                      [alt]="item.title"
-                      placeholderMode="auto"
-                    />
-                    <span class="search-result__body">
-                      <span class="search-result__type">{{ filterLabel(item.resultType) }}</span>
-                      <strong>{{ item.title }}</strong>
-                      @if (item.summary) {
-                        <span>{{ item.summary }}</span>
-                      }
-                    </span>
-                    <span class="search-result__arrow" aria-hidden="true">→</span>
-                  </button>
-                }
-              </div>
-            </section>
+          @if (count(vm, filter)) {
+            <button
+              type="button"
+              [attr.aria-pressed]="activeFilter() === filter"
+              (click)="setFilter(filter)"
+            >
+              {{ filterLabel(filter) }} <span>{{ count(vm, filter) }}</span>
+            </button>
           }
         }
-      </div>
+      </nav>
+      @if (principal(vm); as item) {
+        @if (activeFilter() === 'ALL' || activeFilter() === item.resultType) {
+          <article class="principal">
+            <app-jano-media
+              [media]="item.resolvedMedia?.card ?? item.resolvedMedia?.thumbnail ?? null"
+              usage="card"
+              [alt]="item.title"
+              placeholderMode="auto"
+            />
+            <div>
+              <span class="eyebrow">{{ i18n.t('search.best') }}</span>
+              <p class="metadata">
+                {{ typeLabel(item) }}
+                @if (item.startYear !== null && item.startYear !== undefined) {
+                  · {{ item.startYear }}
+                  @if (
+                    item.endYear !== null &&
+                    item.endYear !== undefined &&
+                    item.endYear !== item.startYear
+                  ) {
+                    –{{ item.endYear }}
+                  }
+                }
+              </p>
+              <h2>
+                <a [routerLink]="resultLink(item)"
+                  >{{ item.title }} <span aria-hidden="true">↗</span></a
+                >
+              </h2>
+              @if (item.summary) {
+                <p class="summary">{{ item.summary }}</p>
+              }
+              <details>
+                <summary>{{ i18n.t('search.why') }}</summary>
+                <p>{{ reason(item) }}</p>
+              </details>
+            </div>
+          </article>
+        }
+      }
+      @for (section of sections(vm); track section.key) {
+        @if (section.items?.[0]?.resultType === 'RELATION') {
+          <details class="context" [open]="activeFilter() === 'RELATION'">
+            <summary>{{ i18n.t('search.context') }} · {{ section.total }}</summary>
+            <p>{{ i18n.t('search.contextHint') }}</p>
+            @for (item of section.items; track item.id) {
+              <article class="connection">
+                @if (item.relationType) {
+                  <span class="metadata">{{ item.relationType }}</span>
+                }
+                <a [routerLink]="resultLink(item)" [queryParams]="{ workspace: 'graph' }"
+                  >{{ item.title.split(' → ')[0] }} ↗</a
+                >
+                @if (item.summary) {
+                  <p>{{ item.summary }}</p>
+                }
+                @if (item.toSlug) {
+                  <a class="connection-target" [routerLink]="['/entity', item.toSlug]"
+                    >{{ item.relationWithTitle || item.title.split(' → ')[1] || item.toSlug }} ↗</a
+                  >
+                }
+              </article>
+            }
+          </details>
+        } @else {
+          <section class="search-section">
+            <header>
+              <h2>{{ sectionLabel(section) }}</h2>
+              @if (canExpand(section)) {
+                <button
+                  type="button"
+                  [attr.aria-expanded]="expandedSections().has(section.key)"
+                  (click)="toggleSection(section.key)"
+                >
+                  {{
+                    i18n.t(
+                      expandedSections().has(section.key) ? 'mySpace.showLess' : 'search.viewAll'
+                    )
+                  }}
+                  ({{ section.total }})
+                </button>
+              }
+            </header>
+            @for (item of visibleItems(section, vm); track item.id) {
+              @if (item.id !== principal(vm)?.id) {
+                <a class="search-result" [routerLink]="resultLink(item)">
+                  <app-jano-media
+                    [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
+                    usage="thumbnail"
+                    [alt]="item.title"
+                    placeholderMode="auto"
+                  />
+                  <div>
+                    <span class="metadata"
+                      >{{ typeLabel(item) }}
+                      @if (item.startYear !== null && item.startYear !== undefined) {
+                        · {{ item.startYear }}
+                      }
+                    </span>
+                    <h3>{{ item.title }}</h3>
+                    @if (item.summary) {
+                      <p>{{ item.summary }}</p>
+                    }
+                  </div>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              }
+            }
+          </section>
+        }
+      }
     }
   }
 </main>

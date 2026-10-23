@@ -1,3 +1,5 @@
+import { entitySymbol } from '../../entity-symbols';
+import { AppLoadingComponent } from '../app-loading/app-loading.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,10 +12,10 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switchMap } from 'rxjs';
+import { catchError, map, of, Subject, switchMap, timer } from 'rxjs';
 import { SearchApi, SearchResult } from '../../../core/api/search.api';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { entityTypeLabel } from '../../../core/i18n/domain-labels';
@@ -31,20 +33,20 @@ type SearchCategoryType =
 const SEARCH_CATEGORIES: Array<{
   type: SearchCategoryType;
   labelKey: string;
-  icon: 'artist' | 'movement' | 'concept' | 'artwork' | 'article' | 'place' | 'period';
 }> = [
-  { type: 'ARTIST', labelKey: 'search.type.artists', icon: 'artist' },
-  { type: 'MOVEMENT', labelKey: 'search.type.movements', icon: 'movement' },
-  { type: 'CONCEPT', labelKey: 'search.type.concepts', icon: 'concept' },
-  { type: 'ARTWORK', labelKey: 'search.type.artworks', icon: 'artwork' },
-  { type: 'ARTICLE', labelKey: 'search.type.articles', icon: 'article' },
-  { type: 'PLACE', labelKey: 'search.type.places', icon: 'place' },
-  { type: 'PERIOD', labelKey: 'search.type.periods', icon: 'period' },
+  { type: 'ARTIST', labelKey: 'search.type.artists' },
+  { type: 'MOVEMENT', labelKey: 'search.type.movements' },
+  { type: 'CONCEPT', labelKey: 'search.type.concepts' },
+  { type: 'ARTWORK', labelKey: 'search.type.artworks' },
+  { type: 'ARTICLE', labelKey: 'search.type.articles' },
+  { type: 'PLACE', labelKey: 'search.type.places' },
+  { type: 'PERIOD', labelKey: 'search.type.periods' },
 ];
 
 @Component({
   standalone: true,
   selector: 'app-global-search',
+  imports: [AppLoadingComponent, NgTemplateOutlet],
   templateUrl: './global-search.component.html',
   styleUrl: './global-search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,14 +65,16 @@ export class GlobalSearchComponent {
   readonly searchSuggestions = signal<SearchResult[]>([]);
   readonly searchFocused = signal(false);
   readonly searchLoading = signal(false);
+  readonly searchError = signal(false);
   readonly categories = SEARCH_CATEGORIES;
+  readonly entitySymbol = entitySymbol;
   readonly activeSuggestionIndex = signal(-1);
   readonly recentSearches = signal<string[]>(this.readRecentSearches());
 
   private readonly searchInput$ = new Subject<string>();
   private readonly preventPageTouchMove = (event: TouchEvent): void => {
     const target = event.target instanceof Element ? event.target : null;
-    if (target?.closest('.app-chrome__mobile-search-filters, .app-chrome__search-suggestions')) {
+    if (target?.closest('.app-chrome__mobile-search-prelude, .app-chrome__search-suggestions')) {
       return;
     }
     event.preventDefault();
@@ -86,25 +90,29 @@ export class GlobalSearchComponent {
 
     this.searchInput$
       .pipe(
-        debounceTime(180),
-        distinctUntilChanged(),
         switchMap((value) => {
+          this.searchError.set(false);
+          this.searchSuggestions.set([]);
           const q = value.trim();
           if (!q) {
             this.searchLoading.set(false);
             return of([]);
           }
           this.searchLoading.set(true);
-          return this.searchApi.search({ q, limit: 6 }).pipe(
+          return timer(180).pipe(
+            switchMap(() => this.searchApi.search({ q, limit: 6, locale: this.i18n.locale() })),
             map((response) => response.items.slice(0, 6)),
-            catchError(() => of([])),
+            catchError(() => {
+              this.searchError.set(true);
+              return of([]);
+            }),
           );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((items) => {
         this.searchSuggestions.set(items);
-        this.activeSuggestionIndex.set(items.length ? 0 : -1);
+        this.activeSuggestionIndex.set(-1);
         this.searchLoading.set(false);
       });
   }
@@ -152,11 +160,22 @@ export class GlobalSearchComponent {
 
   moveSearchSuggestion(delta: number): void {
     this.activeSuggestionIndex.set(
-      nextSuggestionIndex(this.activeSuggestionIndex(), delta, this.searchSuggestions().length),
+      this.activeSuggestionIndex() < 0 && delta < 0
+        ? this.searchSuggestions().length - 1
+        : nextSuggestionIndex(this.activeSuggestionIndex(), delta, this.searchSuggestions().length),
     );
   }
 
-  onSearchKeydown(event: KeyboardEvent): void {
+  onSearchKeydown(event: KeyboardEvent, input: HTMLInputElement): void {
+    if (event.isComposing) return;
+    if (event.key === 'Enter' && this.activeSuggestionIndex() >= 0) {
+      const item = this.searchSuggestions()[this.activeSuggestionIndex()];
+      if (item) {
+        event.preventDefault();
+        this.chooseSearchSuggestion(input, item);
+      }
+      return;
+    }
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       this.moveSearchSuggestion(event.key === 'ArrowDown' ? 1 : -1);
@@ -174,11 +193,11 @@ export class GlobalSearchComponent {
   }
 
   chooseSearchSuggestion(input: HTMLInputElement, item: SearchResult): void {
-    this.reset(input);
-    void navigateToAppSearch(this.router, item.title);
+    this.chooseRecentSearch(input, item.title);
   }
 
   clearSearchInput(input: HTMLInputElement): void {
+    this.searchInput$.next('');
     input.value = '';
     this.searchDraft.set('');
     this.searchSuggestions.set([]);
@@ -221,6 +240,8 @@ export class GlobalSearchComponent {
   }
 
   private reset(input: HTMLInputElement): void {
+    this.searchInput$.next('');
+    input.blur();
     input.value = '';
     this.searchDraft.set('');
     this.searchSuggestions.set([]);
@@ -272,7 +293,11 @@ export class GlobalSearchComponent {
         ...searches.filter((item) => item.toLocaleLowerCase() !== query.toLocaleLowerCase()),
       ].slice(0, 4);
       if (isPlatformBrowser(this.platformId)) {
-        window.localStorage.setItem('jano.search.recents', JSON.stringify(next));
+        try {
+          window.localStorage.setItem('jano.search.recents', JSON.stringify(next));
+        } catch {
+          // Keep search working when the browser blocks local storage.
+        }
       }
       return next;
     });

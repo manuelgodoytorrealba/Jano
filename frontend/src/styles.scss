@@ -28,3 +28,10 @@ body.app-stage-immersive .app-shell__content {
   padding: 0;
   overflow: hidden;
 }
+
+// Publications use the full desktop workspace when the main header is collapsed.
+@media (min-width: 981px) {
+  .app-shell:has(.publication):has(.app-chrome__header--collapsed) .app-shell__content {
+    padding-top: calc(var(--app-safe-top) + 12px);
+  }
+}

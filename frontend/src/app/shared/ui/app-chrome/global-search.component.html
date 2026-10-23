@@ -24,10 +24,10 @@
       autocomplete="off"
       [placeholder]="i18n.t('search.headerPlaceholder')"
       [attr.aria-label]="i18n.t('search.headerPlaceholder')"
-      [attr.aria-expanded]="showSearchSuggestions()"
+      [attr.aria-expanded]="showSearchSuggestions() || showPreparationPanel()"
       (input)="onSearchInput(searchInput.value)"
       (focus)="onSearchFocus(searchInput.value)"
-      (keydown)="onSearchKeydown($event)"
+      (keydown)="onSearchKeydown($event, searchInput)"
       (keydown.escape)="closeSearchUi()"
     />
     @if (searchDraft()) {
@@ -61,7 +61,12 @@
       (wheel)="onSearchSuggestionsWheel($event)"
     >
       @if (searchLoading()) {
-        <div class="app-chrome__search-state">{{ i18n.t('search.searching') }}</div>
+        <app-loading [compact]="true" [label]="i18n.t('search.searching')" />
+      } @else if (searchError()) {
+        <div class="app-chrome__search-state" role="alert">{{ i18n.t('search.error') }}</div>
+        <button type="button" class="app-chrome__suggestion" (click)="onSearchInput(searchDraft())">
+          {{ i18n.t('search.retry') }}
+        </button>
       } @else if (searchSuggestions().length) {
         @for (item of searchSuggestions(); track item.id; let i = $index) {
           <button
@@ -69,10 +74,15 @@
             class="app-chrome__suggestion"
             [class.is-active]="activeSuggestionIndex() === i"
             (mouseenter)="setActiveSearchSuggestion(i)"
-            (mousedown)="chooseSearchSuggestion(searchInput, item)"
+            (click)="chooseSearchSuggestion(searchInput, item)"
           >
-            <span class="app-chrome__suggestion-type">{{ entityLabel(item.type) }}</span>
-            <span class="app-chrome__suggestion-title">{{ item.title }}</span>
+            <svg class="app-chrome__suggestion-symbol" viewBox="0 0 24 24" aria-hidden="true">
+              <path [attr.d]="entitySymbol(item.type, item.kind).path" />
+            </svg>
+            <span class="app-chrome__suggestion-copy"
+              ><span class="app-chrome__suggestion-type">{{ entityLabel(item.type) }}</span
+              ><span class="app-chrome__suggestion-title">{{ item.title }}</span></span
+            >
           </button>
         }
         <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
@@ -123,15 +133,14 @@
       <div class="app-chrome__mobile-search-links">
         <button type="button" (click)="openMobileDiscovery('/entities/artwork')">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 4.5h9l3 3v12H6zM15 4.5v3h3" />
+            <path [attr.d]="entitySymbol('ARTWORK').path" />
           </svg>
           <span>{{ i18n.t('search.mobile.recentWorks') }}</span
           ><b aria-hidden="true">›</b>
         </button>
         <button type="button" (click)="openMobileDiscovery('/entities/artist')">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="7" r="3.2" />
-            <path d="M5.5 19c1.2-3.1 3.6-4.7 6.5-4.7s5.3 1.6 6.5 4.7" />
+            <path [attr.d]="entitySymbol('ARTIST').path" />
           </svg>
           <span>{{ i18n.t('search.mobile.featuredArtists') }}</span
           ><b aria-hidden="true">›</b>
@@ -147,6 +156,7 @@
           ><b aria-hidden="true">›</b>
         </button>
       </div>
+      <ng-container *ngTemplateOutlet="searchHistory" />
     </section>
 
     <section class="app-chrome__search-prelude app-chrome__search-prelude--desktop app-glass">
@@ -159,97 +169,54 @@
             <button
               type="button"
               class="app-chrome__search-category"
-              (mousedown)="openPreparationCategory(category.type)"
+              (click)="openPreparationCategory(category.type)"
             >
               <span class="app-chrome__search-category-icon" aria-hidden="true">
-                @switch (category.icon) {
-                  @case ('artist') {
-                    <svg viewBox="0 0 24 24">
-                      <circle cx="12" cy="7.5" r="3.2" />
-                      <path d="M5.5 19c1.3-3.2 4-4.8 6.5-4.8s5.2 1.6 6.5 4.8" />
-                    </svg>
-                  }
-                  @case ('movement') {
-                    <svg viewBox="0 0 24 24">
-                      <path d="M4.5 18.5c3.8-7.2 11.2-11.4 15-13" />
-                      <path d="M6.5 7.5h6.5" />
-                      <path d="M11 13h6.5" />
-                    </svg>
-                  }
-                  @case ('concept') {
-                    <svg viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="6.5" />
-                      <path d="M12 3.5v3" />
-                      <path d="M12 17.5v3" />
-                      <path d="M3.5 12h3" />
-                      <path d="M17.5 12h3" />
-                    </svg>
-                  }
-                  @case ('artwork') {
-                    <svg viewBox="0 0 24 24">
-                      <rect x="4.5" y="5" width="15" height="14" rx="2.5" />
-                      <path d="M7.5 15l3-3 2.5 2.5 3.5-4 1.5 1.8" />
-                      <circle cx="9" cy="9" r="1.2" />
-                    </svg>
-                  }
-                  @case ('article') {
-                    <svg viewBox="0 0 24 24">
-                      <rect x="5" y="4.5" width="14" height="15" rx="2.5" />
-                      <path d="M8.5 9h7" />
-                      <path d="M8.5 12.5h7" />
-                      <path d="M8.5 16h4.5" />
-                    </svg>
-                  }
-                  @case ('place') {
-                    <svg viewBox="0 0 24 24">
-                      <path
-                        d="M12 20.2c3.6-3.8 5.5-6.8 5.5-9.3A5.5 5.5 0 1 0 6.5 10.9c0 2.5 1.9 5.5 5.5 9.3Z"
-                      />
-                      <circle cx="12" cy="10.5" r="1.8" />
-                    </svg>
-                  }
-                  @case ('period') {
-                    <svg viewBox="0 0 24 24">
-                      <path d="M6.5 5.5h11" />
-                      <path d="M8 3.8v3.4" />
-                      <path d="M16 3.8v3.4" />
-                      <rect x="5.5" y="6.5" width="13" height="12" rx="2.5" />
-                      <path d="M8.5 11h7" />
-                    </svg>
-                  }
-                }
+                <svg viewBox="0 0 24 24"><path [attr.d]="entitySymbol(category.type).path" /></svg>
               </span>
-              <span>{{ i18n.t(category.labelKey) }}</span>
+              <span>{{ i18n.t(category.labelKey) }}</span
+              ><span class="app-chrome__category-arrow" aria-hidden="true">›</span>
             </button>
           }
         </div>
       </section>
-      @if (recentSearches().length) {
-        <section class="app-chrome__search-prelude-section app-chrome__search-recent-section">
-          <div class="app-chrome__search-prelude-head">
-            <h2>{{ i18n.t('search.recent') }}</h2>
-          </div>
-          <div class="app-chrome__search-recents">
-            @for (query of recentSearches(); track query) {
-              <button
-                type="button"
-                class="app-chrome__search-recent"
-                (mousedown)="chooseRecentSearch(searchInput, query)"
-              >
-                <span aria-hidden="true">◷</span>{{ query }}
-              </button>
-            }
-          </div>
-        </section>
-      }
-      <button
-        type="button"
-        class="app-chrome__search-prompt"
-        (mousedown)="chooseSearchPrompt(searchInput)"
-      >
-        <span aria-hidden="true">✦</span><strong>{{ i18n.t('search.suggestion') }}</strong>
-        {{ i18n.t('search.try') }} “{{ i18n.t('search.promptQuery') }}”
-      </button>
+      <ng-container *ngTemplateOutlet="searchHistory" />
     </section>
   }
+  <ng-template #searchHistory>
+    @if (recentSearches().length) {
+      <section class="app-chrome__search-prelude-section app-chrome__search-recent-section">
+        <div class="app-chrome__search-prelude-head">
+          <h2>{{ i18n.t('search.recent') }}</h2>
+        </div>
+        <div class="app-chrome__search-recents">
+          @for (query of recentSearches(); track query) {
+            <button
+              type="button"
+              class="app-chrome__search-recent"
+              (click)="chooseRecentSearch(searchInput, query)"
+            >
+              <svg class="app-chrome__search-utility-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M12 7v5l3 2" /></svg
+              >{{ query }}
+            </button>
+          }
+        </div>
+      </section>
+    }
+    <button
+      type="button"
+      class="app-chrome__search-prompt"
+      (click)="chooseSearchPrompt(searchInput)"
+    >
+      <svg class="app-chrome__search-utility-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path [attr.d]="entitySymbol('CONCEPT').path" /></svg
+      ><span class="app-chrome__search-prompt-copy"
+        ><strong>{{ i18n.t('search.suggestion') }}</strong> {{ i18n.t('search.try') }} “{{
+          i18n.t('search.promptQuery')
+        }}”</span
+      >
+    </button>
+  </ng-template>
 </form>

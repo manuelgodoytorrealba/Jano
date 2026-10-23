@@ -1,0 +1,75 @@
+.article-editor {
+  display: grid;
+  gap: 20px;
+}
+.article-editor p {
+  color: var(--color-text-soft);
+  margin: 0;
+}
+.block {
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+header div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+input,
+textarea,
+select {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-solid);
+  color: var(--color-text);
+  border-radius: 8px;
+  font: inherit;
+}
+button {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.image-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  gap: 20px;
+}
+.image-fields img {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+@media (max-width: 650px) {
+  .image-fields {
+    grid-template-columns: 1fr;
+  }
+}

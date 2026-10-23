@@ -22,9 +22,9 @@
     [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()"
   >
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
-      @if (pageVm$ | async; as pageVm) {
-        <nav class="entities-breadcrumbs ds-panel" [attr.aria-label]="i18n.t('common.breadcrumb')">
-          <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
+      <nav class="entities-breadcrumbs ds-panel" [attr.aria-label]="i18n.t('common.breadcrumb')">
+        <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
+        @if (pageVm$ | async; as pageVm) {
           @if (!isDiscoveryFeed) {
             <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
             <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
@@ -37,8 +37,8 @@
               }}</span>
             }
           }
-        </nav>
-      }
+        }
+      </nav>
       <div class="entities-hud__controls">
         <button
           type="button"
@@ -274,8 +274,7 @@
             role="status"
             [attr.aria-label]="i18n.t('explorer.loadingAria')"
           >
-            <span class="entities-explorer-loading__pulse" aria-hidden="true"></span>
-            <span class="entities-explorer-loading__label">{{ i18n.t('explorer.loading') }}</span>
+            <app-loading [label]="i18n.t('explorer.loading')" />
           </div>
         </div>
       } @else {

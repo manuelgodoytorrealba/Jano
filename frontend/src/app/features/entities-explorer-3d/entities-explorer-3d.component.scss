@@ -565,3 +565,11 @@
     cursor: default;
   }
 }
+
+// Move the entire deck without changing the canvas dimensions or card scale.
+// Leave clearance for the forward expansion on hover above the caption.
+@media (min-width: 981px) {
+  .explorer3d__canvas {
+    transform: translateY(clamp(-56px, -5vh, -32px));
+  }
+}

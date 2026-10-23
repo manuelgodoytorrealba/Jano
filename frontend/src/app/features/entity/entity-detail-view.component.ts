@@ -1,3 +1,5 @@
+import { ArticleHeroComponent } from '../../shared/article-reading/article-hero.component';
+import { ArticleReadingComponent } from '../../shared/article-reading/article-reading.component';
 import { EntityConnectionsPreviewComponent } from './entity-connections-preview.component';
 import {
   ChangeDetectionStrategy,
@@ -92,6 +94,8 @@ type DetailVisitState = {
     RouterLink,
     GraphComponent,
     RichTextComponent,
+    ArticleReadingComponent,
+    ArticleHeroComponent,
     JanoMediaComponent,
     EntityScrollProgressComponent,
   ],

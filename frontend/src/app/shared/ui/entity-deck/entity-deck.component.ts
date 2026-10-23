@@ -325,16 +325,24 @@ export class EntityDeckComponent {
     const target = event.target;
     if (
       event.defaultPrevented ||
+      event.isComposing ||
       event.altKey ||
       event.ctrlKey ||
       event.metaKey ||
       event.shiftKey ||
       (target instanceof Element &&
-        target.closest(
-          'input, textarea, select, button, a, [contenteditable]:not([contenteditable="false"]), [role="combobox"], [role="listbox"], [role="slider"], [role="tablist"], [role="menu"]',
-        ))
+        (target.ownerDocument.querySelector('dialog[open]') ||
+          target.closest(
+            'input, textarea, select, button, [contenteditable]:not([contenteditable="false"]), [role="combobox"], [role="listbox"], [role="slider"], [role="tablist"], [role="menu"]',
+          )))
     )
       return;
+    if (
+      (event.key === 'ArrowLeft' || event.key === 'ArrowRight') &&
+      target instanceof HTMLElement &&
+      target.closest('.app-chrome__nav')
+    )
+      target.blur();
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       this.prev();

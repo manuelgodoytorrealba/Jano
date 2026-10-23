@@ -228,21 +228,59 @@
                   <p class="publication__introduction">{{ publication.objective }}</p>
                 }
                 <article class="publication__chapter">
-                  <p class="publication__eyebrow">
-                    {{ 'research.publication.chapter' | t }}
-                    {{ (chapterIndex + 1).toString().padStart(2, '0') }}
-                  </p>
-                  <h2 #chapterTitle tabindex="-1">{{ section.title }}</h2>
-                  @if (section.imageUrl) {
-                    <img
-                      class="publication__section-image"
-                      [src]="section.imageUrl"
-                      (load)="restoreReadingPosition()"
-                      (error)="restoreReadingPosition()"
-                      [alt]="section.title"
-                      loading="lazy"
-                    />
-                  }
+                  <div
+                    class="publication__opening"
+                    [class.publication__opening--text-only]="!section.imageUrl"
+                  >
+                    <div class="publication__opening-copy">
+                      <p class="publication__eyebrow">
+                        {{ 'research.publication.chapter' | t }}
+                        {{ (chapterIndex + 1).toString().padStart(2, '0') }}
+                      </p>
+                      <h2 #chapterTitle tabindex="-1">{{ section.title }}</h2>
+                    </div>
+                    @if (section.imageUrl) {
+                      @if (isMobile()) {
+                        <img
+                          class="publication__section-image"
+                          [src]="section.imageUrl"
+                          (load)="restoreReadingPosition()"
+                          (error)="restoreReadingPosition()"
+                          [alt]="section.title"
+                          loading="lazy"
+                        />
+                      } @else {
+                        <figure>
+                          <button
+                            type="button"
+                            class="publication__image-button"
+                            [attr.aria-label]="'research.publication.expandImage' | t"
+                            (click)="chapterImage.showModal()"
+                          >
+                            <img
+                              [src]="section.imageUrl"
+                              [alt]="section.title"
+                              (load)="restoreReadingPosition()"
+                              (error)="restoreReadingPosition()"
+                              loading="lazy"
+                            />
+                          </button>
+                          <figcaption>{{ section.title }}</figcaption>
+                        </figure>
+                        <dialog
+                          #chapterImage
+                          class="publication__image-viewer"
+                          (keydown.escape)="$event.stopPropagation()"
+                        >
+                          <form method="dialog">
+                            <button type="submit">{{ 'button.close' | t }}</button>
+                          </form>
+                          <img [src]="section.imageUrl" [alt]="section.title" />
+                          <p>{{ section.title }}</p>
+                        </dialog>
+                      }
+                    }
+                  </div>
                   @if (section.drafts[0]?.currentRevision?.content) {
                     <app-rich-text [text]="section.drafts[0].currentRevision!.content" />
                   } @else if (section.objective || section.notes) {

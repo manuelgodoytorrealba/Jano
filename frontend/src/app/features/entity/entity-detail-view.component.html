@@ -1,6 +1,7 @@
 @if (entity; as entity) {
   <div
     class="entity-detail page-shell"
+    [class.entity-detail--article]="isArticle(entity)"
     [class.entity-detail--workspace-focus]="workspaceFocused"
     [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
     [class.entity-detail--image-focus]="workspaceMode === 'image'"
@@ -123,49 +124,15 @@
         <ng-container *ngTemplateOutlet="entityWorkspace"></ng-container>
       }
       @if (isArticle(entity)) {
-        <section class="entity-section entity-glass entity-section--wide entity-article-hero">
-          <div class="entity-article-hero__media">
-            <app-jano-media
-              [entity]="entity"
-              usage="hero"
-              [alt]="visualAlt(entity)"
-              [lazy]="false"
-              priority="high"
-            />
-            <div class="entity-article-hero__overlay"></div>
-          </div>
-
-          <div class="entity-article-hero__content">
-            <div class="entity-article-hero__meta">
-              <div class="entity-header__badges">
-                <span class="ds-badge entity-badge">{{ i18n.t('entity.article') }}</span>
-              </div>
-
-              <div class="entity-article-hero__byline">
-                @if (articleByline(entity); as author) {
-                  <span>{{ i18n.t('entity.by') }} {{ author }}</span>
-                }
-                @if (articleDateLabel(entity); as dateLabel) {
-                  <span>{{ dateLabel }}</span>
-                }
-                @if (entity.startYear || entity.endYear) {
-                  <span
-                    >{{ entity.startYear ?? '' }}
-                    @if (entity.endYear) {
-                      –{{ entity.endYear }}
-                    }
-                  </span>
-                }
-              </div>
-            </div>
-
-            <div class="entity-article-hero__title-block">
-              <h1 class="entity-article-hero__title">{{ entity.title }}</h1>
-              @if (entity.summary) {
-                <p class="entity-article-hero__summary">{{ entity.summary }}</p>
-              }
-            </div>
-          </div>
+        <section class="entity-section entity-glass entity-section--wide entity-article-intro">
+          <app-article-hero
+            [title]="entity.title"
+            [summary]="entity.summary"
+            [author]="articleByline(entity)"
+            [date]="articleDateLabel(entity)"
+            [startYear]="entity.startYear"
+            [endYear]="entity.endYear"
+          />
         </section>
       }
       <ng-template #entityWorkspace>
@@ -309,7 +276,10 @@
 
       @if (showEditorialFlow(entity) && (!isMobileViewport || !workspaceFocused)) {
         <section class="entity-information entity-section entity-glass entity-section--wide">
-          <header class="entity-information__header">
+          <header
+            class="entity-information__header"
+            [class.entity-information__header--article]="isArticle(entity)"
+          >
             <div>
               @if (isArticle(entity)) {
                 <h2 class="entity-information__title">{{ entity.title }}</h2>
@@ -366,20 +336,27 @@
             tabindex="0"
             [hidden]="informationTab !== 'context'"
           >
-            @if (entity.summary) {
+            @if (entity.summary && !isArticle(entity)) {
               <div class="entity-prose">{{ entity.summary }}</div>
             }
 
-            @if (entity.content) {
-              <div class="entity-section__head">
-                <p class="section-label">{{ storySectionLabel(entity) }}</p>
-              </div>
-              <div class="entity-prose">
-                <app-rich-text
-                  [text]="entity.content"
-                  [previewAccess]="richTextPreviewAccess"
-                ></app-rich-text>
-              </div>
+            @if (entity.content && isArticle(entity)) {
+              <app-article-reading
+                [content]="entity.content"
+                [previewAccess]="richTextPreviewAccess"
+              />
+            } @else {
+              @if (entity.content) {
+                <div class="entity-section__head">
+                  <p class="section-label">{{ storySectionLabel(entity) }}</p>
+                </div>
+                <div class="entity-prose">
+                  <app-rich-text
+                    [text]="entity.content"
+                    [previewAccess]="richTextPreviewAccess"
+                  ></app-rich-text>
+                </div>
+              }
             }
           </div>
           <div

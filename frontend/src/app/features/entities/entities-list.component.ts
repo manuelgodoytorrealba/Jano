@@ -1,3 +1,4 @@
+import { AppLoadingComponent } from '../../shared/ui/app-loading/app-loading.component';
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -82,6 +83,7 @@ type ArchiveVisitState = {
   providers: [EntitiesListFacade],
   imports: [
     AsyncPipe,
+    AppLoadingComponent,
     RouterLink,
     EntitiesExplorer3dComponent,
     EntitiesExplorerTotemComponent,

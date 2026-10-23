@@ -403,3 +403,13 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+.entity-information__header--article > div:first-child {
+  display: none;
+}
+
+.entity-article-intro {
+  margin-right: var(--detail-menu-space, 68px);
+  min-width: 0;
+  box-sizing: border-box;
+}

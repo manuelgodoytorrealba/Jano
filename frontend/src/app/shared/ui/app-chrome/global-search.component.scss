@@ -298,74 +298,12 @@
   .app-chrome__search-input.ds-input::placeholder {
     color: rgba(24, 22, 19, 0.46);
   }
-  .app-chrome__search-prelude {
-    border-color: rgba(24, 22, 19, 0.12);
-    background: linear-gradient(180deg, rgba(244, 244, 241, 0.98), rgba(230, 230, 226, 0.98));
-    color: rgba(28, 27, 24, 0.96);
-  }
-  .app-chrome__search-suggestions,
-  .app-chrome__suggestion {
-    background: #f3f2ef;
-  }
-
-  .app-chrome__search-suggestions {
-    border-color: rgba(24, 22, 19, 0.14);
-    box-shadow:
-      0 22px 50px rgba(31, 28, 23, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.72);
-  }
-
-  .app-chrome__suggestion-title,
-  .app-chrome__suggestion--search {
-    color: var(--color-text);
-  }
-
-  .app-chrome__suggestion:hover,
-  .app-chrome__suggestion:focus-visible,
-  .app-chrome__suggestion.is-active {
-    background: rgba(38, 35, 30, 0.08);
-  }
-
-  .app-chrome__suggestion--search {
-    border-color: rgba(24, 22, 19, 0.12);
-  }
-
   .app-chrome__search-clear {
     background: rgba(34, 32, 28, 0.08);
     color: rgba(24, 22, 19, 0.74);
   }
-
   .app-chrome__search-submit {
     color: rgba(24, 22, 19, 0.78);
-  }
-
-  .app-chrome__search-category {
-    border-color: rgba(24, 22, 19, 0.16);
-    background: rgba(255, 255, 255, 0.48);
-    color: var(--color-text);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
-  }
-
-  .app-chrome__search-recent {
-    border-color: rgba(24, 22, 19, 0.16);
-    background: rgba(255, 255, 255, 0.52);
-    color: var(--color-text-soft);
-  }
-
-  .app-chrome__search-recent:hover,
-  .app-chrome__search-recent:focus-visible {
-    background: rgba(255, 255, 255, 0.76);
-  }
-
-  .app-chrome__search-prompt {
-    border-color: rgba(24, 22, 19, 0.12);
-    background: linear-gradient(100deg, rgba(255, 255, 255, 0.48), rgba(227, 185, 139, 0.38));
-    color: var(--color-text-soft);
-  }
-
-  .app-chrome__search-prompt span,
-  .app-chrome__search-prompt strong {
-    color: var(--color-text);
   }
 }
 
@@ -661,5 +599,182 @@
     left: 12px;
     width: 16px;
     height: 16px;
+  }
+}
+
+// Shared surface tokens keep the search panels consistent with the rest of the app.
+.app-chrome__search-prelude,
+.app-chrome__search-suggestions {
+  background: var(--color-surface-solid);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.app-chrome__search-category,
+.app-chrome__suggestion,
+.app-chrome__search-recent,
+.app-chrome__search-prompt {
+  color: var(--color-text);
+  background: var(--color-surface-strong);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+.app-chrome__search-category:hover,
+.app-chrome__search-category:focus-visible,
+.app-chrome__suggestion:hover,
+.app-chrome__suggestion:focus-visible,
+.app-chrome__suggestion.is-active {
+  background: var(--color-surface-muted);
+  border-color: var(--color-text-muted);
+  transform: none;
+}
+.app-chrome__search-category:focus-visible,
+.app-chrome__suggestion:focus-visible {
+  outline: 2px solid var(--color-text-muted);
+  outline-offset: 2px;
+}
+.app-chrome__search-category-icon {
+  display: grid;
+}
+.app-chrome__search-category-icon svg,
+.app-chrome__suggestion-symbol,
+.app-chrome__search-utility-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.app-chrome__suggestion:not(.app-chrome__suggestion--search) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+}
+.app-chrome__suggestion-symbol {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+.app-chrome__suggestion-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.app-chrome__suggestion-title {
+  color: var(--color-text);
+  font-weight: 500;
+}
+.app-chrome__category-arrow {
+  color: var(--color-text-muted);
+}
+.app-chrome__search-prompt span,
+.app-chrome__search-prompt strong {
+  color: var(--color-text-soft);
+}
+.app-chrome__search-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+@media (min-width: 1201px) {
+  .app-chrome__search-prelude {
+    width: min(680px, calc(100vw - 240px));
+    padding: 22px;
+    gap: 20px;
+    border-radius: 22px;
+    overflow-y: auto;
+  }
+  .app-chrome__search-prelude-head h2 {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: none;
+    color: var(--color-text-soft);
+  }
+  .app-chrome__search-categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .app-chrome__search-category {
+    min-height: 62px;
+    grid-template-columns: 28px 1fr auto;
+    justify-items: start;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 13px;
+    text-align: left;
+    font-size: 15px;
+  }
+  .app-chrome__search-category-icon {
+    width: 24px;
+    height: 24px;
+  }
+  .app-chrome__search-prompt {
+    margin: 0;
+    padding: 14px;
+    min-height: 52px;
+    border-radius: 13px;
+    font-size: 14px;
+  }
+  .app-chrome__search-recent-section {
+    padding-top: 16px;
+    border-color: var(--color-border);
+  }
+}
+
+.app-chrome__search-utility-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.app-chrome__search-recent:focus-visible,
+.app-chrome__search-prompt:focus-visible {
+  outline: 2px solid var(--color-text-muted);
+  outline-offset: 2px;
+}
+.app-chrome__search-recent {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 10px 16px;
+}
+@media (max-width: 1200px) {
+  .app-chrome__mobile-search-prelude .app-chrome__search-recent-section {
+    padding-top: 12px;
+    border-color: var(--color-border-strong);
+  }
+  .app-chrome__mobile-search-prelude .app-chrome__search-prompt {
+    margin: 0;
+    border-radius: 14px;
+    padding: 16px;
+    min-height: 60px;
+  }
+  .app-chrome__mobile-search-prelude .app-chrome__search-prelude-head h2 {
+    color: var(--color-text-soft);
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: none;
+  }
+  .app-chrome__search-recent {
+    min-height: 44px;
+  }
+}
+
+.app-chrome__search-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.app-chrome__search-prompt .app-chrome__search-prompt-copy {
+  margin: 0;
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1200px) {
+  .app-chrome__mobile-search-prelude > * {
+    flex-shrink: 0;
   }
 }
