@@ -2,6 +2,7 @@ import {
   entityVisualUrl,
   mediaDisplayUrl,
   resolveEntityMediaItem,
+  resolveEntityMediaGallery,
   selectPrimaryVisualMedia,
 } from '../../shared/media/media.utils';
 import {
@@ -58,6 +59,12 @@ export function detailMedia(
   entity: PublicEntity | null | undefined,
 ): PublicEntityMediaAsset | null {
   return resolveEntityMediaItem(entity, 'detail') ?? primaryMedia(entity);
+}
+
+export function contextGallery(entity: PublicEntity | null | undefined): PublicEntityMediaAsset[] {
+  if (isArticle(entity)) return [];
+  const detailId = detailMedia(entity)?.id;
+  return resolveEntityMediaGallery(entity).filter((media) => !detailId || media.id !== detailId);
 }
 
 export function visualUrl(entity: PublicEntity | null | undefined): string | null {

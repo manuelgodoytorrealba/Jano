@@ -219,6 +219,10 @@ docker compose --env-file infra/.env.production \
 
 El importador exige que todas las entidades del artefacto existan como publicadas en producción; si falta alguna, aborta sin aplicar cambios. Sólo actualiza `Entity.summary`, `Entity.content` y los campos editoriales de las traducciones `es`/`en`. No crea, elimina ni modifica identidad, relaciones canónicas, assertions ni fuentes.
 
+El contenido de informalismo incorpora entidades nuevas y utiliza su paquete específico en [`backend/api/prisma/editorial-data/informalismo/README.md`](../backend/api/prisma/editorial-data/informalismo/README.md). Incluye las fichas bilingües, el artículo introductorio y sus fuentes y relaciones públicas. Tras el despliegue saludable mediante `prod.sh`, ejecutar primero su prueba transaccional y después la importación explícita; no contiene la investigación privada ni sus PDF.
+
+Las imágenes del mismo lote se transfieren después con el [paquete de fotografías de informalismo](../backend/api/prisma/editorial-data/informalismo-photos/README.md). Ese paso usa el servicio `backend`, que monta uploads, y conserva los créditos y los bytes originales. Incluye prueba sin escrituras y aplicación explícita.
+
 ### 2.5 Fallo de migración
 
 1. Mantener backend detenido y mantenimiento activo.

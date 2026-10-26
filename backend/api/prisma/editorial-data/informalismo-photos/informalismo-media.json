@@ -1,0 +1,1919 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "key": "canogar-print-red",
+      "sha256": "ccd65806cf3202573fe6963037c89ecdb598d067163a60efbdda799adb7fb90b",
+      "file": "assets/ccd65806cf3202573fe6963037c89ecdb598d067163a60efbdda799adb7fb90b.jpg",
+      "storageKey": "media/informalismo-20261026/ccd65806cf3202573fe6963037c89ecdb598d067163a60efbdda799adb7fb90b.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1153,
+      "height": 1600,
+      "alt": "Obra atribuida a Rafael Canogar; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "rafael-canogar",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 10,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "canogar-la-espera",
+      "sha256": "0df6224f8f7988bec1f165e375b6bcfe5256e9069d25c1e541edf071a4700813",
+      "file": "assets/0df6224f8f7988bec1f165e375b6bcfe5256e9069d25c1e541edf071a4700813.jpg",
+      "storageKey": "media/informalismo-20261026/0df6224f8f7988bec1f165e375b6bcfe5256e9069d25c1e541edf071a4700813.jpg",
+      "mimeType": "image/jpeg",
+      "width": 2560,
+      "height": 1949,
+      "alt": "Rafael Canogar, La espera, 1972 (identificación según archivo aportado).",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": "https://colecciones.uv.es/s/martinez-guerricabeitia-va/item/1663862",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "rafael-canogar",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 20,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "canogar-black-gestures",
+      "sha256": "0568d4607a7282458dd80ab9aceaccf271e9f4242b198bf03e353e3f71cc3dc7",
+      "file": "assets/0568d4607a7282458dd80ab9aceaccf271e9f4242b198bf03e353e3f71cc3dc7.jpg",
+      "storageKey": "media/informalismo-20261026/0568d4607a7282458dd80ab9aceaccf271e9f4242b198bf03e353e3f71cc3dc7.jpg",
+      "mimeType": "image/jpeg",
+      "width": 3194,
+      "height": 4000,
+      "alt": "Obra atribuida a Rafael Canogar; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "rafael-canogar",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 30,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "canogar-head-pink",
+      "sha256": "a7d32ea9874e25370c5aa7ac56ff897601f3d6b24cc3a2e8d6d49ccde288388a",
+      "file": "assets/a7d32ea9874e25370c5aa7ac56ff897601f3d6b24cc3a2e8d6d49ccde288388a.jpg",
+      "storageKey": "media/informalismo-20261026/a7d32ea9874e25370c5aa7ac56ff897601f3d6b24cc3a2e8d6d49ccde288388a.jpg",
+      "mimeType": "image/jpeg",
+      "width": 596,
+      "height": 800,
+      "alt": "Obra atribuida a Rafael Canogar; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "rafael-canogar",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 40,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "sao-paulo-iv-poster-1957",
+      "sha256": "68d33ae780c248a3b47a31ad9467c175254cbb8ef8b0857fab3f4d2e89f2573a",
+      "file": "assets/68d33ae780c248a3b47a31ad9467c175254cbb8ef8b0857fab3f4d2e89f2573a.jpg",
+      "storageKey": "media/informalismo-20261026/68d33ae780c248a3b47a31ad9467c175254cbb8ef8b0857fab3f4d2e89f2573a.jpg",
+      "mimeType": "image/jpeg",
+      "width": 595,
+      "height": 800,
+      "alt": "Alexandre Wollner, cartel de la IV Bienal de São Paulo, 1957. No corresponde a la V Bienal de 1959.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": "https://bienal.org.br/exposicoes/4a-bienal-de-sao-paulo/",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "internacionalizacion-arte-abstracto-espanol",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "moma-newspanish-installation-1960",
+      "sha256": "e9c4996c1b12456110e91526e9562581f1304a7cd06ac66cd094430b1f8fbae9",
+      "file": "assets/e9c4996c1b12456110e91526e9562581f1304a7cd06ac66cd094430b1f8fbae9.jpg",
+      "storageKey": "media/informalismo-20261026/e9c4996c1b12456110e91526e9562581f1304a7cd06ac66cd094430b1f8fbae9.jpg",
+      "mimeType": "image/jpeg",
+      "width": 505,
+      "height": 396,
+      "alt": "New Spanish Painting and Sculpture, MoMA, 1960. Vista de instalación IN668.12; fotografía de George Barrows.",
+      "source": "MoMA, archivo de exposiciones IN668.12; copia aportada por el usuario.",
+      "photoBy": "George Barrows",
+      "license": null,
+      "sourcePageUrl": "https://www.moma.org/calendar/exhibitions/2555/installation_images/17680",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "new-spanish-painting-and-sculpture-1960",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 10,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "avance-cultural",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "saura-color-composition",
+      "sha256": "63cee3d18d790a2de10716f84c6dea1fabeef54df7cb3fa60e4c09dca234fdcc",
+      "file": "assets/63cee3d18d790a2de10716f84c6dea1fabeef54df7cb3fa60e4c09dca234fdcc.jpg",
+      "storageKey": "media/informalismo-20261026/63cee3d18d790a2de10716f84c6dea1fabeef54df7cb3fa60e4c09dca234fdcc.jpg",
+      "mimeType": "image/jpeg",
+      "width": 540,
+      "height": 370,
+      "alt": "Obra atribuida a Antonio Saura; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antonio-saura",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 10,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "saura-black-ochre-print",
+      "sha256": "af3ad31579d72e782c330d2ee60326f5b7aa723442266dca89eb6667f78af49b",
+      "file": "assets/af3ad31579d72e782c330d2ee60326f5b7aa723442266dca89eb6667f78af49b.jpg",
+      "storageKey": "media/informalismo-20261026/af3ad31579d72e782c330d2ee60326f5b7aa723442266dca89eb6667f78af49b.jpg",
+      "mimeType": "image/jpeg",
+      "width": 700,
+      "height": 512,
+      "alt": "Obra atribuida a Antonio Saura; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antonio-saura",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 20,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "tapies-matter-cross",
+      "sha256": "1415d29dd581d6876f9bb1bcf26aa443b19efa2b15b8a7829dff1c0ad9af18a0",
+      "file": "assets/1415d29dd581d6876f9bb1bcf26aa443b19efa2b15b8a7829dff1c0ad9af18a0.jpg",
+      "storageKey": "media/informalismo-20261026/1415d29dd581d6876f9bb1bcf26aa443b19efa2b15b8a7829dff1c0ad9af18a0.jpg",
+      "mimeType": "image/jpeg",
+      "width": 900,
+      "height": 900,
+      "alt": "Obra atribuida a Antoni Tàpies; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antoni-tapies",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 10,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "tapies-glove",
+      "sha256": "d7c0f9e9c620a8f9620ddbedba426ba70b7d137e96214d514a8f3565eadce0e6",
+      "file": "assets/d7c0f9e9c620a8f9620ddbedba426ba70b7d137e96214d514a8f3565eadce0e6.png",
+      "storageKey": "media/informalismo-20261026/d7c0f9e9c620a8f9620ddbedba426ba70b7d137e96214d514a8f3565eadce0e6.png",
+      "mimeType": "image/png",
+      "width": 660,
+      "height": 528,
+      "alt": "Obra atribuida a Antoni Tàpies; título no documentado Atribución recibida con la carpeta; título y fecha sin verificar.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antoni-tapies",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 20,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "tapies-ciseaux-cercle-1976",
+      "sha256": "3bb05423dc9fba2e08a134337a90e89497e115fca0ceb2d198155fac63f1d741",
+      "file": "assets/3bb05423dc9fba2e08a134337a90e89497e115fca0ceb2d198155fac63f1d741.jpg",
+      "storageKey": "media/informalismo-20261026/3bb05423dc9fba2e08a134337a90e89497e115fca0ceb2d198155fac63f1d741.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1800,
+      "height": 2552,
+      "alt": "Antoni Tàpies, Ciseaux dans le cercle, 1976; obra posterior a su primera etapa informalista.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": "https://open.cr/eng/report/objects_report202b?Sel=OTyp&artistID=3&objectcategory%5B%5D=&objecttype%5B%5D=0&presentation=gallery&sort=Title&year=1976",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antoni-tapies",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 30,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "portrait-canogar",
+      "sha256": "a59275bb8eb726c91e68f56300487c9c6d68d998c6b0a3bd599b7f20fd285fba",
+      "file": "assets/a59275bb8eb726c91e68f56300487c9c6d68d998c6b0a3bd599b7f20fd285fba.jpg",
+      "storageKey": "media/informalismo-20261026/a59275bb8eb726c91e68f56300487c9c6d68d998c6b0a3bd599b7f20fd285fba.jpg",
+      "mimeType": "image/jpeg",
+      "width": 632,
+      "height": 485,
+      "alt": "Retrato de Rafael Canogar",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "rafael-canogar",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "rafael-canogar",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "rafael-canogar",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "rafael-canogar",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "rafael-canogar",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "rafael-canogar",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "portrait-franco",
+      "sha256": "3b174cc06e4b0704be4ba7d146ac13325f73b1e29acbac2d4511c5f9c9bdc437",
+      "file": "assets/3b174cc06e4b0704be4ba7d146ac13325f73b1e29acbac2d4511c5f9c9bdc437.jpg",
+      "storageKey": "media/informalismo-20261026/3b174cc06e4b0704be4ba7d146ac13325f73b1e29acbac2d4511c5f9c9bdc437.jpg",
+      "mimeType": "image/jpeg",
+      "width": 386,
+      "height": 518,
+      "alt": "Retrato de Francisco Franco. Imagen de contexto histórico; fecha y fotógrafo no documentados.",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "politica-cultural-exterior-franquismo",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 10,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "portrait-saura",
+      "sha256": "fb099366f1da69260a7e0a3beabdc16e3f70213a83ae7d070cf600bf73aba669",
+      "file": "assets/fb099366f1da69260a7e0a3beabdc16e3f70213a83ae7d070cf600bf73aba669.jpg",
+      "storageKey": "media/informalismo-20261026/fb099366f1da69260a7e0a3beabdc16e3f70213a83ae7d070cf600bf73aba669.jpg",
+      "mimeType": "image/jpeg",
+      "width": 302,
+      "height": 302,
+      "alt": "Retrato de Antonio Saura",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antonio-saura",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "portrait-tapies",
+      "sha256": "4ce311e222078e5517c470116f4a4169f818364ae1d5a89b50f1ad2b9f213e34",
+      "file": "assets/4ce311e222078e5517c470116f4a4169f818364ae1d5a89b50f1ad2b9f213e34.webp",
+      "storageKey": "media/informalismo-20261026/4ce311e222078e5517c470116f4a4169f818364ae1d5a89b50f1ad2b9f213e34.webp",
+      "mimeType": "image/webp",
+      "width": 669,
+      "height": 700,
+      "alt": "Retrato de Antoni Tàpies",
+      "source": "Imagen aportada por el usuario; autor de la fotografía no documentado.",
+      "photoBy": null,
+      "license": null,
+      "sourcePageUrl": null,
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "antoni-tapies",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "granpintura-guggenheim",
+      "sha256": "71123cf33fddea30ca6831832add758853d6ba8e5c949af8eed3ada9cc3c429b",
+      "file": "assets/71123cf33fddea30ca6831832add758853d6ba8e5c949af8eed3ada9cc3c429b.jpg",
+      "storageKey": "media/informalismo-20261026/71123cf33fddea30ca6831832add758853d6ba8e5c949af8eed3ada9cc3c429b.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 977,
+      "alt": "Gran pintura (1958), de Antoni Tàpies: superficie ocre con incisiones y textura de arena.",
+      "source": "Antoni Tàpies, Gran pintura, 1958; www.guggenheim.org",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción. Obra: © 2023 Fundació Antoni Tàpies / ARS / VEGAP.",
+      "sourcePageUrl": "https://www.guggenheim.org/artwork/4037",
+      "canonicalUrl": "https://www.guggenheim.org/wp-content/uploads/1958/01/59.1551_ph_web-1.jpg",
+      "assignments": [
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gran-pintura-tapies-1958",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antoni-tapies",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 50,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 20,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "arenales-iaacc",
+      "sha256": "2baecceeb796a3b6a66129944710871646b76423275caf0339eae00bb201ed07",
+      "file": "assets/2baecceeb796a3b6a66129944710871646b76423275caf0339eae00bb201ed07.jpg",
+      "storageKey": "media/informalismo-20261026/2baecceeb796a3b6a66129944710871646b76423275caf0339eae00bb201ed07.jpg",
+      "mimeType": "image/jpeg",
+      "width": 2560,
+      "height": 2523,
+      "alt": "Arenales (1959), de Juana Francés, obra matérica abstracta con arenas.",
+      "source": "Juana Francés, Arenales, 1959; iaacc.es",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://iaacc.es/events/vuestra-obra-juana-frances-arenales/",
+      "canonicalUrl": "https://iaacc.es/wp-content/uploads/2025/04/Arenales-scaled.jpg",
+      "assignments": [
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arenales-juana-frances-1959",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 50,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 30,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "crucifixion-pompidou",
+      "sha256": "e6dfd6136ba3335f1be54fbf700681696644037a8f3c95611f976b1267a57a86",
+      "file": "assets/e6dfd6136ba3335f1be54fbf700681696644037a8f3c95611f976b1267a57a86.jpg",
+      "storageKey": "media/informalismo-20261026/e6dfd6136ba3335f1be54fbf700681696644037a8f3c95611f976b1267a57a86.jpg",
+      "mimeType": "image/jpeg",
+      "width": 800,
+      "height": 646,
+      "alt": "Crucifixion 12 (1959), de Antonio Saura: figura crucificada trazada en negro y blanco.",
+      "source": "Antonio Saura, Crucifixion 12, 1959; www.centrepompidou.fr",
+      "photoBy": "Centre Pompidou, MNAM-CCI / Philippe Migeat / Dist. GrandPalaisRmn",
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción. Obra: © Adagp, Paris.",
+      "sourcePageUrl": "https://www.centrepompidou.fr/fr/ressources/oeuvre/cjkXqM",
+      "canonicalUrl": "https://www.centrepompidou.fr/media/picture/71/51/7151e7c32012dfd8d30403ae78f42d58/thumb_large.jpg",
+      "assignments": [
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "crucifixion-12-saura-1959",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "antonio-saura",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 50,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 40,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "millares-mayoral",
+      "sha256": "8eb486ebcee06eaf995fc3651ec89bd0bdd3a0206a37d53170963d61dc7952d8",
+      "file": "assets/8eb486ebcee06eaf995fc3651ec89bd0bdd3a0206a37d53170963d61dc7952d8.webp",
+      "storageKey": "media/informalismo-20261026/8eb486ebcee06eaf995fc3651ec89bd0bdd3a0206a37d53170963d61dc7952d8.webp",
+      "mimeType": "image/webp",
+      "width": 680,
+      "height": 492,
+      "alt": "Manolo Millares sentado en su estudio en 1970.",
+      "source": "Manolo Millares en su estudio, 1970; galeriamayoral.com",
+      "photoBy": "Juan Dolcet Santos",
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://galeriamayoral.com/artists/34-manolo-millares/",
+      "canonicalUrl": "https://static-assets.artlogic.net/w_1200,c_limit,f_auto,fl_lossy,q_auto/ws-artlogicwebsite1593/usr/images/artists/artist_image/items/90/90af509f3389440280181f2d49e39694/manolo-millares_-1970_juan-dolcet-santos_cropped.jpeg",
+      "assignments": [
+        {
+          "slug": "manolo-millares",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manolo-millares",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manolo-millares",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manolo-millares",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manolo-millares",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manolo-millares",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "rivera-reinasofia",
+      "sha256": "7edf075879eef385f1463ccb3760cfe93aba0816bf9b5bf654672f2cb7972f46",
+      "file": "assets/7edf075879eef385f1463ccb3760cfe93aba0816bf9b5bf654672f2cb7972f46.webp",
+      "storageKey": "media/informalismo-20261026/7edf075879eef385f1463ccb3760cfe93aba0816bf9b5bf654672f2cb7972f46.webp",
+      "mimeType": "image/webp",
+      "width": 1156,
+      "height": 1440,
+      "alt": "Retrato fotográfico de Manuel Rivera, realizado por Juan Dolcet en 1987.",
+      "source": "Juan Dolcet, Manuel Rivera, 1987; www.museoreinasofia.es",
+      "photoBy": "Juan Dolcet",
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://www.museoreinasofia.es/colecciones/obra/manuel-rivera/",
+      "canonicalUrl": "https://recursos.museoreinasofia.es/styles/large_portrait/public/Obra/AD02262_2.jpg.webp",
+      "assignments": [
+        {
+          "slug": "manuel-rivera",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manuel-rivera",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manuel-rivera",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manuel-rivera",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manuel-rivera",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "manuel-rivera",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "frances-aware",
+      "sha256": "22dfb3403f2abdeb58d249ac6c0d3b02162ed07866dd19bb3cf8cba264530ed4",
+      "file": "assets/22dfb3403f2abdeb58d249ac6c0d3b02162ed07866dd19bb3cf8cba264530ed4.jpg",
+      "storageKey": "media/informalismo-20261026/22dfb3403f2abdeb58d249ac6c0d3b02162ed07866dd19bb3cf8cba264530ed4.jpg",
+      "mimeType": "image/jpeg",
+      "width": 532,
+      "height": 750,
+      "alt": "Retrato de Juana Francés.",
+      "source": "Retrato de Juana Francés; awarewomenartists.com",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://awarewomenartists.com/en/artiste/juana-frances/",
+      "canonicalUrl": "https://awarewomenartists.com/wp-content/uploads/2021/09/0-portrait-juana-frances-aware-women-artists-artistes-femmes-532x750.jpg",
+      "assignments": [
+        {
+          "slug": "juana-frances",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "juana-frances",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "sanleon-benlliure",
+      "sha256": "14bbd44c0f7886e2ebc35af3055787a72cf61e7da9c046c289ae1fb74512eaad",
+      "file": "assets/14bbd44c0f7886e2ebc35af3055787a72cf61e7da9c046c289ae1fb74512eaad.jpg",
+      "storageKey": "media/informalismo-20261026/14bbd44c0f7886e2ebc35af3055787a72cf61e7da9c046c289ae1fb74512eaad.jpg",
+      "mimeType": "image/jpeg",
+      "width": 560,
+      "height": 290,
+      "alt": "José Sanleón en una fotografía de su ficha de artista en Galería Benlliure.",
+      "source": "Retrato de José Sanleón; galeriabenlliure.com",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://galeriabenlliure.com/artista/jose-sanleon",
+      "canonicalUrl": "https://galeriabenlliure.com/wp-content/uploads/2021/02/Sanleon.jpg",
+      "assignments": [
+        {
+          "slug": "jose-sanleon",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jose-sanleon",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jose-sanleon",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jose-sanleon",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jose-sanleon",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jose-sanleon",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "becker-commons",
+      "sha256": "bbba2511b0b1392c276e025274939f962e99bfc499457524a88b8a817dbdcb51",
+      "file": "assets/bbba2511b0b1392c276e025274939f962e99bfc499457524a88b8a817dbdcb51.jpg",
+      "storageKey": "media/informalismo-20261026/bbba2511b0b1392c276e025274939f962e99bfc499457524a88b8a817dbdcb51.jpg",
+      "mimeType": "image/jpeg",
+      "width": 3456,
+      "height": 5184,
+      "alt": "Howard S. Becker en la École des hautes études en sciences sociales de París, el 5 de noviembre de 2012.",
+      "source": "Howard S. Becker en la EHESS, 2012; commons.wikimedia.org",
+      "photoBy": "Thierry Caro",
+      "license": "CC BY-SA 3.0",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Howard-S.-Becker-EHESS.JPG",
+      "canonicalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/69/Howard-S.-Becker-EHESS.JPG",
+      "assignments": [
+        {
+          "slug": "howard-s-becker",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "howard-s-becker",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "howard-s-becker",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "howard-s-becker",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "howard-s-becker",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "howard-s-becker",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "berger-commons",
+      "sha256": "168b92ae06a6bf5b7d1364a8041a9b332b57bc8d824b7c9d7f27cd43f265f6b8",
+      "file": "assets/168b92ae06a6bf5b7d1364a8041a9b332b57bc8d824b7c9d7f27cd43f265f6b8.jpg",
+      "storageKey": "media/informalismo-20261026/168b92ae06a6bf5b7d1364a8041a9b332b57bc8d824b7c9d7f27cd43f265f6b8.jpg",
+      "mimeType": "image/jpeg",
+      "width": 652,
+      "height": 734,
+      "alt": "Retrato de John Berger tomado en 2009; recorte disponible en Wikimedia Commons.",
+      "source": "John Berger, 2009; commons.wikimedia.org",
+      "photoBy": "Ji-Elle",
+      "license": "CC BY-SA 3.0; imagen ya recortada en origen.",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:John_Berger-2009_(1)_(cropped).jpg",
+      "canonicalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2a/John_Berger-2009_%281%29_%28cropped%29.jpg",
+      "assignments": [
+        {
+          "slug": "john-berger",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "john-berger",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "john-berger",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "john-berger",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "john-berger",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "john-berger",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "williams-commons",
+      "sha256": "7795207187b3108ce525ba11493fcdf70b31110214c91d7f7d765d49c5512a20",
+      "file": "assets/7795207187b3108ce525ba11493fcdf70b31110214c91d7f7d765d49c5512a20.jpg",
+      "storageKey": "media/informalismo-20261026/7795207187b3108ce525ba11493fcdf70b31110214c91d7f7d765d49c5512a20.jpg",
+      "mimeType": "image/jpeg",
+      "width": 437,
+      "height": 584,
+      "alt": "Raymond Williams en Saffron Walden, durante los años ochenta.",
+      "source": "Raymond Williams en Saffron Walden, años ochenta; commons.wikimedia.org",
+      "photoBy": "GwydionM",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Raymond_Williams_At_Saffron_Walden.jpg",
+      "canonicalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Raymond_Williams_At_Saffron_Walden.jpg",
+      "assignments": [
+        {
+          "slug": "raymond-williams",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "raymond-williams",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "raymond-williams",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "raymond-williams",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "raymond-williams",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "raymond-williams",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "ohara-commons",
+      "sha256": "bd13ca9b4d81ef56429afacce2a4ec3cff97e1a46beb3b9a28c70c5bb826f60f",
+      "file": "assets/bd13ca9b4d81ef56429afacce2a4ec3cff97e1a46beb3b9a28c70c5bb826f60f.jpg",
+      "storageKey": "media/informalismo-20261026/bd13ca9b4d81ef56429afacce2a4ec3cff97e1a46beb3b9a28c70c5bb826f60f.jpg",
+      "mimeType": "image/jpeg",
+      "width": 400,
+      "height": 503,
+      "alt": "Frank O’Hara con camisa clara y una mano junto a la barbilla, en un retrato de Kenward Elmslie.",
+      "source": "Retrato de Frank O’Hara; commons.wikimedia.org",
+      "photoBy": "Kenward Elmslie",
+      "license": "Public domain en Estados Unidos según Commons (publicación sin aviso); vigencia en otros países no comprobada. Versión retocada por Blz 2049.",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Frank_O%27Hara_(photo_portrait).jpg",
+      "canonicalUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Frank_O%27Hara_%28photo_portrait%29.jpg",
+      "assignments": [
+        {
+          "slug": "frank-ohara",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "frank-ohara",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "frank-ohara",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "frank-ohara",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "frank-ohara",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "frank-ohara",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "otages-pompidou",
+      "sha256": "2e7abfcdf940b18bfb46ac8b1e821928a38526cdd46a4bc557f1f835cd9a011f",
+      "file": "assets/2e7abfcdf940b18bfb46ac8b1e821928a38526cdd46a4bc557f1f835cd9a011f.jpg",
+      "storageKey": "media/informalismo-20261026/2e7abfcdf940b18bfb46ac8b1e821928a38526cdd46a4bc557f1f835cd9a011f.jpg",
+      "mimeType": "image/jpeg",
+      "width": 617,
+      "height": 800,
+      "alt": "Tête d’otage (1944–1945), de Jean Fautrier, una cabeza sugerida con materia pictórica; ejemplo de la serie Otages.",
+      "source": "Jean Fautrier, Tête d’otage, 1944–1945 (ejemplo de la serie Otages); www.centrepompidou.fr",
+      "photoBy": "Centre Pompidou, MNAM-CCI / Jean-Claude Planchet / Dist. GrandPalaisRmn",
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción. Obra: © Adagp, Paris.",
+      "sourcePageUrl": "https://www.centrepompidou.fr/en/ressources/oeuvre/c6b98Ez",
+      "canonicalUrl": "https://www.centrepompidou.fr/media/picture/0d/9f/0d9fb973953439596e2973f5aad32825/thumb_large.jpg",
+      "assignments": [
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "otages-serie-fautrier",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "jean-fautrier",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 50,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "dau-macba",
+      "sha256": "a15a011606c3e715c91e0c7f5e9b2c12cf0d3c847a1f483cd6b0f10a9ea38c8c",
+      "file": "assets/a15a011606c3e715c91e0c7f5e9b2c12cf0d3c847a1f483cd6b0f10a9ea38c8c.jpg",
+      "storageKey": "media/informalismo-20261026/a15a011606c3e715c91e0c7f5e9b2c12cf0d3c847a1f483cd6b0f10a9ea38c8c.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1367,
+      "height": 1920,
+      "alt": "Ejemplar de la revista Dau al Set de 1949 conservado en el MACBA.",
+      "source": "Revista Dau al Set, 1949; www.macba.cat",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://www.macba.cat/es/actor/dau-al-set-grup-dartistes/",
+      "canonicalUrl": "https://d2zy2h1755x359.cloudfront.net/public/DigitalAsset/288994/5879809ae355d3ab7e8d5e9145496026/full/large/0/default.jpg",
+      "assignments": [
+        {
+          "slug": "dau-al-set",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "dau-al-set",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "dau-al-set",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "dau-al-set",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "dau-al-set",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "dau-al-set",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "gutai-guggenheim",
+      "sha256": "106d3eff92add0019a478581d7cb76adab5566f9b7f828087babab6fdb43bdcd",
+      "file": "assets/106d3eff92add0019a478581d7cb76adab5566f9b7f828087babab6fdb43bdcd.jpg",
+      "storageKey": "media/informalismo-20261026/106d3eff92add0019a478581d7cb76adab5566f9b7f828087babab6fdb43bdcd.jpg",
+      "mimeType": "image/jpeg",
+      "width": 2480,
+      "height": 1395,
+      "alt": "Vista de la retrospectiva Gutai: Splendid Playground en la rotonda del Guggenheim de Nueva York, 2013.",
+      "source": "Gutai: Splendid Playground, vista de exposición, 2013; www.guggenheim.org",
+      "photoBy": "David Heald",
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://www.guggenheim.org/exhibition/gutai-splendid-playground",
+      "canonicalUrl": "https://www.guggenheim.org/wp-content/uploads/2013/02/installation-srgm-gutai-splendid-playground-2013-ph048.jpg",
+      "assignments": [
+        {
+          "slug": "gutai",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gutai",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gutai",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gutai",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gutai",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "gutai",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "feito-rabasf",
+      "sha256": "35defc40170f7be2df1e90c71b72ea78417da4cf7761d7922763b1b845c183f8",
+      "file": "assets/35defc40170f7be2df1e90c71b72ea78417da4cf7761d7922763b1b845c183f8.jpg",
+      "storageKey": "media/informalismo-20261026/35defc40170f7be2df1e90c71b72ea78417da4cf7761d7922763b1b845c183f8.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1000,
+      "height": 664,
+      "alt": "Luis Feito en su estudio, delante de una mesa con pinceles y obra en proceso.",
+      "source": "Luis Feito en su estudio; www.realacademiabellasartessanfernando.com",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://www.realacademiabellasartessanfernando.com/noticias/academia/luis-feito-en-la-memoria/",
+      "canonicalUrl": "https://i0.wp.com/www.realacademiabellasartessanfernando.com/assets/images/blocks/d6bd4e15d28e7a74b65b9c417dc47716_orig.jpg?w=1300&ssl=1",
+      "assignments": [
+        {
+          "slug": "luis-feito",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "luis-feito",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "luis-feito",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "luis-feito",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "luis-feito",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "luis-feito",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "artautre-sothebys",
+      "sha256": "11f3af0f71da95c4df280fc1cac503c1cdf70ae9b14af9d4d1ff7cbffc371c70",
+      "file": "assets/11f3af0f71da95c4df280fc1cac503c1cdf70ae9b14af9d4d1ff7cbffc371c70.jpg",
+      "storageKey": "media/informalismo-20261026/11f3af0f71da95c4df280fc1cac503c1cdf70ae9b14af9d4d1ff7cbffc371c70.jpg",
+      "mimeType": "image/jpeg",
+      "width": 902,
+      "height": 1024,
+      "alt": "Cubierta de Un art autre (1952), de Michel Tapié: título en rojo sobre superficie texturada gris.",
+      "source": "Cubierta de Un art autre, Michel Tapié, 1952; www.sothebys.com",
+      "photoBy": null,
+      "license": "Derechos reservados. No se ha identificado licencia abierta ni obtenido autorización de reproducción.",
+      "sourcePageUrl": "https://www.sothebys.com/en/articles/art-informel",
+      "canonicalUrl": "https://sothebys-com.brightspotcdn.com/e0/3f/5260c8dc43abb8e965efd98796e6/tapie-art-autre.jpg",
+      "assignments": [
+        {
+          "slug": "un-art-autre",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "un-art-autre",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "un-art-autre",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "un-art-autre",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "un-art-autre",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "un-art-autre",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "coverage2-tapie",
+      "sha256": "ecf5587b6540f701e01abe94b5363e3fc381d77c98a9147ee036c49e6733d039",
+      "file": "assets/ecf5587b6540f701e01abe94b5363e3fc381d77c98a9147ee036c49e6733d039.webp",
+      "storageKey": "media/informalismo-20261026/ecf5587b6540f701e01abe94b5363e3fc381d77c98a9147ee036c49e6733d039.webp",
+      "mimeType": "image/webp",
+      "width": 479,
+      "height": 616,
+      "alt": "Michel Tapié, retrato de Arnold Newman, 1954. The Jewish Museum, registro 2023-193.",
+      "source": "The Jewish Museum; Gift of Lynn and Martin Halbfinger.",
+      "photoBy": "Arnold Newman",
+      "license": "Derechos reservados; autorización de reproducción no documentada.",
+      "sourcePageUrl": "https://collections.thejewishmuseum.org/collection/37745-michel-tapie",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "michel-tapie",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "michel-tapie",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "michel-tapie",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "michel-tapie",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "michel-tapie",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "michel-tapie",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "coverage2-paso",
+      "sha256": "e0503e806a9c290d59df67a129dd0ab4fc9df47af632c593e2fa68965b886f39",
+      "file": "assets/e0503e806a9c290d59df67a129dd0ab4fc9df47af632c593e2fa68965b886f39.jpg",
+      "storageKey": "media/informalismo-20261026/e0503e806a9c290d59df67a129dd0ab4fc9df47af632c593e2fa68965b886f39.jpg",
+      "mimeType": "image/jpeg",
+      "width": 960,
+      "height": 1300,
+      "alt": "Rafael Canogar, cofundador de El Paso. Retrato publicado por la Fundación Martín Chirino; fecha y fotógrafo no indicados. No es un retrato colectivo.",
+      "source": "Fundación de Arte y Pensamiento Martín Chirino; página Sobre El Paso (2025).",
+      "photoBy": null,
+      "license": "Derechos reservados; autorización de reproducción no documentada.",
+      "sourcePageUrl": "https://fundacionmartinchirino.org/actualidad/eventos/sobre-el-paso/301",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "el-paso",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "el-paso",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "el-paso",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "el-paso",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "el-paso",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "el-paso",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "coverage2-tachismo",
+      "sha256": "632f1985f4f0491f1da00bb9283a5f85d2f98f03174d85ded8d496b22da6a741",
+      "file": "assets/632f1985f4f0491f1da00bb9283a5f85d2f98f03174d85ded8d496b22da6a741.jpg",
+      "storageKey": "media/informalismo-20261026/632f1985f4f0491f1da00bb9283a5f85d2f98f03174d85ded8d496b22da6a741.jpg",
+      "mimeType": "image/jpeg",
+      "width": 3000,
+      "height": 4079,
+      "alt": "Wols, La ciudad, 1950–1951. Museo Nacional Thyssen-Bornemisza, inv. 786. Ejemplo de un artista vinculado al tachismo.",
+      "source": "Museo Nacional Thyssen-Bornemisza, Madrid; inv. 786 (1975.19).",
+      "photoBy": null,
+      "license": "Derechos reservados de la reproducción; licencia abierta no documentada.",
+      "sourcePageUrl": "https://www.museothyssen.org/coleccion/artistas/wols/ciudad",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "tachismo",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "tachismo",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "tachismo",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "tachismo",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "tachismo",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "tachismo",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "coverage2-arteotro",
+      "sha256": "757bfeee2f0e473064b0b7a3f5603b798d38ca763af9a779d6b348c64a497b06",
+      "file": "assets/757bfeee2f0e473064b0b7a3f5603b798d38ca763af9a779d6b348c64a497b06.jpg",
+      "storageKey": "media/informalismo-20261026/757bfeee2f0e473064b0b7a3f5603b798d38ca763af9a779d6b348c64a497b06.jpg",
+      "mimeType": "image/jpeg",
+      "width": 313,
+      "height": 380,
+      "alt": "Art altre, 1957. Invitación de Club 49 a la conferencia de Michel Tapié del 6 de marzo, Sala Gaspar. MACBA, A.MBO.0088.002.",
+      "source": "Col·lecció MACBA. Centre d’Estudis i Documentació. Fons Maria Lluïsa Borràs; vista previa pública.",
+      "photoBy": null,
+      "license": "© Hereva de Maria Lluïsa Borràs; derechos reservados.",
+      "sourcePageUrl": "https://www.macba.cat/es/obra/ambo0088002-art-altre/",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "arte-otro-1957",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arte-otro-1957",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arte-otro-1957",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arte-otro-1957",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arte-otro-1957",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "arte-otro-1957",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    },
+    {
+      "key": "coverage2-zen",
+      "sha256": "9c2d3d40541d4bf280974b28e94197154a8af610faaa1956596e93cbeba8f52d",
+      "file": "assets/9c2d3d40541d4bf280974b28e94197154a8af610faaa1956596e93cbeba8f52d.jpg",
+      "storageKey": "media/informalismo-20261026/9c2d3d40541d4bf280974b28e94197154a8af610faaa1956596e93cbeba8f52d.jpg",
+      "mimeType": "image/jpeg",
+      "width": 2150,
+      "height": 3880,
+      "alt": "Hakuin Ekaku, Retrato de Bodhidharma, mediados del siglo XVIII. The Met, 2015.500.9.3. Imagen de contexto de la tradición zen.",
+      "source": "The Metropolitan Museum of Art; Gift of Florence and Herbert Irving, 2015.",
+      "photoBy": null,
+      "license": "Public Domain; The Met Open Access (CC0).",
+      "sourcePageUrl": "https://www.metmuseum.org/art/collection/search/78145",
+      "canonicalUrl": null,
+      "assignments": [
+        {
+          "slug": "zen",
+          "role": "HERO",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "zen",
+          "role": "CARD",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "zen",
+          "role": "DETAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "zen",
+          "role": "THUMBNAIL",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "zen",
+          "role": "EXPLORER_3D",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        },
+        {
+          "slug": "zen",
+          "role": "GALLERY",
+          "isPrimary": false,
+          "sortOrder": 0,
+          "displayMode": "CONTAIN"
+        }
+      ]
+    }
+  ]
+}

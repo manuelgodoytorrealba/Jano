@@ -123,3 +123,29 @@
     font-size: 0.875rem;
   }
 }
+
+.entity-context-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.entity-context-gallery figure {
+  min-width: 0;
+  margin: 0;
+}
+.entity-context-gallery app-jano-media {
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+.entity-context-gallery figcaption,
+.entity-context-gallery details {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.entity-context-gallery summary {
+  cursor: pointer;
+}

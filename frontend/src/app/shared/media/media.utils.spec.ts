@@ -1,4 +1,5 @@
 import {
+  entityVisualUrl,
   isRenderableRasterMedia,
   mediaDisplayUrl,
   resolveEntityMediaItem,
@@ -7,6 +8,45 @@ import {
 import { describe, expect, it } from 'vitest';
 
 describe('media.utils', () => {
+  it.each([
+    'ARTWORK',
+    'ARTIST',
+    'PERSON',
+    'TEXT',
+    'ORGANIZATION',
+    'PLACE',
+    'EVENT',
+    'ARTICLE',
+    'CONCEPT',
+    'MOVEMENT',
+    'PERIOD',
+  ])('uses a title-specific editorial cover instead of an unrelated photo for %s', (type) => {
+    const first = entityVisualUrl({ type, title: 'Antoni Tàpies' });
+    const second = entityVisualUrl({ type, title: 'Antonio Saura' });
+
+    expect(first).toMatch(/^data:image\/svg\+xml;/);
+    expect(second).toMatch(/^data:image\/svg\+xml;/);
+    expect(first).not.toBe(second);
+    expect(decodeURIComponent(first!)).toContain('Antoni Tàpies');
+    expect(decodeURIComponent(second!)).toContain('Antonio Saura');
+  });
+
+  it('preserves real resolved image URLs for each usage', () => {
+    const entity = {
+      type: 'ARTWORK',
+      title: 'Gran pintura',
+      resolvedMedia: {
+        hero: { url: 'https://example.com/hero.jpg' },
+        card: { url: 'https://example.com/card.jpg' },
+        detail: { url: 'https://example.com/detail.jpg' },
+      },
+    };
+
+    expect(entityVisualUrl(entity, 'hero')).toBe('https://example.com/hero.jpg');
+    expect(entityVisualUrl(entity, 'card')).toBe('https://example.com/card.jpg');
+    expect(entityVisualUrl(entity, 'detail')).toBe('https://example.com/detail.jpg');
+  });
+
   it('keeps hero, card and detail separated when resolvedMedia provides distinct assets', () => {
     const entity = {
       type: 'ARTWORK',

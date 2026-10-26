@@ -1,0 +1,1972 @@
+{
+  "version": 1,
+  "entities": [
+    {
+      "key": "tapies",
+      "id": "inf26-canonical-7d4144e28e93e8712c57e599",
+      "slug": "antoni-tapies",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Antoni Tàpies",
+      "summaryEs": "Antoni Tàpies exploró las posibilidades pictóricas de la materia y de los objetos cotidianos.",
+      "summaryEn": "Antoni Tàpies explored the pictorial possibilities of matter and everyday objects.",
+      "essayEs": "Formó parte de [[dau-al-set|Dau al Set]], la colaboración entre artistas y escritores articulada alrededor de una revista desde 1948. Hacia 1954–1955 comenzó sus pinturas matéricas.\n\nEn las décadas siguientes amplió la presencia de objetos cotidianos en sus obras. El Museu Tàpies describe esta evolución como una manera de poner la realidad material en primer plano.",
+      "essayEn": "He belonged to [[dau-al-set|Dau al Set]], the collaboration between artists and writers formed around a magazine from 1948. Around 1954–1955 he began his matter paintings.\n\nIn the following decades he increased the presence of everyday objects in his work. The Museu Tàpies describes this development as a way of bringing material reality to the foreground.",
+      "titleEs": "Antoni Tàpies",
+      "sourceKeys": ["S6", "S4"],
+      "claims": [
+        {
+          "key": "tapies-c01",
+          "propositionEs": "Tàpies inició sus pinturas matéricas hacia 1954–1955 y amplió la incorporación de objetos cotidianos en los años sesenta y setenta.",
+          "propositionEn": "Tàpies began his matter paintings around 1954–1955 and increased his incorporation of everyday objects in the 1960s and 1970s.",
+          "locator": "Párrafos 1–3 y 7 del texto de exposición",
+          "qualifiers": ["Fecha aproximada: hacia 1954–1955"],
+          "attribution": null,
+          "sourceKeys": ["S6"]
+        },
+        {
+          "key": "tapies-c04",
+          "propositionEs": "Tàpies formó parte de Dau al Set, colaboración de artistas y escritores en torno a una revista iniciada en 1948.",
+          "propositionEn": "Tàpies belonged to Dau al Set, a collaboration of artists and writers around a magazine begun in 1948.",
+          "locator": "Primer párrafo de la descripción de exposición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S4"]
+        },
+        {
+          "key": "tapies-c03",
+          "propositionEs": "El Museu Tàpies interpreta sus materiales y objetos como una presencia concreta de la realidad.",
+          "propositionEn": "The Museu Tàpies interprets his materials and objects as a concrete presence of reality.",
+          "locator": "Párrafos 2–3, La realidad en primer plano",
+          "qualifiers": ["Interpretación institucional"],
+          "attribution": "Museu Tàpies",
+          "sourceKeys": ["S6"]
+        }
+      ]
+    },
+    {
+      "key": "saura",
+      "id": "inf26-canonical-3053ad6a365d42c34f90e283",
+      "slug": "antonio-saura",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Antonio Saura",
+      "summaryEs": "Antonio Saura mantuvo la figura humana dentro de una pintura de trazos intensos y contrastes de negro y blanco.",
+      "summaryEn": "Antonio Saura retained the human figure within a painting of forceful strokes and contrasts of black and white.",
+      "essayEs": "Entre 1953 y 1955 vivió en París y participó brevemente en actividades surrealistas. En 1957 cofundó [[el-paso|El Paso]], que dirigió hasta su disolución en 1960.\n\nDurante ese periodo construyó figuras deformadas mediante trazos intensos y una gama de negros, blancos y grises. El gesto pictórico convivía así con la presencia humana.",
+      "essayEn": "Between 1953 and 1955 he lived in Paris and briefly took part in Surrealist activities. In 1957 he co-founded [[el-paso|El Paso]], which he led until its dissolution in 1960.\n\nDuring that period he constructed distorted figures through forceful strokes and a palette of blacks, whites and greys. Pictorial gesture thus coexisted with the human presence.",
+      "titleEs": "Antonio Saura",
+      "sourceKeys": ["S11"],
+      "claims": [
+        {
+          "key": "saura-c01",
+          "propositionEs": "Saura vivió en París entre 1953 y 1955 y participó brevemente en actividades surrealistas.",
+          "propositionEn": "Saura lived in Paris between 1953 and 1955 and briefly participated in Surrealist activities.",
+          "locator": "Párrafo sobre París y comienzos de su trayectoria",
+          "qualifiers": ["Participación breve"],
+          "attribution": null,
+          "sourceKeys": ["S11"]
+        },
+        {
+          "key": "saura-c02",
+          "propositionEs": "Saura cofundó El Paso en 1957 y lo dirigió hasta 1960; en este periodo usó figuras deformadas y trazos en negros, blancos y grises.",
+          "propositionEn": "Saura co-founded El Paso in 1957 and led it until 1960; during this period he used distorted figures and strokes in blacks, whites and greys.",
+          "locator": "Párrafos sobre El Paso y figuras",
+          "qualifiers": ["Paleta y figuras referidas a este periodo, no a toda la carrera"],
+          "attribution": null,
+          "sourceKeys": ["S11"]
+        }
+      ]
+    },
+    {
+      "key": "canogar",
+      "id": "inf26-canonical-f9c3ddfc516796de2b1e32a9",
+      "slug": "rafael-canogar",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Rafael Canogar",
+      "summaryEs": "Rafael Canogar pasó de la pintura gestual informalista a una figuración cargada de denuncia social.",
+      "summaryEn": "Rafael Canogar moved from gestural Informalist painting to a figurative language charged with social criticism.",
+      "essayEs": "Tras formarse con Daniel Vázquez Díaz, se adentró en el informalismo en 1956 y cofundó [[el-paso|El Paso]] en 1957. En Toledo (1960) transformó el paisaje de su ciudad natal mediante blancos, negros y gestos pictóricos.\n\nA mediados de los sesenta volvió a la figuración. En sus obras posteriores, cuerpos fragmentados y multitudes expresaron preocupaciones por la España de la dictadura. Esta evolución permite seguir cambios de lenguaje concretos, sin atribuir a toda su pintura el contenido de una sola etapa.",
+      "essayEn": "After studying with Daniel Vázquez Díaz, he began exploring Informalism in 1956 and co-founded [[el-paso|El Paso]] in 1957. In Toledo (1960), he transformed the landscape of his native city through whites, blacks and pictorial gestures.\n\nIn the mid-1960s he returned to figuration. In later works, fragmented bodies and crowds expressed concerns about Spain under the dictatorship. This development makes it possible to follow specific changes of language without attributing the content of one period to all his painting.",
+      "titleEs": "Rafael Canogar",
+      "sourceKeys": ["S12", "S7"],
+      "claims": [
+        {
+          "key": "canogar-c01",
+          "propositionEs": "Canogar se formó con Daniel Vázquez Díaz, comenzó su etapa informalista en 1956 y pintó Toledo en 1960 con paisaje, blancos, negros y gesto.",
+          "propositionEn": "Canogar studied with Daniel Vázquez Díaz, began his Informalist period in 1956 and painted Toledo in 1960 using landscape, whites, blacks and gesture.",
+          "locator": "Párrafos sobre formación, 1956 y Toledo",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S12"]
+        },
+        {
+          "key": "canogar-c02",
+          "propositionEs": "Canogar fue cofundador de El Paso en Madrid en 1957.",
+          "propositionEn": "Canogar co-founded El Paso in Madrid in 1957.",
+          "locator": "Párrafo sobre fundadores, línea 18",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "canogar-c03",
+          "propositionEs": "La figuración de mediados de los sesenta y obras posteriores de Canogar incorporaron denuncia de la dictadura y cuerpos fragmentados.",
+          "propositionEn": "Canogar’s mid-1960s figuration and later works incorporated criticism of the dictatorship and fragmented bodies.",
+          "locator": "Párrafos sobre Los Novios, La Familia y las obras de 1969–1970",
+          "qualifiers": [
+            "Se refiere a etapas figurativas posteriores, no a toda la obra informalista"
+          ],
+          "attribution": null,
+          "sourceKeys": ["S12"]
+        }
+      ]
+    },
+    {
+      "key": "millares",
+      "id": "inf26-canonical-c6a1bb0726d54557f1b6cd9b",
+      "slug": "manolo-millares",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Manolo Millares",
+      "summaryEs": "Manolo Millares trabajó con arpillera, desgarros y costuras.",
+      "summaryEn": "Manolo Millares worked with burlap, tears and stitching.",
+      "essayEs": "Vinculado al grupo canario LADAC, se trasladó a Madrid en 1955 y cofundó [[el-paso|El Paso]] en 1957. En Personaje caído I (1970) utilizó arpillera plegada, desgarrada y cosida.\n\nEl Reina Sofía vincula su obra madura a la represión totalitaria, el franquismo y las violencias del siglo XX, y ve en el cosido una posibilidad de reparación.",
+      "essayEn": "Associated with the Canarian group LADAC, he moved to Madrid in 1955 and co-founded [[el-paso|El Paso]] in 1957. In Fallen Figure I (1970) he used folded, torn and stitched burlap.\n\nThe Reina Sofía connects his mature work with totalitarian repression, Francoism and twentieth-century violence, and sees in stitching a possibility of repair.",
+      "titleEs": "Manolo Millares",
+      "sourceKeys": ["S14"],
+      "claims": [
+        {
+          "key": "millares-c01",
+          "propositionEs": "Millares estuvo vinculado a LADAC, se trasladó a Madrid en 1955 y cofundó El Paso en 1957.",
+          "propositionEn": "Millares was associated with LADAC, moved to Madrid in 1955 and co-founded El Paso in 1957.",
+          "locator": "Párrafos 2–4 del texto de exposición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S14"]
+        },
+        {
+          "key": "millares-c02",
+          "propositionEs": "Personaje caído I (1970) utiliza arpillera plegada, desgarros y costuras.",
+          "propositionEn": "Fallen Figure I (1970) uses folded burlap, tears and seams.",
+          "locator": "Leyenda y párrafo dedicado a Personaje caído I",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S14"]
+        },
+        {
+          "key": "millares-c03",
+          "propositionEs": "El Reina Sofía interpreta la obra madura de Millares en relación con el totalitarismo, el franquismo y la violencia del siglo XX, y el cosido como reparación.",
+          "propositionEn": "The Reina Sofía interprets Millares’s mature work in relation to totalitarianism, Francoism and twentieth-century violence, and stitching as repair.",
+          "locator": "Párrafo sobre obra madura, línea 44",
+          "qualifiers": ["Interpretación institucional"],
+          "attribution": "Museo Nacional Centro de Arte Reina Sofía",
+          "sourceKeys": ["S14"]
+        }
+      ]
+    },
+    {
+      "key": "rivera",
+      "id": "inf26-canonical-8ba35ebe3d5c74320285c75c",
+      "slug": "manuel-rivera",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Manuel Rivera",
+      "summaryEs": "Manuel Rivera hizo de la tela metálica un material pictórico en el que intervienen la luz y la profundidad.",
+      "summaryEn": "Manuel Rivera made wire mesh into a pictorial material in which light and depth play a role.",
+      "essayEs": "En 1956 tensaba redes metálicas sobre bastidores en un solo plano. Después amplió su anchura y superpuso planos, desarrollando composiciones que producen vibraciones ópticas y efectos de muaré. La serie Metamorfosis comenzó en 1958.\n\nAunque estas obras adquieren volumen, Rivera insistía en su intención pictórica: las formas proceden de la luz y de las propiedades del material. Su participación fundacional en [[el-paso|El Paso]] en 1957 conecta esta experimentación con el colectivo madrileño.",
+      "essayEn": "In 1956 he stretched metal mesh across frames in a single plane. He later increased their depth and superimposed planes, developing compositions that produce optical vibrations and moiré effects. The Metamorphosis series began in 1958.\n\nAlthough these works acquire volume, Rivera insisted on his pictorial intention: the forms emerge from light and the properties of the material. His participation in the founding of [[el-paso|El Paso]] in 1957 connects this experimentation with the Madrid collective.",
+      "titleEs": "Manuel Rivera",
+      "sourceKeys": ["S16"],
+      "claims": [
+        {
+          "key": "rivera-c01",
+          "propositionEs": "Rivera trabajó con tela metálica en un plano en 1956 y después superpuso planos con efectos de luz y muaré; Metamorfosis comenzó en 1958.",
+          "propositionEn": "Rivera worked with wire mesh in one plane in 1956 and later superimposed planes with light and moiré effects; Metamorphosis began in 1958.",
+          "locator": "Párrafos sobre espacio-luz, bastidores y muaré, líneas 42–44",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S16"]
+        },
+        {
+          "key": "rivera-c02",
+          "propositionEs": "Rivera insistía en su intención pictórica pese al volumen de las obras.",
+          "propositionEn": "Rivera insisted on his pictorial intention despite the volume of the works.",
+          "locator": "Párrafo sobre efectos tridimensionales, línea 44",
+          "qualifiers": ["Intención atribuida al artista por el museo"],
+          "attribution": "Manuel Rivera, según Museo Reina Sofía",
+          "sourceKeys": ["S16"]
+        },
+        {
+          "key": "rivera-c03",
+          "propositionEs": "Rivera fue cofundador de El Paso en Madrid en 1957.",
+          "propositionEn": "Rivera co-founded El Paso in Madrid in 1957.",
+          "locator": "Primer párrafo: El Paso (1957–1960), Rivera miembro fundador",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S16"]
+        }
+      ]
+    },
+    {
+      "key": "frances",
+      "id": "inf26-canonical-46b6f0ae97088f7259ea1daf",
+      "slug": "juana-frances",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Juana Francés",
+      "summaryEs": "Juana Francés fue una de las artistas fundadoras de El Paso.",
+      "summaryEn": "Juana Francés was one of the artists who founded El Paso.",
+      "essayEs": "En 1957 participó en la fundación de [[el-paso|El Paso]]. En [[arenales-juana-frances-1959|Arenales]] (1959), realizada con técnica mixta, exploró la textura mediante arenas. Desde 1956 incorporaba también arcillas y fragmentos de vidrio a su pintura.",
+      "essayEn": "In 1957 she took part in founding [[el-paso|El Paso]]. In [[arenales-juana-frances-1959|Arenales]] (1959), made with mixed media, she explored texture through sands. From 1956 she also incorporated clays and fragments of glass into her painting.",
+      "titleEs": "Juana Francés",
+      "sourceKeys": ["S13", "S7"],
+      "claims": [
+        {
+          "key": "frances-c01",
+          "propositionEs": "Francés incorporó arenas, arcillas y vidrio desde 1956.",
+          "propositionEn": "Francés incorporated sands, clays and glass from 1956.",
+          "locator": "Párrafo sobre cambio de procedimiento a partir de 1956, línea 28",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S13"]
+        },
+        {
+          "key": "frances-c02",
+          "propositionEs": "Francés fue cofundadora de El Paso en 1957.",
+          "propositionEn": "Francés co-founded El Paso in 1957.",
+          "locator": "Lista fundacional, línea 18",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "frances-c03",
+          "propositionEs": "Arenales (1959), de Juana Francés, utiliza técnica mixta y arenas para trabajar la textura.",
+          "propositionEn": "Arenales (1959), by Juana Francés, uses mixed media and sands to work with texture.",
+          "locator": "Párrafos sobre la obra y tratamiento de arenas, líneas 27–31",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S13"]
+        }
+      ]
+    },
+    {
+      "key": "feito",
+      "id": "inf26-canonical-bbdca413d8088ae1366822c1",
+      "slug": "luis-feito",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "Luis Feito",
+      "summaryEs": "Luis Feito fue uno de los artistas fundadores de El Paso.",
+      "summaryEn": "Luis Feito was one of the artists who founded El Paso.",
+      "essayEs": "Cofundó [[el-paso|El Paso]] en Madrid en 1957. El colectivo estuvo activo hasta 1960.",
+      "essayEn": "He co-founded [[el-paso|El Paso]] in Madrid in 1957. The collective was active until 1960.",
+      "titleEs": "Luis Feito",
+      "sourceKeys": ["S7"],
+      "claims": [
+        {
+          "key": "feito-c01",
+          "propositionEs": "Feito cofundó El Paso en Madrid en 1957; el grupo estuvo activo hasta 1960.",
+          "propositionEn": "Feito co-founded El Paso in Madrid in 1957; the group was active until 1960.",
+          "locator": "Párrafos 1 y 3, líneas 16 y 18",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        }
+      ]
+    },
+    {
+      "key": "paso",
+      "id": "inf26-canonical-4dd09b8f659e27847f947829",
+      "slug": "el-paso",
+      "type": "ORGANIZATION",
+      "kind": "ORGANIZATION",
+      "titleEn": "El Paso",
+      "summaryEs": "El Paso fue un colectivo fundado en Madrid en 1957 y activo hasta 1960.",
+      "summaryEn": "El Paso was a collective founded in Madrid in 1957 and active until 1960.",
+      "essayEs": "Entre sus fundadores estuvieron [[juana-frances|Juana Francés]], [[manolo-millares|Manolo Millares]] y [[antonio-saura|Antonio Saura]], junto con otros artistas y críticos.\n\nLa proyección exterior del arte español de aquellos años tuvo tensiones concretas. Genoveva Tusell García documenta negativas iniciales de Tàpies, Saura y Millares ante la mediación gubernamental en la preparación de una exposición en el MoMA. Compartir un colectivo no implica que todos sus integrantes mantuvieran una posición individual idéntica.",
+      "essayEn": "Its founders included [[juana-frances|Juana Francés]], [[manolo-millares|Manolo Millares]] and [[antonio-saura|Antonio Saura]], alongside other artists and critics.\n\nThe international promotion of Spanish art in those years involved specific tensions. Genoveva Tusell García documents initial refusals by Tàpies, Saura and Millares in response to government mediation in preparing an exhibition at MoMA. Sharing a collective does not imply that all its members held an identical individual position.",
+      "titleEs": "El Paso",
+      "sourceKeys": ["S7", "S9"],
+      "claims": [
+        {
+          "key": "paso-c01",
+          "propositionEs": "El Paso se fundó en Madrid en 1957 y estuvo activo hasta 1960; Francés, Millares y Saura estuvieron entre sus fundadores.",
+          "propositionEn": "El Paso was founded in Madrid in 1957 and was active until 1960; Francés, Millares and Saura were among its founders.",
+          "locator": "Párrafos 1 y 3, líneas 16 y 18",
+          "qualifiers": ["Lista parcial de fundadores"],
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "paso-c02",
+          "propositionEs": "Tusell documenta negativas iniciales de Tàpies, Saura y Millares ante la mediación gubernamental en una exposición española en el MoMA.",
+          "propositionEn": "Tusell documents initial refusals by Tàpies, Saura and Millares in response to government mediation in a Spanish exhibition at MoMA.",
+          "locator": "Original, pp. 223 y 229",
+          "qualifiers": [
+            "Negativas iniciales; no atribución de una posición común a todo el colectivo"
+          ],
+          "attribution": "Genoveva Tusell García",
+          "sourceKeys": ["S9"]
+        }
+      ]
+    },
+    {
+      "key": "dau",
+      "id": "inf26-canonical-2c56977201d8b045f629a4bc",
+      "slug": "dau-al-set",
+      "type": "ORGANIZATION",
+      "kind": "ORGANIZATION",
+      "titleEn": "Dau al Set",
+      "summaryEs": "Dau al Set reunió a artistas y escritores en torno a una revista de vanguardia publicada entre 1948 y 1956.",
+      "summaryEn": "Dau al Set brought artists and writers together around an avant-garde magazine published between 1948 and 1956.",
+      "essayEs": "La iniciativa buscaba recuperar la vanguardia catalana interrumpida en 1939. Reunió a Modest Cuixart, Joan Ponç, Joan Josep Tharrats, [[antoni-tapies|Antoni Tàpies]], Joan Brossa y Arnau Puig. Juan Eduardo Cirlot colaboró en la revista.\n\nLa publicación fue un espacio compartido entre artes plásticas y literatura. Su historia permite situar los comienzos de Tàpies dentro de una colaboración concreta, antes de seguir el desarrollo posterior de sus pinturas matéricas.",
+      "essayEn": "The initiative sought to recover the Catalan avant-garde interrupted in 1939. It brought together Modest Cuixart, Joan Ponç, Joan Josep Tharrats, [[antoni-tapies|Antoni Tàpies]], Joan Brossa and Arnau Puig. Juan Eduardo Cirlot contributed to the magazine.\n\nThe publication provided a shared space for visual art and literature. Its history places Tàpies’s beginnings within a specific collaboration, before following the later development of his matter paintings.",
+      "titleEs": "Dau al Set",
+      "sourceKeys": ["S4", "S6"],
+      "claims": [
+        {
+          "key": "dau-c01",
+          "propositionEs": "La revista Dau al Set se publicó entre 1948 y 1956 y articuló una colaboración de artistas y escritores para recuperar la vanguardia catalana interrumpida en 1939.",
+          "propositionEn": "Dau al Set magazine was published between 1948 and 1956 and brought artists and writers together to recover the Catalan avant-garde interrupted in 1939.",
+          "locator": "Primer párrafo de descripción de exposición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S4"]
+        },
+        {
+          "key": "dau-c02",
+          "propositionEs": "Cuixart, Ponç, Tharrats, Tàpies, Brossa y Puig integraban el grupo; Cirlot fue colaborador de la revista.",
+          "propositionEn": "Cuixart, Ponç, Tharrats, Tàpies, Brossa and Puig belonged to the group; Cirlot contributed to the magazine.",
+          "locator": "Primer párrafo, lista de miembros y colaboradores",
+          "qualifiers": ["Cirlot se presenta como colaborador, no fundador"],
+          "attribution": null,
+          "sourceKeys": ["S4"]
+        },
+        {
+          "key": "dau-c03",
+          "propositionEs": "Las pinturas matéricas de Tàpies se iniciaron hacia 1954–1955, después de los comienzos de Dau al Set.",
+          "propositionEn": "Tàpies’s matter paintings began around 1954–1955, after the beginnings of Dau al Set.",
+          "locator": "Primer párrafo del texto de exposición",
+          "qualifiers": ["Fecha aproximada"],
+          "attribution": null,
+          "sourceKeys": ["S6"]
+        }
+      ]
+    },
+    {
+      "key": "tapie",
+      "id": "inf26-canonical-de0f96576c41ffc5979c7ae5",
+      "slug": "michel-tapie",
+      "type": "PERSON",
+      "kind": "PERSON",
+      "titleEn": "Michel Tapié",
+      "summaryEs": "Michel Tapié fue un crítico y escritor que articuló encuentros internacionales alrededor del art informel.",
+      "summaryEn": "Michel Tapié was a critic and writer who brought together international encounters around art informel.",
+      "essayEs": "En marzo de 1951 empleó el término informel en la presentación de Véhémences confrontées, en la Galerie Nina Dausset. Al año siguiente publicó [[un-art-autre|Un art autre]] y organizó una exposición con el mismo título.\n\nSu relación con [[antoni-tapies|Antoni Tàpies]] se concretó en 1957 en la promoción de [[arte-otro-1957|Arte Otro]], en Barcelona.",
+      "essayEn": "In March 1951 he used the term informel in the introduction to Véhémences confrontées at Galerie Nina Dausset. The following year he published [[un-art-autre|Un art autre]] and organised an exhibition with the same title.\n\nHis relationship with [[antoni-tapies|Antoni Tàpies]] took concrete form in 1957 through the promotion of [[arte-otro-1957|Arte Otro]] in Barcelona.",
+      "titleEs": "Michel Tapié",
+      "sourceKeys": ["S1", "S2", "S5"],
+      "claims": [
+        {
+          "key": "tapie-c01",
+          "propositionEs": "Tapié empleó informel en la presentación de Véhémences confrontées en la Galerie Nina Dausset en marzo de 1951.",
+          "propositionEn": "Tapié used informel in the introduction to Véhémences confrontées at Galerie Nina Dausset in March 1951.",
+          "locator": "Le glossaire, entrada Informel",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S1"]
+        },
+        {
+          "key": "tapie-c02",
+          "propositionEs": "Tapié publicó Un art autre y organizó una exposición homónima en 1952.",
+          "propositionEn": "Tapié published Un art autre and organised an exhibition of the same name in 1952.",
+          "locator": "Descripción del movimiento, primera frase",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S2"]
+        },
+        {
+          "key": "tapie-c03",
+          "propositionEs": "Tapié y Tàpies promovieron Arte Otro en Barcelona en 1957.",
+          "propositionEn": "Tapié and Tàpies promoted Arte Otro in Barcelona in 1957.",
+          "locator": "Entrada de 1957",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S5"]
+        }
+      ]
+    },
+    {
+      "key": "ohara",
+      "id": "inf26-canonical-ec5048c09bb398bf13c44cc9",
+      "slug": "frank-ohara",
+      "type": "PERSON",
+      "kind": "PERSON",
+      "titleEn": "Frank O’Hara",
+      "summaryEs": "Frank O’Hara escribió el catálogo de New Spanish Painting and Sculpture, publicado por el MoMA en 1960.",
+      "summaryEn": "Frank O’Hara wrote the catalogue of New Spanish Painting and Sculpture, published by MoMA in 1960.",
+      "essayEs": "Su nombre está ligado a [[new-spanish-painting-and-sculpture-1960|New Spanish Painting and Sculpture]], presentada en Nueva York del 20 de julio al 28 de septiembre de 1960. El catálogo acompañó la exposición de pintura y escultura españolas.",
+      "essayEn": "His name is associated with [[new-spanish-painting-and-sculpture-1960|New Spanish Painting and Sculpture]], presented in New York from 20 July to 28 September 1960. The catalogue accompanied the exhibition of Spanish painting and sculpture.",
+      "titleEs": "Frank O’Hara",
+      "sourceKeys": ["S10"],
+      "claims": [
+        {
+          "key": "ohara-c01",
+          "propositionEs": "O’Hara fue autor del catálogo de New Spanish Painting and Sculpture (1960), exposición del MoMA celebrada del 20 de julio al 28 de septiembre de 1960.",
+          "propositionEn": "O’Hara authored the catalogue of New Spanish Painting and Sculpture (1960), the MoMA exhibition held from 20 July to 28 September 1960.",
+          "locator": "Cabecera y Publications",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S10"]
+        }
+      ]
+    },
+    {
+      "key": "artautre",
+      "id": "inf26-canonical-4d2ebe68bd72817614f65b66",
+      "slug": "un-art-autre",
+      "type": "TEXT",
+      "kind": "WORK",
+      "titleEn": "Un art autre",
+      "summaryEs": "Un art autre es un libro de Michel Tapié publicado en 1952, asociado a una exposición del mismo nombre.",
+      "summaryEn": "Un art autre is a book by Michel Tapié published in 1952 and associated with an exhibition of the same name.",
+      "essayEs": "La propuesta de [[michel-tapie|Michel Tapié]] reunió artistas de distintas procedencias. La exposición incluyó a Alberto Burri, Jean Dubuffet, Jean Fautrier, Willem de Kooning, Jean-Paul Riopelle y Wols, entre otros.\n\nEl título ofrecía una denominación amplia para esa diversidad, según el Musée d’Art Moderne de Paris.",
+      "essayEn": "[[michel-tapie|Michel Tapié]]’s proposal brought together artists from different backgrounds. The exhibition included Alberto Burri, Jean Dubuffet, Jean Fautrier, Willem de Kooning, Jean-Paul Riopelle and Wols, among others.\n\nThe title provided a broad designation for this diversity, according to the Musée d’Art Moderne de Paris.",
+      "titleEs": "Un art autre",
+      "sourceKeys": ["S2", "S1"],
+      "claims": [
+        {
+          "key": "artautre-c01",
+          "propositionEs": "Tapié publicó Un art autre en 1952 y organizó una exposición homónima con Burri, Dubuffet, Fautrier, de Kooning, Riopelle y Wols, entre otros.",
+          "propositionEn": "Tapié published Un art autre in 1952 and organised an exhibition of the same name with Burri, Dubuffet, Fautrier, de Kooning, Riopelle and Wols, among others.",
+          "locator": "Descripción del movimiento",
+          "qualifiers": ["Lista parcial de participantes de la exposición"],
+          "attribution": null,
+          "sourceKeys": ["S2"]
+        },
+        {
+          "key": "artautre-c02",
+          "propositionEs": "El Musée d’Art Moderne de Paris presenta Un art autre como una denominación que permite reunir personalidades artísticas diversas.",
+          "propositionEn": "The Musée d’Art Moderne de Paris presents Un art autre as a designation allowing diverse artistic personalities to be brought together.",
+          "locator": "Le glossaire, entrada Informel",
+          "qualifiers": ["Interpretación institucional"],
+          "attribution": "Musée d’Art Moderne de Paris",
+          "sourceKeys": ["S1"]
+        }
+      ]
+    },
+    {
+      "key": "tachismo",
+      "id": "inf26-canonical-77a80b355fa73fe7dd26d746",
+      "slug": "tachismo",
+      "type": "CONCEPT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Tachisme",
+      "summaryEs": "El tachismo es una manifestación del art informel cuyo nombre procede de tache, la palabra francesa para mancha.",
+      "summaryEn": "Tachisme is a manifestation of art informel whose name derives from tache, the French word for a spot or stain.",
+      "essayEs": "La mancha ofrece una entrada a la pintura gestual y expresiva de la Europa de posguerra. El Guggenheim sitúa el tachismo dentro del [[informalismo|art informel]].\n\nPara acercarse a estas obras, puede ser útil atender a las marcas y al movimiento de la pintura sobre la superficie.",
+      "essayEn": "The stain offers an entry into the gestural and expressive painting of postwar Europe. The Guggenheim places Tachisme within [[informalismo|art informel]].\n\nWhen approaching these works, it can be useful to attend to the marks and the movement of paint across the surface.",
+      "titleEs": "Tachismo",
+      "sourceKeys": ["S17"],
+      "claims": [
+        {
+          "key": "tachismo-c01",
+          "propositionEs": "Tachismo deriva de tache y es una manifestación de Art Informel, pintura europea gestual y expresiva de posguerra.",
+          "propositionEn": "Tachisme derives from tache and is a manifestation of Art Informel, gestural and expressive postwar European painting.",
+          "locator": "Glosario: Tachisme y Art Informel",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S17"]
+        }
+      ]
+    },
+    {
+      "key": "arteotro",
+      "id": "inf26-canonical-d55e3027867888b693568c16",
+      "slug": "arte-otro-1957",
+      "type": "EVENT",
+      "kind": "EVENT",
+      "titleEn": "Arte Otro (1957)",
+      "summaryEs": "Arte Otro fue una exposición promovida por Antoni Tàpies y Michel Tapié en Barcelona en 1957.",
+      "summaryEn": "Arte Otro was an exhibition promoted by Antoni Tàpies and Michel Tapié in Barcelona in 1957.",
+      "essayEs": "Celebrada en la Sala Gaspar, presentó obras de Pollock, Kline, Dubuffet, Fautrier y Fontana, entre otros. La cronología del Museu Tàpies sitúa su organización conjunta por [[antoni-tapies|Tàpies]] y [[michel-tapie|Tapié]] en 1957.\n\nAmbos se habían conocido en París en 1955. Arte Otro permite seguir esa relación a través de una actividad expositiva concreta entre París y Barcelona.",
+      "essayEn": "Held at Sala Gaspar, it presented works by Pollock, Kline, Dubuffet, Fautrier and Fontana, among others. The Museu Tàpies chronology places its joint organisation by [[antoni-tapies|Tàpies]] and [[michel-tapie|Tapié]] in 1957.\n\nThe two had met in Paris in 1955. Arte Otro makes it possible to follow that relationship through a specific exhibition activity between Paris and Barcelona.",
+      "titleEs": "Arte Otro (1957)",
+      "sourceKeys": ["S5"],
+      "claims": [
+        {
+          "key": "arteotro-c01",
+          "propositionEs": "Tàpies y Tapié promovieron Arte Otro en Sala Gaspar, Barcelona, en 1957, con obras de Pollock, Kline, Dubuffet, Fautrier y Fontana, entre otros.",
+          "propositionEn": "Tàpies and Tapié promoted Arte Otro at Sala Gaspar, Barcelona, in 1957, with works by Pollock, Kline, Dubuffet, Fautrier and Fontana, among others.",
+          "locator": "Entrada de 1957",
+          "qualifiers": ["Lista parcial de artistas"],
+          "attribution": null,
+          "sourceKeys": ["S5"]
+        },
+        {
+          "key": "arteotro-c02",
+          "propositionEs": "Tàpies conoció a Tapié en París en 1955.",
+          "propositionEn": "Tàpies met Tapié in Paris in 1955.",
+          "locator": "Entrada de 1955",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S5"]
+        }
+      ]
+    },
+    {
+      "key": "newspanish",
+      "id": "inf26-canonical-b136ecdc1d725c01eb1468ee",
+      "slug": "new-spanish-painting-and-sculpture-1960",
+      "type": "EVENT",
+      "kind": "EVENT",
+      "titleEn": "New Spanish Painting and Sculpture (1960)",
+      "summaryEs": "New Spanish Painting and Sculpture presentó pintura y escultura españolas en el MoMA de Nueva York en 1960.",
+      "summaryEn": "New Spanish Painting and Sculpture presented Spanish painting and sculpture at MoMA in New York in 1960.",
+      "essayEs": "La exposición abrió el 20 de julio y terminó el 28 de septiembre de 1960. Su catálogo fue escrito por [[frank-ohara|Frank O’Hara]].\n\nGenoveva Tusell García sitúa la muestra dentro de los intercambios artísticos entre España y Estados Unidos. Su investigación documenta negociaciones iniciadas en 1958 y negativas iniciales de Tàpies, Saura y Millares ante la mediación gubernamental. Esta historia permite observar las tensiones entre circulación internacional, decisiones de los artistas y promoción institucional.",
+      "essayEn": "The exhibition opened on 20 July and ended on 28 September 1960. Its catalogue was written by [[frank-ohara|Frank O’Hara]].\n\nGenoveva Tusell García places the exhibition within artistic exchanges between Spain and the United States. Her research documents negotiations beginning in 1958 and initial refusals by Tàpies, Saura and Millares in response to government mediation. This history reveals tensions between international circulation, artists’ decisions and institutional promotion.",
+      "titleEs": "New Spanish Painting and Sculpture (1960)",
+      "sourceKeys": ["S10", "S9"],
+      "claims": [
+        {
+          "key": "newspanish-c01",
+          "propositionEs": "La exposición se celebró en el MoMA del 20 de julio al 28 de septiembre de 1960 y su catálogo es de Frank O’Hara.",
+          "propositionEn": "The exhibition took place at MoMA from 20 July to 28 September 1960 and its catalogue is by Frank O’Hara.",
+          "locator": "Cabecera y Publications",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S10"]
+        },
+        {
+          "key": "newspanish-c02",
+          "propositionEs": "Tusell documenta negociaciones desde 1958 y negativas iniciales de Tàpies, Saura y Millares ante la mediación gubernamental.",
+          "propositionEn": "Tusell documents negotiations from 1958 and initial refusals by Tàpies, Saura and Millares in response to government mediation.",
+          "locator": "Original, pp. 223 y 229",
+          "qualifiers": [
+            "Negativas iniciales; no equivalen a exclusión final ni a posición uniforme de todos los artistas"
+          ],
+          "attribution": "Genoveva Tusell García",
+          "sourceKeys": ["S9"]
+        }
+      ]
+    },
+    {
+      "key": "granpintura",
+      "id": "inf26-canonical-5e1b23cf2b9cd98816d04468",
+      "slug": "gran-pintura-tapies-1958",
+      "type": "ARTWORK",
+      "kind": "WORK",
+      "titleEn": "Great Painting (1958)",
+      "summaryEs": "Gran pintura (1958), de Antoni Tàpies, combina óleo, polvo de mármol y arena sobre lienzo.",
+      "summaryEn": "Great Painting (1958), by Antoni Tàpies, combines oil, marble dust and sand on canvas.",
+      "essayEs": "Jennifer Blessing, en el Guggenheim, compara su superficie marcada con un muro alterado por la acción humana y el tiempo. Propone una lectura ligada a la memoria de la violencia y a la contemplación.\n\nEn esta pintura de [[antoni-tapies|Antoni Tàpies]], los materiales humildes y las huellas ofrecen un punto de partida para mirar esa relación entre materia y experiencia.",
+      "essayEn": "Jennifer Blessing, writing for the Guggenheim, compares its marked surface to a wall altered by human intervention and time. She proposes a reading connected with the memory of violence and contemplation.\n\nIn this painting by [[antoni-tapies|Antoni Tàpies]], humble materials and traces offer a starting point for looking at that relationship between matter and experience.",
+      "titleEs": "Gran pintura (1958)",
+      "sourceKeys": ["S3"],
+      "claims": [
+        {
+          "key": "granpintura-c01",
+          "propositionEs": "Gran pintura es una obra de Tàpies de 1958 con óleo, polvo de mármol y arena sobre lienzo.",
+          "propositionEn": "Great Painting is a work by Tàpies from 1958 with oil, marble dust and sand on canvas.",
+          "locator": "Ficha técnica",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S3"]
+        },
+        {
+          "key": "granpintura-c02",
+          "propositionEs": "Blessing describe una superficie marcada, la compara con muros y propone una lectura vinculada a memoria de violencia y contemplación.",
+          "propositionEn": "Blessing describes a marked surface, compares it to walls and proposes a reading connected with the memory of violence and contemplation.",
+          "locator": "Texto firmado por Jennifer Blessing, párrafos 2–3",
+          "qualifiers": ["Interpretación atribuida; no significado necesario para todo espectador"],
+          "attribution": "Jennifer Blessing",
+          "sourceKeys": ["S3"]
+        }
+      ]
+    },
+    {
+      "key": "arenales",
+      "id": "inf26-canonical-29b4d3f1eeff93e18b40b346",
+      "slug": "arenales-juana-frances-1959",
+      "type": "ARTWORK",
+      "kind": "WORK",
+      "titleEn": "Arenales (1959)",
+      "summaryEs": "Arenales es una obra de Juana Francés realizada en 1959 mediante técnica mixta.",
+      "summaryEn": "Arenales is a work by Juana Francés made in 1959 using mixed media.",
+      "essayEs": "Las arenas se separan por colores y grosores y se distribuyen mediante barridos o acumulaciones. El IAACC Pablo Serrano destaca su presencia en las zonas blancas. En esta pintura de [[juana-frances|Juana Francés]], la materia construye la superficie.",
+      "essayEn": "The sands are separated by colour and grain size and distributed through sweeping or accumulation. The IAACC Pablo Serrano highlights their presence in the white areas. In this painting by [[juana-frances|Juana Francés]], matter constructs the surface.",
+      "titleEs": "Arenales (1959)",
+      "sourceKeys": ["S13"],
+      "claims": [
+        {
+          "key": "arenales-c01",
+          "propositionEs": "Arenales, de Juana Francés, es una obra de técnica mixta de 1959 perteneciente a su etapa informalista.",
+          "propositionEn": "Arenales, by Juana Francés, is a mixed-media work from 1959 belonging to her Informalist period.",
+          "locator": "Párrafos sobre la obra, líneas 27–29",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S13"]
+        },
+        {
+          "key": "arenales-c02",
+          "propositionEs": "Las arenas se separan por colores y grosores, se aplican por barridos o acumulación y se potencian en las zonas blancas.",
+          "propositionEn": "The sands are separated by colour and grain size, applied through sweeping or accumulation and emphasised in the white areas.",
+          "locator": "Párrafos sobre tratamiento de texturas, líneas 30–31",
+          "qualifiers": ["Descripción de procedimiento atribuida al museo"],
+          "attribution": "IAACC Pablo Serrano",
+          "sourceKeys": ["S13"]
+        }
+      ]
+    },
+    {
+      "key": "crucifixion",
+      "id": "inf26-canonical-82835a109c5d5957781e53e7",
+      "slug": "crucifixion-12-saura-1959",
+      "type": "ARTWORK",
+      "kind": "WORK",
+      "titleEn": "Crucifixion 12 (1959)",
+      "summaryEs": "Crucifixion 12 es un óleo sobre lienzo de Antonio Saura realizado en 1959.",
+      "summaryEn": "Crucifixion 12 is an oil painting on canvas made by Antonio Saura in 1959.",
+      "essayEs": "La pintura mide 200 × 250,5 centímetros y pertenece a la colección del Centre Pompidou, que la adquirió en 1991. En ella, [[antonio-saura|Antonio Saura]] aplica el gesto pictórico a la figura mediante fuertes contrastes de negro y blanco.\n\nEl museo vincula la serie de crucifixiones, iniciada en 1957, con la persistencia del sufrimiento. Atribuye al artista una lectura del crucificado como símbolo trágico de su época, en el contexto de la España franquista.",
+      "essayEn": "The painting measures 200 × 250.5 centimetres and belongs to the Centre Pompidou collection, which acquired it in 1991. In it, [[antonio-saura|Antonio Saura]] applies pictorial gesture to the figure through strong contrasts of black and white.\n\nThe museum connects the crucifixion series, begun in 1957, with enduring suffering. It attributes to the artist a reading of the crucified figure as a tragic symbol of his time, in the context of Francoist Spain.",
+      "titleEs": "Crucifixion 12 (1959)",
+      "sourceKeys": ["S18"],
+      "claims": [
+        {
+          "key": "crucifixion-c01",
+          "propositionEs": "Crucifixion 12, de Saura, es un óleo sobre lienzo de 1959 de 200 × 250,5 cm, adquirido por el Centre Pompidou en 1991.",
+          "propositionEn": "Crucifixion 12, by Saura, is a 1959 oil on canvas measuring 200 × 250.5 cm, acquired by the Centre Pompidou in 1991.",
+          "locator": "Información detallada: artista, creación, técnica, dimensiones y adquisición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S18"]
+        },
+        {
+          "key": "crucifixion-c02",
+          "propositionEs": "El Centre Pompidou describe gesto aplicado a la figura, contraste blanco-negro y serie iniciada en 1957; vincula la serie al sufrimiento y atribuye a Saura una lectura trágica del crucificado en la España franquista.",
+          "propositionEn": "The Centre Pompidou describes gesture applied to the figure, black-and-white contrast and a series begun in 1957; it connects the series with suffering and attributes to Saura a tragic reading of the crucified figure in Francoist Spain.",
+          "locator": "Texto interpretativo anterior a ficha técnica, líneas 45–46",
+          "qualifiers": ["Interpretación institucional y atribución explícita al artista"],
+          "attribution": "Centre Pompidou; lectura del crucificado atribuida a Antonio Saura",
+          "sourceKeys": ["S18"]
+        }
+      ]
+    },
+    {
+      "key": "otages",
+      "id": "inf26-canonical-9265d9fb07001323d1cd5710",
+      "slug": "otages-serie-fautrier",
+      "type": "ARTWORK",
+      "kind": "WORK",
+      "titleEn": "Otages (series)",
+      "summaryEs": "La serie de Jean Fautrier concentra la atención en el espesor y las texturas de la pintura.",
+      "summaryEn": "Jean Fautrier’s series draws attention to the thickness and textures of paint.",
+      "essayEs": "El Musée d’Art Moderne de Paris fecha Otages entre 1943 y 1945. La serie pertenece a la investigación de [[jean-fautrier|Jean Fautrier]] durante la guerra, cuando la materia adquirió creciente importancia en sus imágenes de cuerpos, objetos y paisajes. El museo describe una combinación de pintura a la cola, pigmentos y tintas que produce empastes y texturas variados. La superficie pictórica cobra así protagonismo dentro de la representación.",
+      "essayEn": "The Musée d’Art Moderne de Paris dates Otages to 1943–1945. The series belongs to [[jean-fautrier|Jean Fautrier]]’s wartime exploration, when matter became increasingly important in his images of bodies, objects, and landscapes. The museum describes a combination of glue-based paint, pigments, and inks that produces varied impastos and textures. The painted surface thereby takes on a prominent role within the representation.",
+      "titleEs": "Otages (serie)",
+      "sourceKeys": ["S19"],
+      "claims": [
+        {
+          "key": "otages-date",
+          "propositionEs": "Otages es una serie de Fautrier fechada en 1943–1945 por el Musée d’Art Moderne de Paris.",
+          "propositionEn": "Otages is a Fautrier series dated 1943–1945 by the Musée d’Art Moderne de Paris.",
+          "locator": "Párrafos De retour à Paris y Dans ses célèbres séries; versión pública alternativa https://www.mam.paris.fr/fr/node/708",
+          "qualifiers": ["Serie, no identificación de una obra individual titulada Rehenes."],
+          "attribution": "Musée d’Art Moderne de Paris",
+          "sourceKeys": ["S19"]
+        },
+        {
+          "key": "otages-matter",
+          "propositionEs": "El museo describe el protagonismo creciente de la materia y la combinación de cola, pigmentos y tintas en el trabajo de Fautrier.",
+          "propositionEn": "The museum describes the increasing prominence of matter and the combination of glue, pigments, and inks in Fautrier’s work.",
+          "locator": "Párrafos sobre guerra y series pictóricas",
+          "qualifiers": [],
+          "attribution": "Musée d’Art Moderne de Paris",
+          "sourceKeys": ["S19"]
+        }
+      ]
+    },
+    {
+      "key": "sanleon",
+      "id": "inf26-canonical-b0c9c6cbd3130af2f804cf49",
+      "slug": "jose-sanleon",
+      "type": "ARTIST",
+      "kind": "PERSON",
+      "titleEn": "José Sanleón",
+      "summaryEs": "Lonas recuperadas y huellas de uso articulan una pintura atenta a la construcción de la superficie.",
+      "summaryEn": "Recovered tarpaulins and traces of use shape a painting practice attentive to the construction of its surface.",
+      "essayEs": "El IVAM sitúa la incorporación de José Sanleón al panorama valenciano en los primeros años ochenta. En sus series El laberinto, Roma Quadrata y Manhattan, desarrolladas entre 1989 y 1993, ciudad y pintura se cruzan mediante la imagen del laberinto. La [[materialidad|materialidad]] adquiere un papel decisivo cuando trabaja con viejas lonas de camión: pliegues, costuras y remaches pasan a formar parte del dibujo, el color y los ritmos de la composición.",
+      "essayEn": "The IVAM places José Sanleón’s emergence on the Valencian art scene in the early 1980s. In his series El laberinto, Roma Quadrata, and Manhattan, developed between 1989 and 1993, city and painting intersect through the image of the labyrinth. [[materialidad|Materiality]] takes a decisive role when he works with old truck tarpaulins: folds, seams, and rivets become part of the drawing, color, and compositional rhythms.",
+      "titleEs": "José Sanleón",
+      "sourceKeys": ["S15"],
+      "claims": [
+        {
+          "key": "sanleon-context",
+          "propositionEs": "El IVAM sitúa a Sanleón en el panorama valenciano desde comienzos de los ochenta y sus tres series entre 1989 y 1993.",
+          "propositionEn": "The IVAM places Sanleón on the Valencian art scene from the early 1980s and his three series between 1989 and 1993.",
+          "locator": "Descripción de exposición, párrafos 1–3",
+          "qualifiers": [],
+          "attribution": "Institut Valencià d’Art Modern",
+          "sourceKeys": ["S15"]
+        },
+        {
+          "key": "sanleon-tarpaulin",
+          "propositionEs": "El IVAM describe la conversión de pliegues, costuras, remaches y huellas de lonas usadas en recursos de composición.",
+          "propositionEn": "The IVAM describes the conversion of folds, seams, rivets, and traces on used tarpaulins into compositional devices.",
+          "locator": "Descripción, párrafos 4–6",
+          "qualifiers": [],
+          "attribution": "Institut Valencià d’Art Modern",
+          "sourceKeys": ["S15"]
+        }
+      ]
+    },
+    {
+      "key": "politica",
+      "id": "inf26-canonical-642107ff2732ec2ed650b5a3",
+      "slug": "politica-cultural-exterior-franquismo",
+      "type": "CONCEPT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Francoist foreign cultural policy",
+      "summaryEs": "La promoción internacional de la vanguardia formó parte de las estrategias de apertura del régimen franquista.",
+      "summaryEn": "The international promotion of avant-garde art formed part of the Franco regime’s strategies of opening up.",
+      "essayEs": "Durante los años cincuenta y sesenta, el franquismo se acercó a la vanguardia para proyectar modernización y apertura. Alicia Fuentes Vega analiza ese acercamiento y el papel de las imágenes de «lo español». La obra de [[manuel-rivera|Manuel Rivera]] circuló en iniciativas de instituciones franquistas, según el Reina Sofía. Genoveva Tusell documenta además reticencias de artistas ante la mediación gubernamental en las negociaciones de una exposición española en Nueva York.",
+      "essayEn": "During the 1950s and 1960s, the Franco regime approached the avant-garde to project modernization and openness. Alicia Fuentes Vega analyzes this approach and the role of images of “Spanishness.” [[manuel-rivera|Manuel Rivera]]’s work circulated through initiatives by Francoist institutions, according to the Reina Sofía. Genoveva Tusell also documents artists’ reservations about government mediation during negotiations for an exhibition of Spanish art in New York.",
+      "titleEs": "Política cultural exterior del franquismo",
+      "sourceKeys": ["S8", "S7", "S9"],
+      "claims": [
+        {
+          "key": "politica-approach",
+          "propositionEs": "Fuentes Vega relaciona el acercamiento franquista a la vanguardia con modernización, apertura y narrativas de españolidad en los años cincuenta y sesenta.",
+          "propositionEn": "Fuentes Vega relates the Franco regime’s approach to the avant-garde to modernization, openness, and narratives of Spanishness in the 1950s and 1960s.",
+          "locator": "Resumen y pp. 183–184",
+          "qualifiers": [],
+          "attribution": "Alicia Fuentes Vega",
+          "sourceKeys": ["S8"]
+        },
+        {
+          "key": "politica-rivera",
+          "propositionEs": "La obra de Rivera tuvo cabida en la promoción artística de instituciones franquistas.",
+          "propositionEn": "Rivera’s work featured in art promotion by Francoist institutions.",
+          "locator": "Biografía de Manuel Rivera, párrafos sobre circulación internacional",
+          "qualifiers": [],
+          "attribution": "Museo Nacional Centro de Arte Reina Sofía",
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "politica-reservations",
+          "propositionEs": "Tusell documenta reticencias de artistas ante la mediación gubernamental para la muestra del MoMA.",
+          "propositionEn": "Tusell documents artists’ reservations about government mediation for the MoMA exhibition.",
+          "locator": "p. 229",
+          "qualifiers": [],
+          "attribution": "Genoveva Tusell García",
+          "sourceKeys": ["S9"]
+        }
+      ]
+    },
+    {
+      "key": "internacionalizacion",
+      "id": "inf26-canonical-adc83880d11d70eecd8287a2",
+      "slug": "internacionalizacion-arte-abstracto-espanol",
+      "type": "CONCEPT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Internationalization of Spanish abstract art",
+      "summaryEs": "Exposiciones e intercambios conectaron la abstracción española con circuitos internacionales durante los años cincuenta y sesenta.",
+      "summaryEn": "Exhibitions and exchanges connected Spanish abstraction with international circuits during the 1950s and 1960s.",
+      "essayEs": "Genoveva Tusell reconstruye los intercambios de exposiciones entre España y Estados Unidos de 1950 a 1964. El Arte Moderno en los EE. UU. llegó a Madrid y Barcelona en 1955; La Nueva Pintura Americana se presentó en Madrid en 1958. En la dirección inversa, [[new-spanish-painting-and-sculpture-1960|New Spanish Painting and Sculpture]] abrió en el MoMA en 1960. Las negociaciones documentadas por Tusell permiten seguir la intervención de instituciones y artistas en esa circulación.",
+      "essayEn": "Genoveva Tusell reconstructs exhibition exchanges between Spain and the United States from 1950 to 1964. Modern Art in the United States reached Madrid and Barcelona in 1955; The New American Painting was presented in Madrid in 1958. In the opposite direction, [[new-spanish-painting-and-sculpture-1960|New Spanish Painting and Sculpture]] opened at MoMA in 1960. The negotiations Tusell documents reveal the participation of institutions and artists in this circulation.",
+      "titleEs": "Internacionalización del arte abstracto español",
+      "sourceKeys": ["S9", "S10"],
+      "claims": [
+        {
+          "key": "international-exchanges",
+          "propositionEs": "Tusell estudia intercambios de 1950–1964 y las exposiciones estadounidenses en España de 1955 y 1958.",
+          "propositionEn": "Tusell studies exchanges in 1950–1964 and the American exhibitions in Spain in 1955 and 1958.",
+          "locator": "Título, resumen y pp. 223–229",
+          "qualifiers": [],
+          "attribution": "Genoveva Tusell García",
+          "sourceKeys": ["S9"]
+        },
+        {
+          "key": "international-moma",
+          "propositionEs": "New Spanish Painting and Sculpture se celebró en el MoMA en 1960.",
+          "propositionEn": "New Spanish Painting and Sculpture took place at MoMA in 1960.",
+          "locator": "Cabecera de la exposición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S10"]
+        }
+      ]
+    },
+    {
+      "key": "becker",
+      "id": "inf26-canonical-23635671b14ff3f69e01d9f3",
+      "slug": "howard-s-becker",
+      "type": "PERSON",
+      "kind": "PERSON",
+      "titleEn": "Howard S. Becker",
+      "summaryEs": "Sociólogo que estudió la creación artística como cooperación entre personas, oficios e instituciones.",
+      "summaryEn": "Sociologist who studied artistic creation as cooperation among people, occupations, and institutions.",
+      "essayEs": "Howard S. Becker (1928–2023) trabajó en las sociologías del arte, la música y la desviación. En Art Worlds, la obra artística aparece como resultado de una actividad colectiva: junto al artista intervienen proveedores, intérpretes, marchantes, críticos y consumidores. Su análisis atiende a las convenciones que permiten coordinar esa cooperación y a la manera en que tales redes contribuyen a configurar el arte que llega a producirse.",
+      "essayEn": "Howard S. Becker (1928–2023) worked in the sociologies of art, music, and deviance. In Art Worlds, an artwork emerges from collective activity: suppliers, performers, dealers, critics, and consumers participate alongside the artist. His analysis examines the conventions that coordinate this cooperation and the ways these networks help shape the art that can be produced. Artistic creation thus involves a wider social system.",
+      "titleEs": "Howard S. Becker",
+      "sourceKeys": ["PUB_BECKER_AUTHOR", "PUB_BECKER_ART_WORLDS"],
+      "claims": [
+        {
+          "key": "becker-life",
+          "propositionEs": "Becker vivió entre 1928 y 2023 y trabajó en las sociologías del arte, la música y la desviación.",
+          "propositionEn": "Becker lived from 1928 to 2023 and worked in the sociologies of art, music, and deviance.",
+          "locator": "Biografía del autor, primer párrafo",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["PUB_BECKER_AUTHOR"]
+        },
+        {
+          "key": "becker-cooperation",
+          "propositionEs": "Art Worlds analiza las redes cooperativas y convenciones que configuran la producción de arte.",
+          "propositionEn": "Art Worlds analyzes the cooperative networks and conventions that shape art production.",
+          "locator": "About the Book",
+          "qualifiers": [],
+          "attribution": "Descripción editorial de University of California Press",
+          "sourceKeys": ["PUB_BECKER_ART_WORLDS"]
+        }
+      ]
+    },
+    {
+      "key": "berger",
+      "id": "inf26-canonical-0bdd5f970575805c8055c914",
+      "slug": "john-berger",
+      "type": "PERSON",
+      "kind": "PERSON",
+      "titleEn": "John Berger",
+      "summaryEs": "Escritor que convirtió las maneras de mirar las imágenes en una pregunta cultural compartida.",
+      "summaryEn": "Writer who made the ways we look at images a shared cultural question.",
+      "essayEs": "John Berger nació en Londres en 1926 y murió en 2017. Escribió ficción y ensayo; entre sus obras figuran la novela G. y Ways of Seeing. Este último libro apareció en 1972 a partir de una serie de la BBC. Su reflexión sitúa la mirada antes de las palabras y pregunta por la relación, siempre abierta, entre lo que vemos, lo que sabemos y lo que podemos explicar.",
+      "essayEn": "John Berger was born in London in 1926 and died in 2017. He wrote fiction and nonfiction, including the novel G. and Ways of Seeing. The latter first appeared in 1972, based on a BBC television series. His reflection places seeing before words and asks about the unsettled relationship between what we see, what we know, and what we can explain.",
+      "titleEs": "John Berger",
+      "sourceKeys": ["PUB_BERGER_WAYS"],
+      "claims": [
+        {
+          "key": "berger-life",
+          "propositionEs": "Berger nació en Londres en 1926, murió en 2017 y escribió ficción y no ficción, incluida G.",
+          "propositionEn": "Berger was born in London in 1926, died in 2017, and wrote fiction and nonfiction, including G.",
+          "locator": "About John Berger",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["PUB_BERGER_WAYS"]
+        },
+        {
+          "key": "berger-ways",
+          "propositionEs": "Ways of Seeing apareció en 1972 a partir de la serie BBC y pregunta por la relación entre mirar, saber y explicar.",
+          "propositionEn": "Ways of Seeing appeared in 1972 from the BBC series and asks about the relationship between seeing, knowing, and explaining.",
+          "locator": "Descripción editorial y pasaje inicial reproducido",
+          "qualifiers": [],
+          "attribution": "John Berger; descripción editorial de Penguin",
+          "sourceKeys": ["PUB_BERGER_WAYS"]
+        }
+      ]
+    },
+    {
+      "key": "williams",
+      "id": "inf26-canonical-d17108747e922613fe66bf5b",
+      "slug": "raymond-williams",
+      "type": "PERSON",
+      "kind": "PERSON",
+      "titleEn": "Raymond Williams",
+      "summaryEs": "Teórico cultural atento a la vida cotidiana, la creación artística y la formación de significados compartidos.",
+      "summaryEn": "Cultural theorist attentive to everyday life, artistic creation, and the formation of shared meanings.",
+      "essayEs": "En Culture is ordinary, publicado originalmente en 1958, Raymond Williams reúne dos sentidos de cultura: una forma de vida con significados comunes y las actividades de las artes y el aprendizaje. Ambos se hacen y transforman mediante la experiencia. Su reflexión sobre el [[avance-cultural|avance cultural]] propone abrir cauces para nuevas aportaciones y para su discusión pública. La colección Resources of Hope, publicada en 1989, reúne este ensayo con otros escritos sobre cultura y democracia.",
+      "essayEn": "In Culture is ordinary, originally published in 1958, Raymond Williams brings together two meanings of culture: a way of life with common meanings, and the activities of arts and learning. Both are made and transformed through experience. His reflection on [[avance-cultural|cultural growth]] proposes opening channels for new contributions and public discussion. Resources of Hope, published in 1989, collects this essay alongside other writings on culture and democracy.",
+      "titleEs": "Raymond Williams",
+      "sourceKeys": ["PUB_WILLIAMS_CULTURE", "PUB_WILLIAMS_RESOURCES"],
+      "claims": [
+        {
+          "key": "williams-culture",
+          "propositionEs": "En Culture is ordinary (1958), Williams une cultura como forma de vida y como artes y aprendizaje, transformadas por la experiencia.",
+          "propositionEn": "In Culture is ordinary (1958), Williams joins culture as a way of life and as arts and learning, transformed through experience.",
+          "locator": "p. 4 impresa y encabezamiento Culture is Ordinary [1958]",
+          "qualifiers": [],
+          "attribution": "Raymond Williams",
+          "sourceKeys": ["PUB_WILLIAMS_CULTURE"]
+        },
+        {
+          "key": "williams-growth",
+          "propositionEs": "Williams propone cauces abiertos para aportaciones culturales y su discusión común.",
+          "propositionEn": "Williams proposes open channels for cultural contributions and their common discussion.",
+          "locator": "p. 16 impresa",
+          "qualifiers": [],
+          "attribution": "Raymond Williams",
+          "sourceKeys": ["PUB_WILLIAMS_CULTURE"]
+        },
+        {
+          "key": "williams-resources",
+          "propositionEs": "Resources of Hope reúne Culture is Ordinary con ensayos sobre cultura y democracia y fue publicado en 1989.",
+          "propositionEn": "Resources of Hope collects Culture is Ordinary with essays on culture and democracy and was published in 1989.",
+          "locator": "Descripción y metadatos de edición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["PUB_WILLIAMS_RESOURCES"]
+        }
+      ]
+    },
+    {
+      "key": "zen",
+      "id": "inf26-canonical-92e4accd3d41d63fe7698c06",
+      "slug": "zen",
+      "type": "CONCEPT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Zen",
+      "summaryEs": "La recepción artística del Zen abrió un campo de reflexión sobre el gesto y la creación en la posguerra.",
+      "summaryEn": "The artistic reception of Zen opened a field of reflection on gesture and creation after the war.",
+      "essayEs": "David Almazán estudia la recepción del Zen en la pintura de posguerra y su relación con el gesto y los materiales. Recoge el trabajo de Pilar Cabañas sobre el encuentro de [[antonio-saura|Antonio Saura]] con el Zen y el informalismo en París. Almazán examina referencias caligráficas en los escritos de Saura y plantea el problema de equiparar una pintura gestual con la práctica del Zen. Advierte que delimitar y valorar esa influencia resulta difícil.",
+      "essayEn": "David Almazán studies the reception of Zen in postwar painting and its relationship with gesture and materials. He discusses Pilar Cabañas’s work on [[antonio-saura|Antonio Saura]]’s encounter with Zen and Informel in Paris. Almazán examines calligraphic references in Saura’s writings and questions the equation of gestural painting with Zen practice. He warns that delimiting and assessing this artistic influence is difficult.",
+      "titleEs": "Zen",
+      "sourceKeys": ["PUB_ALMAZAN_ZEN"],
+      "claims": [
+        {
+          "key": "zen-reception",
+          "propositionEs": "Almazán examina la recepción del Zen en el arte de posguerra, las referencias gestuales y los límites de equiparar pintura y práctica Zen.",
+          "propositionEn": "Almazán examines Zen’s reception in postwar art, gestural references, and the limits of equating painting with Zen practice.",
+          "locator": "pp. 179, 184 y 189–190",
+          "qualifiers": [
+            "Recepción artística situada; no atribuye práctica religiosa a Saura ni a todo el informalismo."
+          ],
+          "attribution": "David Almazán Tomás",
+          "sourceKeys": ["PUB_ALMAZAN_ZEN"]
+        },
+        {
+          "key": "zen-cabanas",
+          "propositionEs": "Almazán recoge el trabajo de Cabañas, quien sitúa en París el encuentro de Saura con el Zen y el informalismo.",
+          "propositionEn": "Almazán discusses Cabañas’s work, which locates Saura’s encounter with Zen and Informel in Paris.",
+          "locator": "p. 189, párrafo Antonio Saura, zentauro y difusor del arte moderno japonés y nota 35",
+          "qualifiers": [
+            "Cita secundaria explícita; no se afirma lectura integral pública del capítulo de Cabañas."
+          ],
+          "attribution": "Pilar Cabañas Moreno, citada por David Almazán Tomás",
+          "sourceKeys": ["PUB_ALMAZAN_ZEN"]
+        }
+      ]
+    },
+    {
+      "key": "gutai",
+      "id": "inf26-canonical-646d2f7533f3dd809caca7f8",
+      "slug": "gutai",
+      "type": "ORGANIZATION",
+      "kind": "ORGANIZATION",
+      "titleEn": "Gutai",
+      "summaryEs": "Colectivo japonés que exploró el encuentro directo entre cuerpo, materia, acción y participación del público.",
+      "summaryEn": "Japanese collective that explored direct encounters among body, matter, action, and public participation.",
+      "essayEs": "Yoshihara Jirō fundó Gutai en 1954 en Ashiya, cerca de Osaka; el grupo estuvo activo hasta 1972. Su nombre significa concreción y expresa el interés de sus integrantes por el contacto directo con los materiales. Sus experimentos abarcaron pintura, acciones y entornos participativos. La revista Gutai ayudó a difundir esas propuestas internacionalmente: según la curadora Alexandra Munroe, permitió que [[michel-tapie|Michel Tapié]] y otros artistas y críticos conocieran la actividad del colectivo.",
+      "essayEn": "Yoshihara Jirō founded Gutai in 1954 in Ashiya, near Osaka; the group remained active until 1972. Its name means concreteness and expresses its members’ interest in direct engagement with materials. Their experiments spanned painting, actions, and participatory environments. The Gutai journal helped circulate these proposals internationally: according to curator Alexandra Munroe, it introduced [[michel-tapie|Michel Tapié]] and other artists and critics to the collective’s activities.",
+      "titleEs": "Gutai",
+      "sourceKeys": ["PUB_GUTAI_EXHIBITION", "PUB_GUTAI_VIDEO"],
+      "claims": [
+        {
+          "key": "gutai-history",
+          "propositionEs": "Gutai fue fundado en Ashiya por Yoshihara Jirō en 1954, estuvo activo hasta 1972 y exploró materiales, acciones y participación.",
+          "propositionEn": "Gutai was founded in Ashiya by Yoshihara Jirō in 1954, was active until 1972, and explored materials, actions, and participation.",
+          "locator": "Descripción curatorial, párrafos 1–3",
+          "qualifiers": [],
+          "attribution": "Ming Tiampo y Alexandra Munroe",
+          "sourceKeys": ["PUB_GUTAI_EXHIBITION"]
+        },
+        {
+          "key": "gutai-journal",
+          "propositionEs": "La revista Gutai permitió que Tapié y otros agentes internacionales conocieran los experimentos del grupo.",
+          "propositionEn": "The Gutai journal introduced Tapié and other international figures to the group’s experiments.",
+          "locator": "Transcripción, intervención de Alexandra Munroe sobre Gutai Journal",
+          "qualifiers": [],
+          "attribution": "Alexandra Munroe",
+          "sourceKeys": ["PUB_GUTAI_VIDEO"]
+        }
+      ]
+    },
+    {
+      "key": "avance",
+      "id": "inf26-canonical-35d5eec950882602947902e7",
+      "slug": "avance-cultural",
+      "type": "CONCEPT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Cultural growth",
+      "summaryEs": "Para Raymond Williams, el crecimiento cultural depende de abrir la creación a una discusión y aceptación compartidas.",
+      "summaryEn": "For Raymond Williams, cultural growth depends on opening creation to shared discussion and acceptance.",
+      "essayEs": "En Culture is ordinary, [[raymond-williams|Raymond Williams]] entiende el crecimiento cultural como la presentación continua de propuestas a una aceptación común. Pide abrir cauces de expresión y conceder espacio a lo difícil y tiempo a lo original. Extender el acceso también supone permitir que nuevos públicos rechacen o transformen parte de lo recibido. Este criterio pertenece a su reflexión democrática sobre la cultura y conserva la posibilidad de crítica dentro de lo compartido.",
+      "essayEn": "In Culture is ordinary, [[raymond-williams|Raymond Williams]] understands cultural growth as the continuous presentation of proposals for common acceptance. He calls for open channels of expression, space for difficult work, and time for originality. Extending access also means allowing new audiences to reject or transform some of what they receive. This criterion belongs to his democratic reflection on culture and preserves the possibility of criticism within what is shared.",
+      "titleEs": "Avance cultural",
+      "sourceKeys": ["PUB_WILLIAMS_CULTURE"],
+      "claims": [
+        {
+          "key": "avance-williams",
+          "propositionEs": "Williams propone el crecimiento cultural como ofrecimiento continuo a aceptación común, con cauces abiertos y espacio para lo difícil y original.",
+          "propositionEn": "Williams proposes cultural growth as continuous offerings for common acceptance, with open channels and room for difficult and original work.",
+          "locator": "p. 16 impresa, párrafo The third condition is controversial",
+          "qualifiers": [
+            "Criterio de Williams; no se presenta como categoría universal ni indicador objetivo."
+          ],
+          "attribution": "Raymond Williams",
+          "sourceKeys": ["PUB_WILLIAMS_CULTURE"]
+        },
+        {
+          "key": "avance-audiences",
+          "propositionEs": "Williams admite que ampliar públicos cambia la cultura mediante rechazo y crítica de lo ofrecido.",
+          "propositionEn": "Williams recognizes that extending audiences changes culture through rejection and criticism of what is offered.",
+          "locator": "p. 16 impresa, mismo párrafo",
+          "qualifiers": [],
+          "attribution": "Raymond Williams",
+          "sourceKeys": ["PUB_WILLIAMS_CULTURE"]
+        }
+      ]
+    },
+    {
+      "key": "informalismo",
+      "id": "cmsvvxhhy003i85sjnho3u8v3",
+      "slug": "informalismo",
+      "type": "MOVEMENT",
+      "kind": "ABSTRACTION",
+      "titleEn": "Art Informel",
+      "summaryEs": "El informalismo reunió búsquedas de la pintura de posguerra centradas en el gesto, la materia y las huellas sobre la superficie. Sus artistas desarrollaron procedimientos diversos, conectados por exposiciones y debates que atravesaron fronteras, sin formar una escuela de lenguaje único.",
+      "summaryEn": "Art informel brought together approaches in postwar painting focused on gesture, matter and traces on the surface. Its artists developed diverse procedures, connected through exhibitions and debates across borders, without forming a school with a single visual language.",
+      "essayEs": "Una pincelada, una acumulación de arena o una superficie semejante a un muro pueden dirigir la atención hacia cómo se construye la pintura. El [[tachismo|tachismo]], cuyo nombre deriva de la palabra francesa para mancha, fue una manifestación del art informel. En Tàpies, el Museu Tàpies explica el material como una presencia concreta de la realidad.\n\n[[michel-tapie|Michel Tapié]] publicó Un art autre en 1952 y organizó una exposición homónima con artistas de distintas procedencias. La pintura europea de posguerra compartió intereses por el gesto y los materiales con el expresionismo abstracto estadounidense. Esa afinidad permite compararlos conservando sus contextos y trayectorias particulares.\n\nEn España, [[dau-al-set|Dau al Set]] reunió artistas y escritores alrededor de una revista iniciada en 1948. [[el-paso|El Paso]] se fundó en Madrid en 1957 y estuvo activo hasta 1960. Son colaboraciones diferentes que ayudan a comprender las redes de la renovación artística, sin convertirlas en un único estilo.\n\nLa difusión internacional tuvo lugar bajo el franquismo, cuyas instituciones promovieron también arte abstracto. Alicia Fuentes Vega analiza el acercamiento del régimen a la vanguardia y sus estrategias de modernización. Ese contexto exige distinguir innovación artística, promoción institucional y democratización. Para comenzar con obras y preguntas de mirada, puede leerse [[informalismo-cuando-la-pintura-se-vuelve-materia|Una primera mirada]].",
+      "essayEn": "A brushstroke, an accumulation of sand or a wall-like surface can direct attention towards how painting is constructed. [[tachismo|Tachisme]], named after the French word for a stain, was a manifestation of art informel. In Tàpies, the Museu Tàpies explains material as a concrete presence of reality.\n\n[[michel-tapie|Michel Tapié]] published Un art autre in 1952 and organised an exhibition of the same name with artists from different backgrounds. Postwar European painting shared interests in gesture and materials with American Abstract Expressionism. This affinity allows comparison while retaining their particular contexts and trajectories.\n\nIn Spain, [[dau-al-set|Dau al Set]] brought artists and writers together around a magazine begun in 1948. [[el-paso|El Paso]] was founded in Madrid in 1957 and was active until 1960. These are distinct collaborations that help explain the networks of artistic renewal without turning them into a single style.\n\nInternational circulation took place under Francoism, whose institutions also promoted abstract art. Alicia Fuentes Vega analyses the regime’s approach to the avant-garde and its strategies of modernisation. This context requires distinguishing artistic innovation, institutional promotion and democratisation. For a beginning with works and questions about looking, read [[informalismo-cuando-la-pintura-se-vuelve-materia|A first look]].",
+      "titleEs": "Informalismo",
+      "sourceKeys": ["S17", "S6", "S2", "S3", "S4", "S7", "S8"],
+      "claims": [
+        {
+          "key": "informalismo-c01",
+          "propositionEs": "La pintura europea de posguerra vinculada al art informel dio protagonismo al gesto y la expresión; el tachismo, derivado de tache, fue una de sus manifestaciones.",
+          "propositionEn": "Postwar European painting associated with art informel foregrounded gesture and expression; Tachisme, derived from tache, was one of its manifestations.",
+          "locator": "Glosario: Art Informel y Tachisme",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S17"]
+        },
+        {
+          "key": "informalismo-c02",
+          "propositionEs": "El Museu Tàpies interpreta sus materiales como una presencia concreta de la realidad y la superficie como muro.",
+          "propositionEn": "The Museu Tàpies interprets his materials as a concrete presence of reality and the surface as a wall.",
+          "locator": "Texto de exposición, párrafos 2–3",
+          "qualifiers": ["Interpretación institucional"],
+          "attribution": "Museu Tàpies",
+          "sourceKeys": ["S6"]
+        },
+        {
+          "key": "informalismo-c03",
+          "propositionEs": "Tapié publicó Un art autre y organizó una exposición homónima con artistas de diferentes procedencias en 1952.",
+          "propositionEn": "Tapié published Un art autre and organised an exhibition of the same name with artists from different backgrounds in 1952.",
+          "locator": "Descripción de movimiento",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S2"]
+        },
+        {
+          "key": "informalismo-c04",
+          "propositionEs": "La pintura gestual europea de posguerra y el expresionismo abstracto estadounidense compartieron atención a gesto, marcas y materiales; son denominaciones de contextos históricos diferentes.",
+          "propositionEn": "Postwar European gestural painting and American Abstract Expressionism shared attention to gesture, marks and materials; they are designations from different historical contexts.",
+          "locator": "Texto de Jennifer Blessing, primer párrafo",
+          "qualifiers": ["Afinidad, no identidad total"],
+          "attribution": null,
+          "sourceKeys": ["S3"]
+        },
+        {
+          "key": "informalismo-c05",
+          "propositionEs": "Dau al Set articuló una colaboración entre artistas y escritores en torno a una revista iniciada en 1948.",
+          "propositionEn": "Dau al Set brought artists and writers together around a magazine begun in 1948.",
+          "locator": "Primer párrafo del texto de exposición",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S4"]
+        },
+        {
+          "key": "informalismo-c06",
+          "propositionEs": "El Paso se fundó en Madrid en 1957 y estuvo activo hasta 1960.",
+          "propositionEn": "El Paso was founded in Madrid in 1957 and was active until 1960.",
+          "locator": "Párrafos 1 y 3",
+          "qualifiers": [],
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "informalismo-c07",
+          "propositionEs": "Instituciones franquistas promovieron internacionalmente obras abstractas; Fuentes Vega estudia el acercamiento a la vanguardia y estrategias de modernización en los cincuenta y sesenta.",
+          "propositionEn": "Francoist institutions promoted abstract works internationally; Fuentes Vega studies the approach to the avant-garde and strategies of modernisation in the 1950s and 1960s.",
+          "locator": "Resumen original y argumento del artículo",
+          "qualifiers": [
+            "La distinción entre innovación, promoción y democratización es cautela analítica; no se afirma afiliación individual"
+          ],
+          "attribution": "Alicia Fuentes Vega",
+          "sourceKeys": ["S8"]
+        }
+      ],
+      "expectedBefore": {
+        "titleEs": "Informalismo",
+        "summaryEs": "El informalismo reunió prácticas centradas en materia, gesto, textura y accidente, especialmente en la Europa de la posguerra y sus contextos particulares.",
+        "essayEs": "## Contexto\n\nEl informalismo reunió prácticas centradas en materia, gesto, textura y accidente, especialmente en la Europa de la posguerra y sus contextos particulares.\n\n## Relaciones de lectura\n\nEn el catálogo se relaciona con Jean Fautrier, Materialidad, Rehenes, Siglo XX. Estas conexiones permiten leer el movimiento junto a obras, artistas y conceptos concretos.\n\n## Cómo continuar\n\nConviene contrastar las conexiones del catálogo con fuentes históricas y atender a sus diferencias internas y geográficas.",
+        "titleEn": "Art Informel",
+        "summaryEn": "Informalism brought together practices focused on matter, gesture, texture and accident, especially in post-war Europe and its specific contexts.",
+        "essayEn": "## Context\n\nInformalism brought together practices focused on matter, gesture, texture and accident, especially in post-war Europe and its specific contexts.\n\n## Reading relationships\n\nThe catalogue connects it with Jean Fautrier, Materialidad, Rehenes, Siglo XX. These paths allow the movement to be read alongside concrete works, artists and concepts.\n\n## How to continue\n\nThe catalogue connections should be compared with historical sources, while attending to internal and geographical differences."
+      }
+    },
+    {
+      "key": "informalismo-lectura-rapida",
+      "id": "inf26-article-introduccion-informalismo",
+      "slug": "informalismo-cuando-la-pintura-se-vuelve-materia",
+      "type": "ARTICLE",
+      "kind": "WORK",
+      "titleEn": "Informalism: when painting becomes matter",
+      "summaryEs": "Una entrada de tres minutos al informalismo: cuatro artistas, tres obras y una forma sencilla de mirar la materia, el gesto y las contradicciones de la posguerra española.",
+      "summaryEn": "A three-minute introduction to Informalism: four artists, three works and a simple way to look at matter, gesture and the contradictions of postwar Spain.",
+      "essayEs": "Ante un cuadro informalista, cambia la pregunta. En vez de buscar enseguida un paisaje, un rostro o una historia, acércate a la superficie: ¿qué pesa, qué se acumula, qué parece haber sido arrastrado? Una mancha puede retener un movimiento. Un grano de arena puede reclamar tanta atención como una figura. No hace falta descifrarlo todo: basta con empezar a mirar de otra manera.\n\nEl informalismo reúne búsquedas de la pintura europea de posguerra que dieron protagonismo al gesto, la huella y la materia. No propone una receta única. La entrada más sencilla es pensar en dos cosas que pueden convivir: lo que hace la mano y lo que permite o resiste el material.\n\n![New%20Spanish%20Painting%20and%20Sculpture%2C%20MoMA%2C%201960.%20Foto%3A%20George%20Barrows%2C%20archivo%20IN668.12.%20Copia%20aportada%3B%20licencia%20no%20documentada.](</uploads/media/informalismo-20261026/e9c4996c1b12456110e91526e9562581f1304a7cd06ac66cd094430b1f8fbae9.jpg>)\n\n## Cuatro maneras de acercarse\n\nEn [[antoni-tapies|Antoni Tàpies]], el cuadro puede adquirir la presencia de un muro. Los materiales cotidianos dejan de ser un fondo discreto y ocupan el centro de la experiencia. El Museu Tàpies lo explica con una imagen muy clara: la tela deja de funcionar como una ventana y se convierte en pared.\n\n[[antonio-saura|Antonio Saura]] mantiene la figura humana dentro de una pintura de trazos enérgicos y contrastes de negro, blanco y gris. Su caso ayuda a soltar un prejuicio: entrar en el informalismo no obliga a dejar de reconocer cuerpos.\n\n[[juana-frances|Juana Francés]] convierte la textura en protagonista. [[manolo-millares|Manolo Millares]] introduce otra experiencia material: arpillera, desgarros y costuras. El Reina Sofía lee en su obra madura una tensión entre destrucción y reparación, vinculada a las violencias del siglo XX. Son caminos distintos; conviene dar a cada uno su tiempo.\n\n## Una renovación con contradicciones\n\nEstos artistas también se encontraron y construyeron espacios compartidos. [[dau-al-set|Dau al Set]] nació en Barcelona en 1948 alrededor de una revista que reunió pintura, poesía y pensamiento, con una importante orientación surrealista. [[el-paso|El Paso]], activo en Madrid entre 1957 y 1960, contó entre sus fundadores con Saura, Francés y Millares. No fueron el mismo grupo ni dos versiones de un estilo idéntico.\n\nLa renovación artística ocurrió bajo la dictadura franquista. Las instituciones del régimen también promovieron abstracción en el exterior: una imagen de modernidad podía resultarles útil. Aquí conviene mantener dos preguntas abiertas: qué posibilidades nuevas ofrecían las obras y para qué se utilizaba su prestigio. Innovación cultural no equivale por sí sola a democratización; participar en una exposición oficial tampoco demuestra automáticamente adhesión política.\n\n## Empieza por tres obras\n\nMira [[gran-pintura-tapies-1958|Gran pintura]] (1958), de Tàpies: óleo con polvo de mármol y arena sobre lienzo. Deja que la superficie guíe tu atención.\n\n![Antoni%20T%C3%A0pies%2C%20Gran%20pintura%2C%201958.%20Solomon%20R.%20Guggenheim%20Museum.%20%C2%A9%20Fundaci%C3%B3%20Antoni%20T%C3%A0pies%20%2F%20ARS%20%2F%20VEGAP.%20Derechos%20reservados.](</uploads/media/informalismo-20261026/71123cf33fddea30ca6831832add758853d6ba8e5c949af8eed3ada9cc3c429b.jpg>)\n\nPasa a [[crucifixion-12-saura-1959|Crucifixion 12]] (1959), de Saura. Observa cómo el gesto y la figura pueden ocupar el mismo cuadro.\n\n![Antonio%20Saura%2C%20Crucifixion%2012%2C%201959.%20Centre%20Pompidou%3B%20foto%3A%20Philippe%20Migeat%20%2F%20Dist.%20GrandPalaisRmn.%20%C2%A9%20Adagp.%20Derechos%20reservados.](</uploads/media/informalismo-20261026/e6dfd6136ba3335f1be54fbf700681696644037a8f3c95611f976b1267a57a86.jpg>)\n\nTermina con [[arenales-juana-frances-1959|Arenales]] (1959), de Francés, realizada con técnica mixta. Sigue sus texturas y compara qué cambia respecto a las otras dos.\n\n![Juana%20Franc%C3%A9s%2C%20Arenales%2C%201959.%20IAACC%20Pablo%20Serrano%2C%20Colecci%C3%B3n%20Circa%20XX.%20Fot%C3%B3grafo%20no%20especificado.%20Derechos%20reservados.](</uploads/media/informalismo-20261026/2baecceeb796a3b6a66129944710871646b76423275caf0339eae00bb201ed07.jpg>)\n\nNo necesitas salir con una interpretación definitiva. Quédate con una diferencia, una pregunta o una sensación que puedas describir. Desde ahí, las biografías, los grupos y el contexto histórico dejan de ser datos sueltos: se convierten en nuevas maneras de volver a mirar.",
+      "essayEn": "In front of an Informalist painting, change the question. Instead of immediately looking for a landscape, a face or a story, attend to the surface: what feels heavy, what builds up, what seems to have been dragged across it? A stain can hold a movement. A grain of sand can demand as much attention as a figure. You do not need to decipher everything: start by looking differently.\n\nInformalism brings together approaches in postwar European painting that foreground gesture, marks and matter. There is no single recipe. An easy way in is to think about two things that can coexist: what the hand does and what the material allows or resists.\n\n![New%20Spanish%20Painting%20and%20Sculpture%2C%20MoMA%2C%201960.%20Photo%3A%20George%20Barrows%2C%20archive%20IN668.12.%20Supplied%20copy%3B%20licence%20undocumented.](</uploads/media/informalismo-20261026/e9c4996c1b12456110e91526e9562581f1304a7cd06ac66cd094430b1f8fbae9.jpg>)\n\n## Four ways in\n\nIn [[antoni-tapies|Antoni Tàpies]], a painting can acquire the presence of a wall. Everyday materials stop being an unobtrusive background and move to the centre of the experience. The Museu Tàpies offers a clear image: the canvas stops functioning as a window and becomes a wall.\n\n[[antonio-saura|Antonio Saura]] keeps the human figure within a painting of energetic strokes and contrasts of black, white and grey. His work helps loosen one assumption: entering Informalism does not mean giving up recognisable bodies.\n\n[[juana-frances|Juana Francés]] brings texture to the foreground. [[manolo-millares|Manolo Millares]] introduces another material experience: burlap, tears and stitching. The Reina Sofía reads his mature work through a tension between destruction and repair, connected to the violence of the twentieth century. These are different paths; each deserves time.\n\n## Renewal and its contradictions\n\nThese artists also met and built shared spaces. [[dau-al-set|Dau al Set]] emerged in Barcelona in 1948 around a magazine bringing together painting, poetry and thought, with an important Surrealist orientation. [[el-paso|El Paso]], active in Madrid between 1957 and 1960, counted Saura, Francés and Millares among its founders. They were neither the same group nor two versions of an identical style.\n\nArtistic renewal took place under Franco's dictatorship. The regime's institutions also promoted abstraction abroad: an image of modernity could be useful to them. Keep two questions open here: what new possibilities the works offered and how their prestige was used. Cultural innovation does not in itself amount to democratisation; taking part in an official exhibition does not automatically demonstrate political allegiance either.\n\n## Start with three works\n\nLook at Tàpies's [[gran-pintura-tapies-1958|Great Painting]] (1958): oil with marble dust and sand on canvas. Let the surface guide your attention.\n\n![Antoni%20T%C3%A0pies%2C%20Great%20Painting%2C%201958.%20Solomon%20R.%20Guggenheim%20Museum.%20%C2%A9%20Fundaci%C3%B3%20Antoni%20T%C3%A0pies%20%2F%20ARS%20%2F%20VEGAP.%20All%20rights%20reserved.](</uploads/media/informalismo-20261026/71123cf33fddea30ca6831832add758853d6ba8e5c949af8eed3ada9cc3c429b.jpg>)\n\nMove to Saura's [[crucifixion-12-saura-1959|Crucifixion 12]] (1959). Notice how gesture and the figure can occupy the same painting.\n\n![Antonio%20Saura%2C%20Crucifixion%2012%2C%201959.%20Centre%20Pompidou%3B%20photo%3A%20Philippe%20Migeat%20%2F%20Dist.%20GrandPalaisRmn.%20%C2%A9%20Adagp.%20All%20rights%20reserved.](</uploads/media/informalismo-20261026/e6dfd6136ba3335f1be54fbf700681696644037a8f3c95611f976b1267a57a86.jpg>)\n\nFinish with Francés's [[arenales-juana-frances-1959|Arenales]] (1959), a mixed-media work. Follow its textures and compare what changes from the other two.\n\n![Juana%20Franc%C3%A9s%2C%20Arenales%2C%201959.%20IAACC%20Pablo%20Serrano%2C%20Circa%20XX%20Collection.%20Photographer%20unspecified.%20All%20rights%20reserved.](</uploads/media/informalismo-20261026/2baecceeb796a3b6a66129944710871646b76423275caf0339eae00bb201ed07.jpg>)\n\nYou do not need to leave with a definitive interpretation. Keep a difference, a question or a sensation you can describe. From there, biographies, groups and historical context stop being isolated facts: they become new ways of looking again.",
+      "titleEs": "Informalismo: cuando la pintura se vuelve materia",
+      "sourceKeys": ["S11", "S13", "S14", "S17", "S18", "S3", "S4", "S6", "S7", "S8", "S9"],
+      "claims": [
+        {
+          "key": "informalismo-article-definition",
+          "propositionEs": "El informalismo reúne búsquedas gestuales y expresivas de la pintura europea de posguerra; la atención a la materia se concreta en prácticas como la de Tàpies.",
+          "propositionEn": "Informalism brings together gestural and expressive approaches in postwar European painting; attention to matter is exemplified by practices such as Tàpies’s.",
+          "locator": "S17: glosario, Art Informel y Gesture; S6: párrafos 1–3, pinturas matéricas y materiales cotidianos.",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S17", "S6"]
+        },
+        {
+          "key": "informalismo-article-tapies-surface",
+          "propositionEs": "El Museu Tàpies describe el protagonismo de los materiales cotidianos y la transformación de la tela de ventana en muro.",
+          "propositionEn": "The Museu Tàpies describes the prominence of everyday materials and the transformation of the canvas from window into wall.",
+          "locator": "Descripción de la exposición, párrafos 2–3; https://museutapies.org/es/exposicio/tapies-realitat-pla/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S6"]
+        },
+        {
+          "key": "informalismo-article-saura-figure",
+          "propositionEs": "Saura conserva elementos figurativos con trazos enérgicos y una gama de negros, blancos y grises; por tanto su caso no supone eliminar la figura.",
+          "propositionEn": "Saura retains figurative elements with energetic strokes and a palette of blacks, whites and greys; his example therefore does not entail eliminating the figure.",
+          "locator": "Descripción, párrafo que comienza «En este periodo Saura presenta elementos figurativos»; https://www.museoreinasofia.es/exposicion/itinerarios-antonio-saura-dacion/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S11"]
+        },
+        {
+          "key": "informalismo-article-frances-sand",
+          "propositionEs": "El IAACC destaca la atención a las texturas en la etapa informalista de Juana Francés.",
+          "propositionEn": "The IAACC highlights attention to texture in Juana Francés’s Informalist period.",
+          "locator": "Texto, párrafo 4, preocupación por el tratamiento de las texturas; https://iaacc.es/events/vuestra-obra-juana-frances-arenales/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S13"]
+        },
+        {
+          "key": "informalismo-article-millares",
+          "propositionEs": "El Reina Sofía documenta la arpillera y lee la obra madura de Millares mediante desgarro y cosido, destrucción/reparación, en relación con las violencias del siglo XX.",
+          "propositionEn": "The Reina Sofía documents burlap and reads Millares’s mature work through tearing and stitching, destruction/repair, in relation to twentieth-century violence.",
+          "locator": "Leyenda técnica de Personaje caído I y párrafo «El aspecto central de la obra madura»; https://www.museoreinasofia.es/exposicion/manolo-millares/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S14"]
+        },
+        {
+          "key": "informalismo-article-dau",
+          "propositionEs": "Dau al Set reunió artistas y escritores alrededor de una revista nacida en 1948 en Barcelona; el MACBA caracteriza buena parte de sus creaciones mediante un espíritu surrealista.",
+          "propositionEn": "Dau al Set brought artists and writers together around a magazine established in Barcelona in 1948; the MACBA characterises much of its work through a Surrealist spirit.",
+          "locator": "Descripción de la exposición, párrafos 1–3; contenido institucional recuperado por búsqueda el 26-10-2026, la apertura directa devuelve 403; https://www.macba.cat/ca/exposicions/dau-al-set/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S4"]
+        },
+        {
+          "key": "informalismo-article-el-paso",
+          "propositionEs": "El Paso estuvo activo entre 1957 y 1960 y se fundó en Madrid con Saura, Francés y Millares entre sus integrantes fundadores.",
+          "propositionEn": "El Paso was active between 1957 and 1960 and was founded in Madrid with Saura, Francés and Millares among its founders.",
+          "locator": "Descripción del archivo, párrafos 1 y 3; https://www.museoreinasofia.es/biblioteca/colecciones/archivos/archivo-manuel-rivera/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S7"]
+        },
+        {
+          "key": "informalismo-article-groups-distinct",
+          "propositionEs": "Dau al Set y El Paso son iniciativas diferentes en fechas, lugares y composición; la comparación no los identifica ni postula un estilo idéntico.",
+          "propositionEn": "Dau al Set and El Paso are initiatives differing in dates, places and membership; comparing them does not identify them with one another or posit an identical style.",
+          "locator": "Comparación limitada de los hechos documentados en S4 descripción y S7 párrafos 1 y 3; no inferencia de influencia.",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S4", "S7"]
+        },
+        {
+          "key": "informalismo-article-political-context",
+          "propositionEs": "La renovación se produjo bajo el franquismo y sus instituciones promovieron obras abstractas en el exterior; Fuentes Vega estudia el acercamiento del régimen a la vanguardia en los años cincuenta y sesenta con fines de modernización y apertura.",
+          "propositionEn": "Renewal took place under Francoism and its institutions promoted abstract works abroad; Fuentes Vega studies the regime’s approach to the avant-garde in the 1950s and 1960s in pursuit of modernisation and openness.",
+          "locator": "S7 párrafo 1 promoción de Rivera, São Paulo/Venecia; S8 resumen; S14 párrafo de obra madura y España franquista. https://doi.org/10.5209/rev_ANHA.2011.37456",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S7", "S8", "S14"]
+        },
+        {
+          "key": "informalismo-article-political-qualification",
+          "propositionEs": "Distinguir posibilidades artísticas y uso del prestigio impide inferir democratización de innovación cultural o adhesión política de una participación oficial; son cautelas analíticas, no atribuciones a individuos.",
+          "propositionEn": "Distinguishing artistic possibilities from uses of prestige prevents inferring democratisation from cultural innovation or political allegiance from official participation; these are analytical qualifications, not attributions to individuals.",
+          "locator": "Cautela editorial derivada de S8 revisión de estereotipos de instrumentalización y S9 pp. 223 y 229 sobre negociaciones y negativas iniciales; no conclusión factual adicional sobre afiliaciones.",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S8", "S9"]
+        },
+        {
+          "key": "informalismo-article-great-painting",
+          "propositionEs": "Gran pintura es una obra de Tàpies de 1958 realizada con óleo, polvo de mármol y arena sobre lienzo.",
+          "propositionEn": "Great Painting is a work by Tàpies from 1958 made with oil, marble dust and sand on canvas.",
+          "locator": "Ficha técnica, título/fecha/medio; contenido institucional recuperado por búsqueda el 26-10-2026, la apertura requiere JavaScript; https://www.guggenheim.org/artwork/4037",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S3"]
+        },
+        {
+          "key": "informalismo-article-crucifixion",
+          "propositionEs": "Crucifixion 12 es una pintura de Antonio Saura de 1959; el Pompidou describe el gesto aplicado a la figura.",
+          "propositionEn": "Crucifixion 12 is a painting by Antonio Saura from 1959; the Pompidou describes gesture applied to the figure.",
+          "locator": "Título, fecha y párrafo «Antonio Saura applique la peinture gestuelle à la figure»; https://www.centrepompidou.fr/es/ressources/oeuvre/cjkXqM",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S18"]
+        },
+        {
+          "key": "informalismo-article-arenales",
+          "propositionEs": "Arenales es una obra de Juana Francés de 1959 realizada con técnica mixta.",
+          "propositionEn": "Arenales is a mixed-media work by Juana Francés from 1959.",
+          "locator": "Cabecera y párrafo 2; https://iaacc.es/events/vuestra-obra-juana-frances-arenales/",
+          "qualifiers": null,
+          "attribution": null,
+          "sourceKeys": ["S13"]
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "key": "moma",
+      "slug": "moma",
+      "type": "ORGANIZATION"
+    },
+    {
+      "key": "abstractexp",
+      "slug": "expresionismo-abstracto",
+      "type": "MOVEMENT"
+    },
+    {
+      "key": "surrealismo",
+      "slug": "surrealismo",
+      "type": "MOVEMENT"
+    },
+    {
+      "key": "pollock",
+      "slug": "jackson-pollock",
+      "type": "ARTIST"
+    },
+    {
+      "key": "fautrier",
+      "slug": "jean-fautrier",
+      "type": "ARTIST"
+    },
+    {
+      "key": "materialidad",
+      "slug": "materialidad",
+      "type": "CONCEPT"
+    }
+  ],
+  "sources": [
+    {
+      "key": "PUB_ALMAZAN_ZEN",
+      "title": "Zentauros del desierto. Saura, Torralba y Fortún y la influencia de la estética japonesa Zen en la pintura aragonesa contemporánea",
+      "author": "David Almazán Tomás",
+      "publisher": "Institución Fernando el Católico",
+      "year": 2009,
+      "url": "https://ifc.dpz.es/recursos/publicaciones/29/23/10almazan.pdf",
+      "quote": "la cuestión central es si se puede equiparar con la práctica del Zen el resultado gestual-sígnico",
+      "locator": "pp. 179, 184 y 189–190 impresas; secciones sobre recepción y Antonio Saura",
+      "apa": "Almazán Tomás, D. (2009). Zentauros del desierto. Saura, Torralba y Fortún y la influencia de la estética japonesa Zen en la pintura aragonesa contemporánea. En C. Giménez Navarro y C. Lomba Serrano (Coords.), XII Coloquio de Arte Aragonés: El arte del siglo XX (pp. 179–193). Institución Fernando el Católico. https://ifc.dpz.es/recursos/publicaciones/29/23/10almazan.pdf",
+      "id": "inf26-pub-source-4e4150022ce9f58cfe1b08b3",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_BECKER_ART_WORLDS",
+      "title": "Art Worlds, 25th Anniversary Edition",
+      "author": "University of California Press",
+      "publisher": "University of California Press",
+      "year": null,
+      "url": "https://www.ucpress.edu/book/9780520256361/art-worlds-25th-anniversary-edition",
+      "quote": "This classic sociological examination of art as collective action explores the cooperative network",
+      "locator": "About the Book; edición publicada en abril de 2008, ISBN 9780520256361; texto recuperado en resultado indexado del editor",
+      "apa": "University of California Press. (s. f.). Art worlds, 25th anniversary edition [Ficha editorial]. https://www.ucpress.edu/book/9780520256361/art-worlds-25th-anniversary-edition",
+      "id": "inf26-pub-source-24b41d2d440d3490449d4ccb",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_BECKER_AUTHOR",
+      "title": "Howard S. Becker",
+      "author": "The University of Chicago Press",
+      "publisher": "The University of Chicago Press",
+      "year": null,
+      "url": "https://press.uchicago.edu/ucp/books/author/B/H/au5158933.html",
+      "quote": "Howard S. Becker (1928-2023) made major contributions to the sociology of deviance, sociology of art, and sociology of music.",
+      "locator": "Biografía del autor, primer párrafo",
+      "apa": "The University of Chicago Press. (s. f.). Howard S. Becker [Biografía de autor]. https://press.uchicago.edu/ucp/books/author/B/H/au5158933.html",
+      "id": "inf26-pub-source-3c29c8824b24f07e7b04b527",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_BERGER_WAYS",
+      "title": "Ways of Seeing",
+      "author": "Penguin Books",
+      "publisher": "Penguin Books",
+      "year": null,
+      "url": "https://www.penguin.co.uk/books/56465/ways-of-seeing-by-berger-john/9780141035796",
+      "quote": "The relation between what we see and what we know is never settled.",
+      "locator": "Descripción, About John Berger y Details; edición 25 septiembre 2008, ISBN 9780141035796",
+      "apa": "Penguin Books. (s. f.). Ways of seeing [Ficha editorial y biografía de John Berger]. https://www.penguin.co.uk/books/56465/ways-of-seeing-by-berger-john/9780141035796",
+      "id": "inf26-pub-source-a4dcb5d5b639190e0b2d3748",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_GUTAI_EXHIBITION",
+      "title": "Gutai: Splendid Playground",
+      "author": "Ming Tiampo y Alexandra Munroe",
+      "publisher": "Solomon R. Guggenheim Museum",
+      "year": 2013,
+      "url": "https://www.guggenheim.org/exhibition/gutai-splendid-playground",
+      "quote": "The Gutai Art Association (active 1954–72) originated in the cosmopolitan town of Ashiya",
+      "locator": "Descripción curatorial, párrafos 1–3; texto institucional recuperado mediante búsqueda",
+      "apa": "Tiampo, M., & Munroe, A. (2013). Gutai: Splendid playground [Exposición]. Solomon R. Guggenheim Museum. https://www.guggenheim.org/exhibition/gutai-splendid-playground",
+      "id": "inf26-pub-source-78127d6a021dca8cc6630763",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_GUTAI_VIDEO",
+      "title": "Gutai: Splendid Playground [Video y transcripción]",
+      "author": "Solomon R. Guggenheim Museum",
+      "publisher": "Solomon R. Guggenheim Museum",
+      "year": 2013,
+      "url": "https://www.guggenheim.org/video/gutai-splendid-playground",
+      "quote": "It was through the journal that many artists abroad first encountered the experimentation of Gutai",
+      "locator": "Transcripción, intervención de Alexandra Munroe sobre el Gutai Journal, primer número 1 enero 1955",
+      "apa": "Solomon R. Guggenheim Museum. (2013, 15 de febrero). Gutai: Splendid playground [Video y transcripción]. https://www.guggenheim.org/video/gutai-splendid-playground",
+      "id": "inf26-pub-source-e091e78aeecf5ddd1e4a72f4",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_WILLIAMS_CULTURE",
+      "title": "Culture is ordinary",
+      "author": "Raymond Williams",
+      "publisher": "Verso; copia académica en Michigan Technological University",
+      "year": 1989,
+      "url": "https://pages.mtu.edu/~jdslack/readings/CSReadings/Williams_Raymond_Culture_is_Ordinary.pdf",
+      "quote": "clear the channels and let all the offerings be made",
+      "locator": "pp. 4 y 16 impresas; portada de la copia identifica Resources of Hope, Verso, 1989",
+      "apa": "Williams, R. (1989). Culture is ordinary. En R. Gable (Ed.), Resources of hope: Culture, democracy, socialism (pp. 3–18). Verso. (Trabajo original publicado en 1958). https://pages.mtu.edu/~jdslack/readings/CSReadings/Williams_Raymond_Culture_is_Ordinary.pdf",
+      "id": "inf26-pub-source-ec53014ea6cc2584e94161d7",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "PUB_WILLIAMS_RESOURCES",
+      "title": "Resources of Hope: Culture, Democracy, Socialism",
+      "author": "Verso Books",
+      "publisher": "Verso Books",
+      "year": null,
+      "url": "https://www.versobooks.com/products/1259-resources-of-hope",
+      "quote": "Collected essays and talks from one of Britain’s great thinkers, ranging across political and cultural theory",
+      "locator": "Descripción, autoría y metadatos de edición: febrero 1989; editor Robin Gable",
+      "apa": "Verso Books. (s. f.). Resources of hope: Culture, democracy, socialism [Ficha editorial]. https://www.versobooks.com/products/1259-resources-of-hope",
+      "id": "inf26-pub-source-98dd85d3ef4c92f54bc93e50",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S1",
+      "title": "Hans Hartung: La fabrique du geste",
+      "author": "Musée d’Art Moderne de Paris",
+      "publisher": "Musée d’Art Moderne de Paris",
+      "year": null,
+      "url": "https://mam.paris.fr/sites/default/files/documents/dp_hanshartung_legende.pdf",
+      "quote": "son propre tempérament",
+      "locator": "Le glossaire: Informel (texto indexado; la apertura completa devolvió 503)",
+      "apa": "Musée d’Art Moderne de Paris. (s. f.). Hans Hartung: La fabrique du geste [Dossier pédagogique]. https://mam.paris.fr/sites/default/files/documents/dp_hanshartung_legende.pdf",
+      "id": "inf26-source-3696ad59777e09d5f2daacb5",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S10",
+      "title": "New Spanish painting and sculpture",
+      "author": "The Museum of Modern Art",
+      "publisher": "The Museum of Modern Art",
+      "year": null,
+      "url": "https://www.moma.org/calendar/exhibitions/2555",
+      "quote": "Jul 20–Sep 28, 1960",
+      "locator": "Cabecera y apartado Publications",
+      "apa": "The Museum of Modern Art. (s. f.). New Spanish painting and sculpture [Exposición, 20 de julio–28 de septiembre de 1960]. https://www.moma.org/calendar/exhibitions/2555",
+      "id": "inf26-source-3d16e90141e88e7233af1668",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S11",
+      "title": "Itinerarios de Antonio Saura: Dación",
+      "author": "Museo Nacional Centro de Arte Reina Sofía",
+      "publisher": "Museo Nacional Centro de Arte Reina Sofía",
+      "year": null,
+      "url": "https://www.museoreinasofia.es/exposicion/itinerarios-antonio-saura-dacion/",
+      "quote": "Entre 1953 y 1955 reside en París",
+      "locator": "Descripción de exposición; omitir frase ambigua sobre la Bienal de Venecia en 1957",
+      "apa": "Museo Nacional Centro de Arte Reina Sofía. (s. f.). Itinerarios de Antonio Saura: Dación [Exposición]. https://www.museoreinasofia.es/exposicion/itinerarios-antonio-saura-dacion/",
+      "id": "inf26-source-4a1bcaec718f10edcd2589d2",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S12",
+      "title": "Canogar: Cincuenta años de pintura",
+      "author": "Museo Nacional Centro de Arte Reina Sofía",
+      "publisher": "Museo Nacional Centro de Arte Reina Sofía",
+      "year": null,
+      "url": "https://www.museoreinasofia.es/exposicion/canogar-cincuenta-anos-pintura/",
+      "quote": "Toledo (1960)",
+      "locator": "Descripción, párrafos dedicados a 1956–1960 y giro figurativo de los sesenta",
+      "apa": "Museo Nacional Centro de Arte Reina Sofía. (s. f.). Canogar: Cincuenta años de pintura [Exposición]. https://www.museoreinasofia.es/exposicion/canogar-cincuenta-anos-pintura/",
+      "id": "inf26-source-d30b6fedc77faaf5199dcee3",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S13",
+      "title": "Vuestra obra. Juana Francés. Arenales, 1959",
+      "author": "Instituto Aragonés de Arte y Cultura Contemporáneos Pablo Serrano",
+      "publisher": "Instituto Aragonés de Arte y Cultura Contemporáneos Pablo Serrano",
+      "year": null,
+      "url": "https://iaacc.es/events/vuestra-obra-juana-frances-arenales/",
+      "quote": "siendo miembro fundadora",
+      "locator": "Texto explicativo sobre Arenales y trayectoria 1956–1963",
+      "apa": "Instituto Aragonés de Arte y Cultura Contemporáneos Pablo Serrano. (s. f.). Vuestra obra. Juana Francés. Arenales, 1959. https://iaacc.es/events/vuestra-obra-juana-frances-arenales/",
+      "id": "inf26-source-02cfcc7e2872c6366adc85eb",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S14",
+      "title": "Manolo Millares: Personaje caído I",
+      "author": "Museo Nacional Centro de Arte Reina Sofía",
+      "publisher": "Museo Nacional Centro de Arte Reina Sofía",
+      "year": null,
+      "url": "https://www.museoreinasofia.es/exposicion/manolo-millares/",
+      "quote": "Personaje caído I [Fallen Figure I], 1970, técnica mixta sobre arpillera",
+      "locator": "Página de exposición 9 septiembre 2026–16 febrero 2027; leyenda de imagen y párrafos 2–6",
+      "apa": "Museo Nacional Centro de Arte Reina Sofía. (s. f.). Manolo Millares: Personaje caído I [Exposición]. https://www.museoreinasofia.es/exposicion/manolo-millares/",
+      "id": "inf26-source-ec546f04a3d6c0118e8d87ee",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S15",
+      "title": "José Sanleón",
+      "author": "Institut Valencià d’Art Modern",
+      "publisher": "Institut Valencià d’Art Modern",
+      "year": null,
+      "url": "https://ivam.es/es/exposiciones/jose-sanleon/",
+      "quote": "José Sanleón (Catarroja, 1953)",
+      "locator": "Exposición 10 diciembre 1993–13 enero 1994; descripción",
+      "apa": "Institut Valencià d’Art Modern. (s. f.). José Sanleón [Exposición]. https://ivam.es/es/exposiciones/jose-sanleon/",
+      "id": "inf26-source-dca468ba69cda6650ce03d97",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S16",
+      "title": "Manuel Rivera",
+      "author": "Museo Nacional Centro de Arte Reina Sofía",
+      "publisher": "Museo Nacional Centro de Arte Reina Sofía",
+      "year": null,
+      "url": "https://www.museoreinasofia.es/exposicion/manuel-rivera/",
+      "quote": "la serie Metamorfosis, que inicia en 1958",
+      "locator": "Descripción de exposición 22 abril–16 junio 1997",
+      "apa": "Museo Nacional Centro de Arte Reina Sofía. (s. f.). Manuel Rivera [Exposición]. https://www.museoreinasofia.es/exposicion/manuel-rivera/",
+      "id": "inf26-source-8662203314894f22d31a3a96",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S17",
+      "title": "ZERO: Countdown to tomorrow, 1950s–60s",
+      "author": "Solomon R. Guggenheim Museum",
+      "publisher": "Solomon R. Guggenheim Museum",
+      "year": null,
+      "url": "https://www.guggenheim.org/wp-content/uploads/2019/12/guggenheim-teaching-materials-zero.pdf",
+      "quote": "One manifestation of Art Informel, from the French tache, meaning a spot or stain",
+      "locator": "Glosario, entrada Tachisme",
+      "apa": "Solomon R. Guggenheim Museum. (s. f.). ZERO: Countdown to tomorrow, 1950s–60s [Teaching materials]. https://www.guggenheim.org/wp-content/uploads/2019/12/guggenheim-teaching-materials-zero.pdf",
+      "id": "inf26-source-b59848410d5d135a48fb5cb5",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S18",
+      "title": "Crucifixion 12",
+      "author": "Centre Pompidou",
+      "publisher": "Centre Pompidou",
+      "year": null,
+      "url": "https://www.centrepompidou.fr/es/ressources/oeuvre/cjkXqM",
+      "quote": "Huile sur toile",
+      "locator": "Información detallada: artista, título, fecha, técnica, dimensiones e inventario AM 1991-186",
+      "apa": "Centre Pompidou. (s. f.). Crucifixion 12 [Ficha de colección]. https://www.centrepompidou.fr/es/ressources/oeuvre/cjkXqM",
+      "id": "inf26-source-d625318b6fb0a410f3481c5a",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S19",
+      "title": "Jean Fautrier",
+      "author": "Musée d’Art Moderne de Paris",
+      "publisher": "Musée d’Art Moderne de Paris",
+      "year": null,
+      "url": "https://www.mam.paris.fr/fr/expositions/exposition-jean-fautrier",
+      "quote": "Otages (1943-1945)",
+      "locator": "Descripción de la exposición, párrafos sobre regreso a París y series pictóricas; recuperado mediante búsqueda institucional",
+      "apa": "Musée d’Art Moderne de Paris. (s. f.). Jean Fautrier [Exposición]. https://www.mam.paris.fr/fr/expositions/exposition-jean-fautrier",
+      "id": "inf26-source-d87f96c3835db6192cdc4d72",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S2",
+      "title": "Art Informel",
+      "author": "Solomon R. Guggenheim Museum",
+      "publisher": "Solomon R. Guggenheim Museum",
+      "year": null,
+      "url": "https://www.guggenheim.org/artwork/movement/art-informel",
+      "quote": "In 1952 French writer Michel Tapié authored the book Un Art autre",
+      "locator": "Descripción de movimiento recuperada en búsqueda; página requiere JavaScript al abrirse",
+      "apa": "Solomon R. Guggenheim Museum. (s. f.). Art Informel. https://www.guggenheim.org/artwork/movement/art-informel",
+      "id": "inf26-source-adfa2b24c2d924fe6383d880",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S3",
+      "title": "Antoni Tàpies: Great painting (Gran pintura)",
+      "author": "Jennifer Blessing",
+      "publisher": "Solomon R. Guggenheim Museum",
+      "year": null,
+      "url": "https://www.guggenheim.org/artwork/4037",
+      "quote": "Oil with marble dust and sand on canvas",
+      "locator": "Ficha técnica y texto de Jennifer Blessing",
+      "apa": "Blessing, J. (s. f.). Antoni Tàpies: Great painting (Gran pintura). Solomon R. Guggenheim Museum. https://www.guggenheim.org/artwork/4037",
+      "id": "inf26-source-44d6a8a73eddb284d49799fd",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S4",
+      "title": "Dau al Set",
+      "author": "Museu d’Art Contemporani de Barcelona",
+      "publisher": "Museu d’Art Contemporani de Barcelona",
+      "year": null,
+      "url": "https://www.macba.cat/ca/exposicions/dau-al-set/",
+      "quote": "Dau al Set (1948-1956)",
+      "locator": "Descripción de la exposición 20 octubre 1999–10 enero 2000; texto indexado, apertura 403",
+      "apa": "Museu d’Art Contemporani de Barcelona. (s. f.). Dau al Set [Exposición]. https://www.macba.cat/ca/exposicions/dau-al-set/",
+      "id": "inf26-source-b1d3eb8f32936fa9cf89d224",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S5",
+      "title": "1954–1958",
+      "author": "Museu Tàpies",
+      "publisher": "Museu Tàpies",
+      "year": null,
+      "url": "https://museutapies.org/es/biografia/1954-1958/",
+      "quote": "Conoce también a Michel Tapié, con cuyo pensamiento estético simpatiza.",
+      "locator": "Entradas anuales 1955, 1956, 1957 y 1958",
+      "apa": "Museu Tàpies. (s. f.). 1954–1958. https://museutapies.org/es/biografia/1954-1958/",
+      "id": "inf26-source-1cdcbd57e7e20491d8be5ff4",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S6",
+      "title": "Tàpies: La realidad en primer plano",
+      "author": "Museu Tàpies",
+      "publisher": "Museu Tàpies",
+      "year": null,
+      "url": "https://museutapies.org/es/exposicio/tapies-realitat-pla/",
+      "quote": "La tela ya no era la ventana que dejaba ver a través, sino que se había convertido en un muro.",
+      "locator": "Descripción de la exposición 18 junio 2021–20 febrero 2022, párrafos 1–5; comisaria Núria Homs",
+      "apa": "Museu Tàpies. (s. f.). Tàpies: La realidad en primer plano [Exposición]. https://museutapies.org/es/exposicio/tapies-realitat-pla/",
+      "id": "inf26-source-b12f76a4b782e4ae7f035b86",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S7",
+      "title": "Archivo Manuel Rivera",
+      "author": "Museo Nacional Centro de Arte Reina Sofía",
+      "publisher": "Museo Nacional Centro de Arte Reina Sofía",
+      "year": null,
+      "url": "https://www.museoreinasofia.es/biblioteca/colecciones/archivos/archivo-manuel-rivera/",
+      "quote": "fue miembro fundador del grupo El Paso (1957-1960)",
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "apa": "Museo Nacional Centro de Arte Reina Sofía. (s. f.). Archivo Manuel Rivera. https://www.museoreinasofia.es/biblioteca/colecciones/archivos/archivo-manuel-rivera/",
+      "id": "inf26-source-d53d113e9c01f4388af35632",
+      "type": "WEBSITE"
+    },
+    {
+      "key": "S8",
+      "title": "Franquismo y exportación cultural. El papel de «lo español» en el apadrinamiento de la vanguardia",
+      "author": "Alicia Fuentes Vega",
+      "publisher": "Alicia Fuentes Vega",
+      "year": 2011,
+      "url": "https://doi.org/10.5209/rev_ANHA.2011.37456",
+      "quote": "el régimen franquista hizo un movimiento de acercamiento a la vanguardia",
+      "locator": "Resumen; ficha original UCM https://revistas.ucm.es/index.php/ANHA/es/article/view/37456, publicado 2011-02-11",
+      "apa": "Fuentes Vega, A. (2011). Franquismo y exportación cultural. El papel de «lo español» en el apadrinamiento de la vanguardia. Anales de Historia del Arte, 21(Extra), 183–196. https://doi.org/10.5209/rev_ANHA.2011.37456",
+      "id": "inf26-source-354dd123c3115c9abaf8b2df",
+      "type": "ARTICLE"
+    },
+    {
+      "key": "S9",
+      "title": "La internacionalización del arte abstracto español: El intercambio de exposiciones con los Estados Unidos (1950–1964)",
+      "author": "Genoveva Tusell García",
+      "publisher": "Genoveva Tusell García",
+      "year": 2003,
+      "url": "https://doi.org/10.5944/etfvii.16.2003.2412",
+      "quote": "Las negociaciones se remontaban a 1958",
+      "locator": "pp. 223 y 229; PDF original https://revistas.uned.es/index.php/ETFVII/article/download/2412/2285/5666",
+      "apa": "Tusell García, G. (2003). La internacionalización del arte abstracto español: El intercambio de exposiciones con los Estados Unidos (1950–1964). Espacio, Tiempo y Forma. Serie VII, Historia del Arte, 16, 223–232. https://doi.org/10.5944/etfvii.16.2003.2412",
+      "id": "inf26-source-72afe96641ea0686c37d95d9",
+      "type": "ARTICLE"
+    }
+  ],
+  "relations": [
+    {
+      "fromKey": "granpintura",
+      "toKey": "tapies",
+      "typeKey": "CREATED_BY",
+      "justificationEs": "Gran pintura fue realizada por Antoni Tàpies en 1958.",
+      "justificationEn": "Great Painting was made by Antoni Tàpies in 1958.",
+      "sourceKeys": ["S3"],
+      "locator": "Ficha técnica y texto de Jennifer Blessing",
+      "key": "relation-01"
+    },
+    {
+      "fromKey": "arenales",
+      "toKey": "frances",
+      "typeKey": "CREATED_BY",
+      "justificationEs": "Arenales fue realizada por Juana Francés en 1959.",
+      "justificationEn": "Arenales was made by Juana Francés in 1959.",
+      "sourceKeys": ["S13"],
+      "locator": "Texto explicativo sobre Arenales y trayectoria 1956–1963",
+      "key": "relation-02"
+    },
+    {
+      "fromKey": "crucifixion",
+      "toKey": "saura",
+      "typeKey": "CREATED_BY",
+      "justificationEs": "Crucifixion 12 fue realizada por Antonio Saura en 1959.",
+      "justificationEn": "Crucifixion 12 was made by Antonio Saura in 1959.",
+      "sourceKeys": ["S18"],
+      "locator": "Información detallada: artista, título, fecha, técnica, dimensiones e inventario AM 1991-186",
+      "key": "relation-03"
+    },
+    {
+      "fromKey": "saura",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Antonio Saura fue cofundador de El Paso en 1957.",
+      "justificationEn": "Antonio Saura co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-04"
+    },
+    {
+      "fromKey": "canogar",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Rafael Canogar fue cofundador de El Paso en 1957.",
+      "justificationEn": "Rafael Canogar co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-05"
+    },
+    {
+      "fromKey": "millares",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Manolo Millares fue cofundador de El Paso en 1957.",
+      "justificationEn": "Manolo Millares co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-06"
+    },
+    {
+      "fromKey": "rivera",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Manuel Rivera fue cofundador de El Paso en 1957.",
+      "justificationEn": "Manuel Rivera co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-07"
+    },
+    {
+      "fromKey": "frances",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Juana Francés fue cofundadora de El Paso en 1957.",
+      "justificationEn": "Juana Francés co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-08"
+    },
+    {
+      "fromKey": "feito",
+      "toKey": "paso",
+      "typeKey": "PART_OF",
+      "justificationEs": "Luis Feito fue cofundador de El Paso en 1957.",
+      "justificationEn": "Luis Feito co-founded El Paso in 1957.",
+      "sourceKeys": ["S7"],
+      "locator": "Descripción biográfica, párrafos 1–2",
+      "key": "relation-09"
+    },
+    {
+      "fromKey": "tapies",
+      "toKey": "dau",
+      "typeKey": "PART_OF",
+      "justificationEs": "Antoni Tàpies formó parte de Dau al Set.",
+      "justificationEn": "Antoni Tàpies belonged to Dau al Set.",
+      "sourceKeys": ["S4"],
+      "locator": "Descripción de la exposición 20 octubre 1999–10 enero 2000; texto indexado, apertura 403",
+      "key": "relation-10"
+    },
+    {
+      "fromKey": "artautre",
+      "toKey": "tapie",
+      "typeKey": "CREATED_BY",
+      "justificationEs": "Michel Tapié escribió Un art autre, publicado en 1952.",
+      "justificationEn": "Michel Tapié wrote Un art autre, published in 1952.",
+      "sourceKeys": ["S2"],
+      "locator": "Descripción de movimiento recuperada en búsqueda; página requiere JavaScript al abrirse",
+      "key": "relation-11"
+    },
+    {
+      "fromKey": "arteotro",
+      "toKey": "tapies",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Antoni Tàpies promovió Arte Otro junto con Michel Tapié en Barcelona en 1957.",
+      "justificationEn": "Antoni Tàpies promoted Arte Otro with Michel Tapié in Barcelona in 1957.",
+      "sourceKeys": ["S5"],
+      "locator": "Entradas anuales 1955, 1956, 1957 y 1958",
+      "key": "relation-12"
+    },
+    {
+      "fromKey": "arteotro",
+      "toKey": "tapie",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Michel Tapié promovió Arte Otro junto con Antoni Tàpies en Barcelona en 1957.",
+      "justificationEn": "Michel Tapié promoted Arte Otro with Antoni Tàpies in Barcelona in 1957.",
+      "sourceKeys": ["S5"],
+      "locator": "Entradas anuales 1955, 1956, 1957 y 1958",
+      "key": "relation-13"
+    },
+    {
+      "fromKey": "arteotro",
+      "toKey": "pollock",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Arte Otro presentó obras de Jackson Pollock en Barcelona en 1957.",
+      "justificationEn": "Arte Otro presented works by Jackson Pollock in Barcelona in 1957.",
+      "sourceKeys": ["S5"],
+      "locator": "Entradas anuales 1955, 1956, 1957 y 1958",
+      "key": "relation-14"
+    },
+    {
+      "fromKey": "arteotro",
+      "toKey": "fautrier",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Arte Otro presentó obras de Jean Fautrier en Barcelona en 1957.",
+      "justificationEn": "Arte Otro presented works by Jean Fautrier in Barcelona in 1957.",
+      "sourceKeys": ["S5"],
+      "locator": "Entradas anuales 1955, 1956, 1957 y 1958",
+      "key": "relation-15"
+    },
+    {
+      "fromKey": "newspanish",
+      "toKey": "moma",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "New Spanish Painting and Sculpture se celebró en el MoMA del 20 de julio al 28 de septiembre de 1960.",
+      "justificationEn": "New Spanish Painting and Sculpture took place at MoMA from 20 July to 28 September 1960.",
+      "sourceKeys": ["S10"],
+      "locator": "Cabecera y apartado Publications",
+      "key": "relation-16"
+    },
+    {
+      "fromKey": "newspanish",
+      "toKey": "ohara",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Frank O’Hara escribió el catálogo de New Spanish Painting and Sculpture, publicado en 1960.",
+      "justificationEn": "Frank O’Hara wrote the catalogue of New Spanish Painting and Sculpture, published in 1960.",
+      "sourceKeys": ["S10"],
+      "locator": "Cabecera y apartado Publications",
+      "key": "relation-17"
+    },
+    {
+      "fromKey": "tachismo",
+      "toKey": "informalismo",
+      "typeKey": "RELATED_TO",
+      "justificationEs": "El Guggenheim presenta el tachismo como una manifestación del art informel.",
+      "justificationEn": "The Guggenheim presents Tachisme as a manifestation of art informel.",
+      "sourceKeys": ["S17"],
+      "locator": "Glosario, entrada Tachisme",
+      "key": "relation-18"
+    },
+    {
+      "fromKey": "informalismo",
+      "toKey": "abstractexp",
+      "typeKey": "RELATED_TO",
+      "justificationEs": "El art informel europeo y el expresionismo abstracto estadounidense compartieron atención a los materiales, el gesto y las marcas pictóricas, con contextos históricos propios.",
+      "justificationEn": "European art informel and American Abstract Expressionism shared attention to materials, gesture and pictorial marks, with their own historical contexts.",
+      "sourceKeys": ["S3"],
+      "locator": "Ficha técnica y texto de Jennifer Blessing",
+      "key": "relation-19"
+    },
+    {
+      "fromKey": "otages",
+      "toKey": "fautrier",
+      "typeKey": "CREATED_BY",
+      "justificationEs": "Jean Fautrier realizó la serie Otages, fechada por el Musée d’Art Moderne de Paris entre 1943 y 1945.",
+      "justificationEn": "Jean Fautrier made the Otages series, dated by the Musée d’Art Moderne de Paris between 1943 and 1945.",
+      "sourceKeys": ["S19"],
+      "locator": "Descripción de la exposición, párrafos sobre regreso a París y series pictóricas; recuperado mediante búsqueda institucional",
+      "key": "relation-20"
+    },
+    {
+      "fromKey": "rivera",
+      "toKey": "materialidad",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Manuel Rivera experimentó con tela metálica, superposición de planos y efectos de luz en su pintura.",
+      "justificationEn": "Manuel Rivera experimented with wire mesh, superimposed planes and light effects in his painting.",
+      "sourceKeys": ["S16"],
+      "locator": "Descripción de exposición 22 abril–16 junio 1997",
+      "key": "relation-21"
+    },
+    {
+      "fromKey": "saura",
+      "toKey": "surrealismo",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Durante su residencia en París entre 1953 y 1955, Saura participó brevemente en actividades surrealistas.",
+      "justificationEn": "While living in Paris between 1953 and 1955, Saura briefly took part in Surrealist activities.",
+      "sourceKeys": ["S11"],
+      "locator": "Descripción de exposición; omitir frase ambigua sobre la Bienal de Venecia en 1957",
+      "key": "relation-22"
+    },
+    {
+      "fromKey": "politica",
+      "toKey": "informalismo",
+      "typeKey": "RELATED_TO",
+      "justificationEs": "Alicia Fuentes Vega estudia el acercamiento del franquismo a la vanguardia para su proyección exterior en los años cincuenta y sesenta.",
+      "justificationEn": "Alicia Fuentes Vega examines Francoism’s approach to the avant-garde for its international projection in the 1950s and 1960s.",
+      "sourceKeys": ["S8"],
+      "locator": "Resumen; ficha original UCM https://revistas.ucm.es/index.php/ANHA/es/article/view/37456, publicado 2011-02-11",
+      "key": "relation-23"
+    },
+    {
+      "fromKey": "internacionalizacion",
+      "toKey": "newspanish",
+      "typeKey": "ASSOCIATED_WITH",
+      "justificationEs": "Genoveva Tusell García estudia las negociaciones de la exposición española del MoMA en el contexto de los intercambios con Estados Unidos.",
+      "justificationEn": "Genoveva Tusell García examines the negotiations for the Spanish exhibition at MoMA in the context of exchanges with the United States.",
+      "sourceKeys": ["S9"],
+      "locator": "pp. 223 y 229; PDF original https://revistas.uned.es/index.php/ETFVII/article/download/2412/2285/5666",
+      "key": "relation-24"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "tapies",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Antoni Tàpies.",
+      "justificationEn": "The article offers a first introduction to Antoni Tàpies.",
+      "sourceKeys": ["S6", "S4"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Antoni Tàpies",
+      "key": "relation-25"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "saura",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Antonio Saura.",
+      "justificationEn": "The article offers a first introduction to Antonio Saura.",
+      "sourceKeys": ["S11"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Antonio Saura",
+      "key": "relation-26"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "millares",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Manolo Millares.",
+      "justificationEn": "The article offers a first introduction to Manolo Millares.",
+      "sourceKeys": ["S14"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Manolo Millares",
+      "key": "relation-27"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "frances",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Juana Francés.",
+      "justificationEn": "The article offers a first introduction to Juana Francés.",
+      "sourceKeys": ["S13", "S7"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Juana Francés",
+      "key": "relation-28"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "paso",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a El Paso.",
+      "justificationEn": "The article offers a first introduction to El Paso.",
+      "sourceKeys": ["S7", "S9"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a El Paso",
+      "key": "relation-29"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "dau",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Dau al Set.",
+      "justificationEn": "The article offers a first introduction to Dau al Set.",
+      "sourceKeys": ["S4", "S6"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Dau al Set",
+      "key": "relation-30"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "granpintura",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Gran pintura (1958).",
+      "justificationEn": "The article offers a first introduction to Great Painting (1958).",
+      "sourceKeys": ["S3"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Gran pintura (1958)",
+      "key": "relation-31"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "arenales",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Arenales (1959).",
+      "justificationEn": "The article offers a first introduction to Arenales (1959).",
+      "sourceKeys": ["S13"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Arenales (1959)",
+      "key": "relation-32"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "crucifixion",
+      "typeKey": "MENTIONS",
+      "justificationEs": "El artículo propone una primera aproximación a Crucifixion 12 (1959).",
+      "justificationEn": "The article offers a first introduction to Crucifixion 12 (1959).",
+      "sourceKeys": ["S18"],
+      "locator": "Lectura pública: enlace y pasaje dedicados a Crucifixion 12 (1959)",
+      "key": "relation-33"
+    },
+    {
+      "fromKey": "informalismo-lectura-rapida",
+      "toKey": "informalismo",
+      "typeKey": "ABOUT_CONCEPT",
+      "justificationEs": "Lectura introductoria a la materia, el gesto y el contexto histórico del informalismo.",
+      "justificationEn": "An introductory reading on matter, gesture and the historical context of Art Informel.",
+      "sourceKeys": ["S17", "S8"],
+      "locator": "Artículo completo; contexto y entrada al movimiento",
+      "key": "relation-34"
+    }
+  ]
+}

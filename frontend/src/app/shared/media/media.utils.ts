@@ -76,23 +76,6 @@ export type EntityWithResolvedMedia = {
 
 const ABSTRACT_ENTITY_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD']);
 
-// Visual fallback for entities that do not yet have a verified, entity-specific
-// media asset. It keeps exploration legible without pretending the image is the
-// artwork itself; the admin still reports the source as empty.
-const ENTITY_TYPE_FALLBACKS: Record<string, string> = {
-  ARTWORK: '/assets/home/artwork.jpg',
-  ARTIST: '/assets/home/artist.jpg',
-  PERSON: '/assets/home/artist.jpg',
-  MOVEMENT: '/assets/home/movement.jpg',
-  PERIOD: '/assets/home/period.jpg',
-  CONCEPT: '/assets/home/concept.jpg',
-  ORGANIZATION: '/assets/home/museum-room.jpg',
-  PLACE: '/assets/home/museum-room.jpg',
-  EVENT: '/assets/home/museum-room.jpg',
-  ARTICLE: '/assets/home/museum-room.jpg',
-  TEXT: '/assets/home/museum-room.jpg',
-};
-
 export type MediaPresentation = {
   src: string | null;
   objectFit: 'cover' | 'contain';
@@ -181,16 +164,9 @@ export function entityVisualUrl(
     return null;
   }
 
-  const resolved = selectResolvedMediaItem(entity, usage);
-  if (resolved) {
-    return mediaDisplayUrl(resolved);
-  }
-
-  if (isAbstractEntityType(entity)) {
-    return buildAbstractEntityPoster(entity);
-  }
-
-  return ENTITY_TYPE_FALLBACKS[(entity.type ?? '').toUpperCase()] ?? null;
+  return (
+    mediaDisplayUrl(selectResolvedMediaItem(entity, usage)) ?? buildAbstractEntityPoster(entity)
+  );
 }
 
 export function mediaObjectFit(

@@ -39,6 +39,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import {
   articleByline,
   articleDateLabel,
+  contextGallery,
   detailFactKicker,
   detailFactSummary,
   detailFacts,
@@ -464,6 +465,10 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
 
   detailMedia(entity: PublicEntity | null) {
     return detailMedia(entity);
+  }
+
+  contextGallery(entity: PublicEntity | null) {
+    return contextGallery(entity);
   }
 
   visualUrl(entity: PublicEntity | null) {

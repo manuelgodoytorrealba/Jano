@@ -358,6 +358,28 @@
                 </div>
               }
             }
+            @let gallery = contextGallery(entity);
+            @if (gallery.length) {
+              <div class="entity-context-gallery">
+                @for (media of gallery; track media.id ?? $index) {
+                  <figure>
+                    <app-jano-media
+                      [media]="media"
+                      usage="gallery"
+                      [alt]="media.alt || entity.title"
+                      placeholderMode="none"
+                    />
+                    <figcaption>{{ media.alt || entity.title }}</figcaption>
+                    @if (media.photoBy || media.source || media.license) {
+                      <details>
+                        <summary>{{ i18n.t('detail.mobileCredits') }}</summary>
+                        <p>{{ media.photoBy }} {{ media.source }} {{ media.license }}</p>
+                      </details>
+                    }
+                  </figure>
+                }
+              </div>
+            }
           </div>
           <div
             class="entity-information__panel"
