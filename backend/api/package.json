@@ -5,10 +5,10 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "packageManager": "npm@10.9.4",
+  "packageManager": "npm@11.21.2",
   "engines": {
-    "node": ">=22.14.0 <23",
-    "npm": ">=10.9.4 <11"
+    "node": ">=22.23.4 <23",
+    "npm": ">=11.21.2 <12"
   },
   "scripts": {
     "build": "nest build && tsc -p tsconfig.seeds.json",

@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:16.15-trixie
     command:
       - postgres
       - -c

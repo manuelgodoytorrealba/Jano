@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:22.14.0-bookworm-slim AS base
+FROM node:22.23.4-bookworm-slim AS base
 WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl poppler-utils tesseract-ocr tesseract-ocr-spa \
   && rm -rf /var/lib/apt/lists/*
 
-RUN --mount=type=cache,target=/root/.npm npm install --global npm@10.9.4
+RUN --mount=type=cache,target=/root/.npm npm install --global npm@11.21.2
 
 COPY package.json package-lock.json .npmrc ./
 COPY backend/api/package.json ./backend/api/package.json

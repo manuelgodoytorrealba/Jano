@@ -6,8 +6,8 @@ Full-stack art knowledge platform built with NestJS, Prisma, PostgreSQL and Angu
 
 Versiones soportadas del repo:
 
-- Node: `>=22.14.0 <23` (`22.14.0` es la versión fijada para desarrollo y Docker)
-- npm: `>=10.9.4 <11`
+- Node: `>=22.23.4 <23` (`22.23.4` es la versión fijada para desarrollo y Docker)
+- npm: `>=11.21.2 <12`
 
 Si usas `nvm`, ejecuta:
 
@@ -19,7 +19,7 @@ nvm use
 Si usas Volta:
 
 ```bash
-volta install node@22.14.0 npm@10.9.4
+volta install node@22.23.4 npm@11.21.2
 ```
 
 Node 20 y Node 25 no son compatibles. Prisma 7 requiere Node 22 o superior y el repositorio limita la versión mayor a Node 22.

@@ -275,7 +275,7 @@ backup() {
   (cd "$backup_dir" && checksum_check database.dump.sha256 >/dev/null)
 
   log 'Creating uploads backup'
-  docker run --rm --pull=never --volume "$UPLOADS_VOLUME:/data:ro" postgres:16 \
+  docker run --rm --pull=never --volume "$UPLOADS_VOLUME:/data:ro" postgres:16.15-trixie \
     tar -C /data -czf - . >"$uploads_tmp"
   tar -tzf "$uploads_tmp" >/dev/null
   mv "$uploads_tmp" "$backup_dir/uploads.tar.gz"
