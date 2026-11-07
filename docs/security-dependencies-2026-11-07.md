@@ -9,6 +9,8 @@ The refreshed lockfile updates affected packages within the application's existi
 framework major versions. Overrides enforce patched Multer, Undici, Glob and
 Minimatch versions. The Minimatch override only applies to affected major versions;
 older callers that expect the version 3 API retain their compatible dependency.
+Express and Multer are now explicit backend dependencies because backend code
+imports them directly; runtime startup no longer relies on workspace hoisting.
 
 PostgreSQL is pinned to 16.15-trixie in development, production, CI and the backup
 helper. This keeps the existing database major version and distribution family.
@@ -27,6 +29,10 @@ Preserve the existing volumes and follow `docs/deployment.md`.
 - Full npm audit: no moderate, high or critical findings.
 - OSV exact-version check: no malware matches in the refreshed lockfile.
 - CI now checks development dependencies as well as runtime dependencies.
+
+Container smoke tests use an isolated copy of the existing local database. A
+pre-existing editorial migration requires seeded canonical entities and fails on
+an empty database; this update does not change that migration or production data.
 
 ## Remaining low-severity advisory
 
