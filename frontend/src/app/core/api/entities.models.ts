@@ -12,15 +12,10 @@ export type PublicEntityType =
   | string;
 
 export type PublicKnowledgeEntityKind =
-  | 'PERSON'
-  | 'WORK'
-  | 'ABSTRACTION'
-  | 'EVENT'
-  | 'PLACE'
-  | 'ORGANIZATION'
-  | string;
+  'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION' | string;
 
 export interface PublicEntityMediaAsset {
+  variants?: { url: string; width: number; height: number }[] | null;
   id?: string | null;
   url?: string | null;
   src?: string | null;

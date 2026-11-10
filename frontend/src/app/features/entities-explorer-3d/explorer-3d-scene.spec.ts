@@ -56,3 +56,34 @@ describe('explorer shared textures', () => {
     imageDisposes.forEach((dispose) => expect(dispose).toHaveBeenCalledTimes(1));
   });
 });
+
+describe('explorer image scheduling', () => {
+  it('prioritizes the active card, bounds concurrent downloads and skips hidden cards', () => {
+    const scene = new Explorer3dScene();
+    const cards = Array.from({ length: 5 }, (_, index) => {
+      const group = new THREE.Group();
+      group.userData['index'] = index;
+      group.visible = index !== 0;
+      return { group, loadImage: vi.fn(), imageRequested: false };
+    });
+    const state = scene as unknown as {
+      cards: typeof cards;
+      activeIndex: number;
+      loadingImages: number;
+      loadVisibleImages(): void;
+    };
+    state.cards = cards;
+    state.activeIndex = 2;
+    state.loadVisibleImages();
+    expect(cards[2].loadImage).toHaveBeenCalledOnce();
+    expect(cards[1].loadImage).toHaveBeenCalledOnce();
+    expect(cards[0].loadImage).not.toHaveBeenCalled();
+    expect(cards[3].loadImage).not.toHaveBeenCalled();
+    state.loadVisibleImages();
+    expect(state.loadingImages).toBe(2);
+    state.loadingImages--;
+    state.loadVisibleImages();
+    expect(cards[3].loadImage).toHaveBeenCalledOnce();
+    expect(state.loadingImages).toBe(2);
+  });
+});

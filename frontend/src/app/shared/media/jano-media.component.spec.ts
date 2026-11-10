@@ -108,4 +108,41 @@ describe('JanoMediaComponent', () => {
     expect(component.src).toBeNull();
     expect(component.state()).toBe('placeholder');
   });
+  it.each(['card', 'thumbnail', 'explorer3d'] as const)(
+    'accepts responsive %s media and retries the original if the variant fails',
+    async (usage) => {
+      const component = new JanoMediaComponent();
+      component.usage = usage;
+      component.media = {
+        url: '/uploads/media/original.jpg',
+        variants: [
+          { url: '/uploads/media-variants/card-320.webp', width: 320, height: 480 },
+          { url: '/uploads/media-variants/card-640.webp', width: 640, height: 960 },
+        ],
+      };
+      component.ngOnChanges();
+      expect(component.imageSrc).toBe('/uploads/media-variants/card-640.webp');
+      expect(component.srcset).toContain('320w');
+      const image = imageFor(component);
+      Object.defineProperty(image, 'currentSrc', { value: component.imageSrc });
+      component.onImageLoad({ target: image } as unknown as Event);
+      await Promise.resolve();
+      expect(component.state()).toBe('ready');
+      component.onImageError({ target: image } as unknown as Event);
+      expect(component.srcset).toBeNull();
+      expect(component.imageSrc).toBe('/uploads/media/original.jpg');
+      expect(component.state()).toBe('pending');
+    },
+  );
+
+  it('keeps the original for detail and gallery views', () => {
+    const component = new JanoMediaComponent();
+    component.usage = 'detail';
+    component.media = {
+      url: '/uploads/media/original.jpg',
+      variants: [{ url: '/thumb.webp', width: 640, height: 960 }],
+    };
+    expect(component.imageSrc).toBe('/uploads/media/original.jpg');
+    expect(component.srcset).toBeNull();
+  });
 });

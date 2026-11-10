@@ -238,6 +238,31 @@ describe('EntitiesListComponent filters', () => {
       .compileComponents();
   });
 
+  it('starts an empty-query feed immediately and sends only the latest debounced search', async () => {
+    vi.useFakeTimers();
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const facade = fixture.debugElement.injector.get(EntitiesListFacade);
+    const subscription = facade.results$.subscribe();
+    try {
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(listCalls.some((call) => call.view === 'card' && !call.q)).toBe(true);
+      const initialCalls = listCalls.length;
+      queryParamMap$.next(convertToParamMap({ q: 'pic' }));
+      queryParamMap$.next(convertToParamMap({ q: 'picasso' }));
+      expect(listCalls.length).toBe(initialCalls);
+      await vi.advanceTimersByTimeAsync(299);
+      expect(listCalls.length).toBe(initialCalls);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(listCalls.at(-1)?.q).toBe('picasso');
+      expect(listCalls.some((call) => call.q === 'pic')).toBe(false);
+    } finally {
+      subscription.unsubscribe();
+      fixture.destroy();
+      vi.useRealTimers();
+    }
+  });
+
   it('starts the home feed in Explorer and renews without dropping filters', async () => {
     routeStub.snapshot.data = { discoveryFeed: true };
     queryParamMap$.next(

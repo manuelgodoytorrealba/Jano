@@ -1,3 +1,4 @@
+import { publicUploadsOnly } from './media/public-uploads.middleware';
 import './instrument';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -45,9 +46,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
-  app.use('/uploads/research', (_req: express.Request, res: express.Response) => {
-    res.sendStatus(404);
-  });
+  app.use('/uploads', publicUploadsOnly);
   app.use(
     '/uploads',
     express.static(join(process.cwd(), 'uploads'), {
@@ -55,6 +54,14 @@ async function bootstrap() {
       etag: true,
       lastModified: true,
       setHeaders: (res, filePath) => {
+        if (
+          /\/(media-variants\/[a-f0-9]{64}-(320|640|960)|app-backgrounds\/optimized-[a-f0-9]{64})\.webp$/.test(
+            filePath,
+          )
+        ) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          return;
+        }
         if (/\.(avif|webp|png|jpe?g|gif|svg)$/i.test(filePath)) {
           res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
           return;

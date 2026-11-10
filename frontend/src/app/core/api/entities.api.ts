@@ -12,6 +12,7 @@ import {
 } from './entities.models';
 
 export type EntitiesListParams = {
+  view?: 'card' | 'options';
   seed?: string;
   type?: string;
   kind?: PublicKnowledgeEntityKind;

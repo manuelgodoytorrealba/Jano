@@ -1,3 +1,4 @@
+import { createMediaVariants } from '../media/media-variants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaOriginType, MediaRole } from '@prisma/client';
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
@@ -6,6 +7,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { detectImageDimensionsFromBuffer } from '../media/image-metadata';
 import { EntityMediaService } from '../media/entity-media.service';
 import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.service';
+
+jest.mock('../media/media-variants', () => ({
+  ...jest.requireActual('../media/media-variants'),
+  createMediaVariants: jest.fn(),
+}));
 
 jest.mock('fs/promises', () => ({
   mkdir: jest.fn(),
@@ -75,6 +81,7 @@ describe('EntityMediaService admin workflows', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    jest.mocked(createMediaVariants).mockResolvedValue([]);
     prisma.entity.findFirst.mockReset();
     prisma.entity.findUnique.mockReset();
     prisma.media.create.mockReset();
@@ -272,6 +279,7 @@ describe('EntityMediaService admin workflows', () => {
         displayUrl: '/uploads/media/uploaded-file.jpg',
         originType: MediaOriginType.UPLOAD,
         storageKey: 'media/uploaded-file.jpg',
+        variants: [],
         originalFilename: 'original-file.jpg',
         fileSize: 123456,
         mimeType: 'image/jpeg',

@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchIntentService } from './search-intent.service';
@@ -388,7 +389,8 @@ describe('SearchService', () => {
 
     await service.search({ q: 'picasso', locale: 'en' }, { includeDrafts: false });
 
-    const sql = prisma.$queryRaw.mock.calls[0]?.[0];
+    const call = prisma.$queryRaw.mock.calls[0];
+    const sql = Prisma.sql(call[0], ...call.slice(1)).sql;
 
     expect(String(sql)).toContain('"EntityTranslation"');
     expect(String(sql)).toContain('"EntityAlias"');

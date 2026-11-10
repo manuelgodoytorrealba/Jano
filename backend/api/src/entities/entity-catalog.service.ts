@@ -27,7 +27,40 @@ export class EntityCatalogService {
   ];
 
   async list(query: ListEntitiesQuery) {
-    return this.listForVisibility(query, { publicOnly: true });
+    const result = await this.listForVisibility(query, { publicOnly: true });
+    if (query.view === 'options') {
+      return {
+        ...result,
+        items: result.items.map(({ id, slug, title, type, kind }) => ({
+          id,
+          slug,
+          title,
+          type,
+          kind,
+        })),
+      };
+    }
+    if (query.view === 'card') {
+      return {
+        ...result,
+        items: result.items.map(
+          ({
+            content: _content,
+            translations: _translations,
+            mediaLinks: _mediaLinks,
+            translationMeta,
+            ...card
+          }) => ({
+            ...card,
+            translationMeta: {
+              isFallback: translationMeta.isFallback,
+              resolvedLocale: translationMeta.resolvedLocale,
+            },
+          }),
+        ),
+      };
+    }
+    return result;
   }
 
   async adminList(query: ListEntitiesQuery) {
@@ -60,6 +93,14 @@ export class EntityCatalogService {
     if (term && !taxonomy)
       throw new BadRequestException('taxonomy is required when term is provided');
     const locale = normalizeLocale(query.locale);
+    const compact = options.publicOnly && !!query.view;
+    const optionsOnly = compact && query.view === 'options';
+    const translations = compact
+      ? {
+          ...localizedInclude(locale),
+          select: { locale: true, title: true, shortDescription: true, excerpt: true },
+        }
+      : localizedInclude(locale);
 
     const where: Prisma.EntityWhereInput = {};
     const and: Prisma.EntityWhereInput[] = [];
@@ -244,34 +285,41 @@ export class EntityCatalogService {
         skip: useCuratedOrder || feedIds ? undefined : skip,
         take: useCuratedOrder || feedIds ? undefined : safeLimit,
         orderBy: useCuratedOrder ? undefined : orderBy,
+        ...(compact ? { omit: { content: true } } : {}),
         include: {
-          translations: localizedInclude(locale),
-          tags: {
-            include: { tag: true },
-            orderBy: [{ tag: { label: 'asc' } }],
-          },
-          classifications: {
-            ...(options.publicOnly
-              ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
-              : {}),
-            select: {
-              confidence: true,
-              source: true,
-              term: {
-                select: {
-                  id: true,
-                  key: true,
-                  label: true,
-                  taxonomy: { select: { id: true, key: true, label: true } },
-                },
+          translations,
+          tags: optionsOnly
+            ? false
+            : {
+                include: { tag: true },
+                orderBy: [{ tag: { label: 'asc' } }],
               },
-            },
-            orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
-          },
-          mediaLinks: {
-            include: { media: true },
-            orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
-          },
+          classifications: optionsOnly
+            ? false
+            : {
+                ...(options.publicOnly
+                  ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
+                  : {}),
+                select: {
+                  confidence: true,
+                  source: true,
+                  term: {
+                    select: {
+                      id: true,
+                      key: true,
+                      label: true,
+                      taxonomy: { select: { id: true, key: true, label: true } },
+                    },
+                  },
+                },
+                orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
+              },
+          mediaLinks: optionsOnly
+            ? false
+            : {
+                include: { media: true },
+                orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+              },
           ...(options.publicOnly
             ? {}
             : {
@@ -312,33 +360,39 @@ export class EntityCatalogService {
       take: fetchSize,
       orderBy: { createdAt: 'desc' },
       include: {
-        translations: localizedInclude(locale),
-        tags: {
-          include: { tag: true },
-          orderBy: [{ tag: { label: 'asc' } }],
-        },
-        classifications: {
-          ...(options.publicOnly
-            ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
-            : {}),
-          select: {
-            confidence: true,
-            source: true,
-            term: {
-              select: {
-                id: true,
-                key: true,
-                label: true,
-                taxonomy: { select: { id: true, key: true, label: true } },
-              },
+        translations,
+        tags: optionsOnly
+          ? false
+          : {
+              include: { tag: true },
+              orderBy: [{ tag: { label: 'asc' } }],
             },
-          },
-          orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
-        },
-        mediaLinks: {
-          include: { media: true },
-          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
-        },
+        classifications: optionsOnly
+          ? false
+          : {
+              ...(options.publicOnly
+                ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
+                : {}),
+              select: {
+                confidence: true,
+                source: true,
+                term: {
+                  select: {
+                    id: true,
+                    key: true,
+                    label: true,
+                    taxonomy: { select: { id: true, key: true, label: true } },
+                  },
+                },
+              },
+              orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
+            },
+        mediaLinks: optionsOnly
+          ? false
+          : {
+              include: { media: true },
+              orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+            },
         ...(options.publicOnly
           ? {}
           : {

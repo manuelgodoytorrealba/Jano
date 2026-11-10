@@ -26,6 +26,9 @@ type CardUserData = {
 };
 
 type Card3D = {
+  loadImage?: () => void;
+  cancelImage?: () => void;
+  imageRequested?: boolean;
   group: THREE.Group;
   frame: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   image: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
@@ -49,6 +52,7 @@ export function spatialEntryEase(progress: number): number {
 }
 
 export class Explorer3dScene {
+  private loadingImages = 0;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(33, 1, 0.1, 100);
   private readonly raycaster = new THREE.Raycaster();
@@ -276,39 +280,82 @@ export class Explorer3dScene {
       image.userData = data;
       imageMaterial.map = createFallbackImageTexture(
         { ...item, type: this.typeLabel(item.type) },
-        1100,
-        1200,
-        48,
+        550,
+        600,
+        24,
       );
       imageMaterial.color.set('#ffffff');
       imageMaterial.needsUpdate = true;
-      const media = resolveMediaPresentation(
-        resolveEntityMediaItem(item, 'explorer3d'),
-        'explorer3d',
-      );
-      if (media.src) {
-        const source = new Image();
-        source.crossOrigin = 'anonymous';
-        source.onload = async () => {
-          try {
-            await source.decode?.();
-          } catch {
-            // `load` remains a safe readiness fallback when decode is unavailable or rejects.
-          }
-
-          if (cardsVersion !== this.cardsVersion) return;
-          imageMaterial.map?.dispose();
-          imageMaterial.map = createRoundedImageTexture(source, 550, 600, 24, media);
-          imageMaterial.color.set('#ffffff');
-          imageMaterial.needsUpdate = true;
+      const selectedMedia = resolveEntityMediaItem(item, 'explorer3d');
+      const media = resolveMediaPresentation(selectedMedia, 'explorer3d');
+      const card: Card3D = { group, frame, image, glass };
+      if (media.src)
+        card.loadImage = () => {
+          const source = new Image();
+          source.crossOrigin = 'anonymous';
+          let finished = false;
+          const finish = () => {
+            if (finished) return;
+            finished = true;
+            source.onload = null;
+            source.onerror = null;
+            if (cardsVersion !== this.cardsVersion) return;
+            this.loadingImages--;
+            this.loadVisibleImages();
+          };
+          card.cancelImage = () => {
+            source.onload = null;
+            source.onerror = null;
+            source.src = '';
+          };
+          let retryOriginal = true;
+          source.onerror = () => {
+            if (retryOriginal && source.getAttribute('src') !== media.src) {
+              retryOriginal = false;
+              source.src = media.src!;
+            } else finish();
+          };
+          source.onload = async () => {
+            try {
+              try {
+                await source.decode?.();
+              } catch {
+                // A successful load can still be used when decode is unavailable.
+              }
+              if (cardsVersion !== this.cardsVersion) return;
+              const texture = createRoundedImageTexture(source, 550, 600, 24, media);
+              imageMaterial.map?.dispose();
+              imageMaterial.map = texture;
+              imageMaterial.color.set('#ffffff');
+              imageMaterial.needsUpdate = true;
+            } finally {
+              finish();
+            }
+          };
+          const variants = selectedMedia?.variants ?? [];
+          source.src = (variants.find((v) => v.width >= 800) ?? variants.at(-1))?.url ?? media.src!;
         };
-        source.src = media.src;
-      }
       group.add(frame, image, glass);
       this.scene.add(group);
-      this.cards.push({ group, frame, image, glass });
+      this.cards.push(card);
       this.raycastTargets.push(image);
     });
+  }
+
+  private loadVisibleImages(): void {
+    const nearby = this.cards
+      .filter((card) => card.group.visible && card.loadImage && !card.imageRequested)
+      .sort(
+        (a, b) =>
+          Math.abs(a.group.userData['index'] - this.activeIndex) -
+          Math.abs(b.group.userData['index'] - this.activeIndex),
+      );
+    for (const card of nearby) {
+      if (this.loadingImages >= 2) break;
+      card.imageRequested = true;
+      this.loadingImages++;
+      card.loadImage!();
+    }
   }
 
   private updateTargets(immediate = false): void {
@@ -355,6 +402,7 @@ export class Explorer3dScene {
         this.applyCardOpacity(card, data.layoutOpacity);
       }
     });
+    this.loadVisibleImages();
   }
 
   private prepareInitialDeckState(): void {
@@ -611,8 +659,10 @@ export class Explorer3dScene {
 
   private disposeCards(): void {
     this.cardsVersion += 1;
+    this.loadingImages = 0;
     const textures = new Set<THREE.Texture>();
     for (const card of this.cards) {
+      card.cancelImage?.();
       for (const mesh of [card.frame, card.image, card.glass]) {
         mesh.geometry.dispose();
         if (mesh.material.map) textures.add(mesh.material.map);

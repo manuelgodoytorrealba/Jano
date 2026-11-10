@@ -6,7 +6,9 @@
           #image
           class="jano-media__img"
           [attr.data-media-request]="requestId"
-          [src]="src"
+          [src]="imageSrc"
+          [attr.srcset]="srcset"
+          [attr.sizes]="srcset ? sizes : null"
           [alt]="altText"
           [attr.loading]="loadingAttr"
           [attr.fetchpriority]="fetchPriorityAttr"

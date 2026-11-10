@@ -1,3 +1,4 @@
+import { createBackgroundVariant } from '../media/media-variants';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -38,8 +39,9 @@ export class AppSettingsService {
       throw new BadRequestException('Background image is required.');
     }
 
+    const optimized = await createBackgroundVariant(`app-backgrounds/${file.filename}`);
     const backgroundImageUrl = buildPublicUploadUrl(
-      `app-backgrounds/${file.filename}`,
+      optimized.slice('/uploads/'.length),
       this.mediaPublicBaseUrl,
     );
 

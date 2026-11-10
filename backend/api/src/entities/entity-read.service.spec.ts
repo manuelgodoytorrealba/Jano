@@ -165,6 +165,67 @@ describe('EntityReadService.list filters', () => {
     editorialService = module.get(EntityEditorialService);
   });
 
+  it('keeps localized card data and media while omitting detail payloads only in the compact view', async () => {
+    const image = { id: 'image', url: '/uploads/media/work.jpg', alt: 'An artwork' };
+    const fixture = {
+      id: 'work',
+      slug: 'work',
+      title: 'Obra',
+      type: 'ARTWORK',
+      kind: 'WORK',
+      status: 'PUBLISHED',
+      summary: 'Resumen',
+      content: 'Texto completo',
+      translations: [
+        { locale: 'en', title: 'Work', shortDescription: 'Summary', essay: 'Full essay' },
+      ],
+      mediaLinks: [{ role: 'CARD', media: image }],
+      tags: [{ tag: { label: 'Painting' } }],
+    };
+    prisma.entity.findMany.mockResolvedValue([fixture]);
+    prisma.entity.count.mockResolvedValue(1);
+    const compact = await catalogService.list({ view: 'card', locale: 'en', page: 1, limit: 24 });
+    expect(compact.items[0]).toEqual(
+      expect.objectContaining({ title: 'Work', summary: 'Summary', tags: fixture.tags }),
+    );
+    expect(compact.items[0]).not.toHaveProperty('content');
+    expect(compact.items[0]).not.toHaveProperty('translations');
+    expect(compact.items[0]).not.toHaveProperty('mediaLinks');
+    expect(compact.items[0]).toHaveProperty('resolvedMedia.card.url', image.url);
+    const complete = await catalogService.list({ locale: 'en', page: 1, limit: 24 });
+    expect(complete.items[0]).toHaveProperty('content', 'Full essay');
+    expect(complete.items[0]).toHaveProperty('mediaLinks');
+  });
+
+  it('returns only localized identifiers for filter options while enforcing public visibility', async () => {
+    prisma.entity.findMany.mockResolvedValue([
+      {
+        id: 'movement',
+        slug: 'cubism',
+        type: 'MOVEMENT',
+        kind: 'ABSTRACTION',
+        title: 'Cubismo',
+        content: 'Long essay',
+        translations: [{ locale: 'en', title: 'Cubism' }],
+      },
+    ]);
+    prisma.entity.count.mockResolvedValue(1);
+    const result = await catalogService.list({
+      view: 'options',
+      type: 'MOVEMENT',
+      locale: 'en',
+      status: 'DRAFT',
+      page: 1,
+      limit: 60,
+      sort: 'title',
+    });
+    expect(result.items).toEqual([
+      { id: 'movement', slug: 'cubism', type: 'MOVEMENT', kind: 'ABSTRACTION', title: 'Cubism' },
+    ]);
+    expect(prisma.entity.findMany.mock.calls[0][0].where.status).toBe('PUBLISHED');
+    expect(prisma.entity.findMany.mock.calls[0][0].include.mediaLinks).toBe(false);
+  });
+
   it('paginates the seeded selection while preserving public visibility and filters', async () => {
     const ids = Array.from({ length: 10 }, (_, i) => `id-${i}`);
     prisma.entity.count.mockResolvedValue(10);

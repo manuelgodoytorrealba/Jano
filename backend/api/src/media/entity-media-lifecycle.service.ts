@@ -1,3 +1,4 @@
+import { createMediaVariants } from './media-variants';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { MediaOriginType, MediaRole } from '@prisma/client';
 import { randomUUID } from 'crypto';
@@ -275,6 +276,7 @@ export class EntityMediaLifecycleService {
     }
 
     try {
+      const variants = await createMediaVariants(storageKey);
       const maxSort = await this.prisma.entityMedia.aggregate({
         where: {
           entityId,
@@ -300,6 +302,7 @@ export class EntityMediaLifecycleService {
             displayUrl: publicUrl,
             sourcePageUrl: link.media.sourcePageUrl?.trim() || undefined,
             storageKey,
+            variants,
             originalFilename: this.inferOriginalFilename(sourceUrl, extension),
             fileSize: buffer.length,
             mimeType,

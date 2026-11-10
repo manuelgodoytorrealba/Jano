@@ -37,6 +37,8 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
   @Input() lazy = true;
   @Input() priority: 'auto' | 'high' | 'low' = 'auto';
   @Input() placeholderMode: 'auto' | 'none' = 'auto';
+  @Input() sizes = '(max-width: 640px) 100vw, 640px';
+  private failedVariantsFor: string | null = null;
   private failedSrc: string | null = null;
   private activeSrc: string | null = null;
   private requestId = 0;
@@ -78,6 +80,28 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
     return fallback === this.failedSrc ? null : fallback;
   }
 
+  get responsiveVariants() {
+    if (
+      !['card', 'thumbnail', 'explorer3d'].includes(this.usage) ||
+      this.failedVariantsFor === this.src
+    ) {
+      return [];
+    }
+    const media = [this.media, this.selectedEntityMedia].find(
+      (item) => item && mediaDisplayUrl(item) === this.src,
+    );
+    return media?.variants ?? [];
+  }
+
+  get imageSrc(): string | null {
+    const variants = this.responsiveVariants;
+    return (variants.find((v) => v.width >= 640) ?? variants.at(-1))?.url ?? this.src;
+  }
+
+  get srcset(): string | null {
+    return this.responsiveVariants.map((v) => `${v.url} ${v.width}w`).join(', ') || null;
+  }
+
   get imageRequestId(): number {
     return this.requestId;
   }
@@ -100,6 +124,12 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
       return;
     }
 
+    if (this.responsiveVariants.length) {
+      this.failedVariantsFor = this.src;
+      this.activeSrc = null;
+      this.syncSource();
+      return;
+    }
     this.failedSrc = this.activeSrc ?? this.src;
     this.syncSource();
   }
@@ -202,7 +232,10 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
       !!src &&
       image === this.imageElement &&
       image.dataset['mediaRequest'] === String(requestId) &&
-      this.sameResource(image.currentSrc || image.src, src)
+      (this.sameResource(image.currentSrc || image.src, src) ||
+        this.responsiveVariants.some((v) =>
+          this.sameResource(image.currentSrc || image.src, v.url),
+        ))
     );
   }
 

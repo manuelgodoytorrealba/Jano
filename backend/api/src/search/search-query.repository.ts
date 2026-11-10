@@ -60,15 +60,66 @@ export class SearchQueryRepository {
       `
       : Prisma.empty;
 
-    const fullTextPredicate = useFullText
-      ? Prisma.sql`weighted.document @@ websearch_to_tsquery('simple', ${q}) OR`
-      : Prisma.empty;
+    // With the simple dictionary, a literal word match is already covered by ILIKE below.
+    // Keep full-text ranking, but avoid building documents for every nonmatching entity.
+    const singleLiteralWord = /^[\p{L}\p{N}]+$/u.test(q);
+    const fullTextPredicate =
+      useFullText && !singleLiteralWord
+        ? Prisma.sql`weighted.document @@ websearch_to_tsquery('simple', ${q}) OR`
+        : Prisma.empty;
 
     const fullTextRank = useFullText
       ? Prisma.sql`ts_rank_cd(weighted.document, websearch_to_tsquery('simple', ${q}))`
       : Prisma.sql`0`;
 
+    // shortcut: literal searches still scan entities; index documents if their latency exceeds the SLO.
+    const relationDocuments = singleLiteralWord
+      ? Prisma.sql`
+      WITH relation_texts AS (
+        SELECT "entityId", string_agg(rel_text, ' ') AS relation_text
+        FROM (
+          SELECT r."fromId" AS "entityId", r."justification" AS rel_text
+          FROM "Relation" r WHERE r."justification" IS NOT NULL
+          UNION ALL
+          SELECT r."toId", r."justification"
+          FROM "Relation" r WHERE r."justification" IS NOT NULL AND r."toId" <> r."fromId"
+          UNION ALL
+          SELECT r."fromId", rt."justification"
+          FROM "Relation" r JOIN "RelationTranslation" rt ON rt."relationId" = r."id"
+          WHERE rt."locale" IN (${Prisma.join(translationLocales)}) AND rt."justification" IS NOT NULL
+          UNION ALL
+          SELECT r."toId", rt."justification"
+          FROM "Relation" r JOIN "RelationTranslation" rt ON rt."relationId" = r."id"
+          WHERE rt."locale" IN (${Prisma.join(translationLocales)}) AND rt."justification" IS NOT NULL
+            AND r."toId" <> r."fromId"
+        ) values_by_entity
+        GROUP BY "entityId"
+      )
+    `
+      : Prisma.empty;
+    const relationJoin = singleLiteralWord
+      ? Prisma.sql`LEFT JOIN relation_texts relation_data ON relation_data."entityId" = e."id"`
+      : Prisma.sql`
+      CROSS JOIN LATERAL (
+        SELECT coalesce(string_agg(rel_text, ' '), '') AS relation_text
+        FROM (
+          SELECT r."justification" AS rel_text
+          FROM "Relation" r
+          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
+            AND r."justification" IS NOT NULL
+          UNION ALL
+          SELECT rt."justification" AS rel_text
+          FROM "Relation" r
+          JOIN "RelationTranslation" rt ON rt."relationId" = r."id"
+          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
+            AND rt."locale" IN (${Prisma.join(translationLocales)})
+            AND rt."justification" IS NOT NULL
+        ) relation_values
+      ) relation_data
+    `;
+
     return this.prisma.$queryRaw<SearchRow[]>`
+      ${relationDocuments}
       SELECT
         e."id",
         (
@@ -214,22 +265,7 @@ export class SearchQueryRepository {
           ) period_values
         ) period_data
       ) detail_data
-      CROSS JOIN LATERAL (
-        SELECT coalesce(string_agg(rel_text, ' '), '') AS relation_text
-        FROM (
-          SELECT r."justification" AS rel_text
-          FROM "Relation" r
-          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
-            AND r."justification" IS NOT NULL
-          UNION ALL
-          SELECT rt."justification" AS rel_text
-          FROM "Relation" r
-          JOIN "RelationTranslation" rt ON rt."relationId" = r."id"
-          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
-            AND rt."locale" IN (${Prisma.join(translationLocales)})
-            AND rt."justification" IS NOT NULL
-        ) relation_values
-      ) relation_data
+      ${relationJoin}
       CROSS JOIN LATERAL (
         SELECT
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
@@ -237,7 +273,7 @@ export class SearchQueryRepository {
           setweight(to_tsvector('simple', tag_data.tag_text), 'B') ||
           setweight(to_tsvector('simple', detail_data.detail_text), 'B') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
-          setweight(to_tsvector('simple', relation_data.relation_text), 'C') ||
+          setweight(to_tsvector('simple', coalesce(relation_data.relation_text, '')), 'C') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
       ) weighted
       WHERE 1 = 1

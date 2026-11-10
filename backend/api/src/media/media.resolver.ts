@@ -1,7 +1,9 @@
+import { publicMediaVariants, type MediaVariant } from './media-variants';
 import { resolveStoredMediaUrl } from '../common/media-url.util';
 
 type MediaLike = {
   id: string;
+  variants?: unknown;
   url: string;
   originType?: string | null;
   derivedFromMediaId?: string | null;
@@ -53,6 +55,7 @@ export type EntityWithMediaLinks = {
 };
 
 export type ResolvedMediaItem = {
+  variants?: MediaVariant[];
   id: string;
   url: string;
   originType: string | null;
@@ -97,22 +100,10 @@ export type ResolvedMediaPayload = {
 };
 
 export type MediaUsage =
-  | 'hero'
-  | 'card'
-  | 'detail'
-  | 'thumbnail'
-  | 'explorer3d'
-  | 'gallery'
-  | 'primary';
+  'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
 
 export type MediaCropSlot =
-  | 'explorer3d'
-  | 'list'
-  | 'preview'
-  | 'hero'
-  | 'card'
-  | 'detail'
-  | 'thumbnail';
+  'explorer3d' | 'list' | 'preview' | 'hero' | 'card' | 'detail' | 'thumbnail';
 
 export type ResolvedMediaSlotState = {
   item: ResolvedMediaItem | null;
@@ -532,6 +523,7 @@ export function toResolvedMediaItem(
 
   return {
     id: link.media.id,
+    variants: publicMediaVariants(link.media.variants),
     url: localUrl ?? link.media.url,
     originType: link.media.originType ?? null,
     derivedFromMediaId: link.media.derivedFromMediaId ?? null,

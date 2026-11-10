@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   combineLatest,
   catchError,
-  debounceTime,
+  debounce,
+  timer,
+  filter,
   distinctUntilChanged,
   map,
   shareReplay,
@@ -216,6 +218,7 @@ export class EntitiesListFacade {
 
   readonly movementOptions$ = this.api
     .list({
+      view: 'options',
       type: 'MOVEMENT',
       limit: 60,
       page: 1,
@@ -229,6 +232,7 @@ export class EntitiesListFacade {
 
   readonly periodOptions$ = this.api
     .list({
+      view: 'options',
       type: 'PERIOD',
       limit: 60,
       page: 1,
@@ -320,12 +324,14 @@ export class EntitiesListFacade {
   readonly results$ = combineLatest([
     this.queryState$.pipe(
       map((state) => state.q),
-      debounceTime(300),
+      distinctUntilChanged(),
+      debounce((query) => (query ? timer(300) : of(0))),
     ),
     this.queryState$,
     this.auth.user$,
     this.locale$,
   ]).pipe(
+    filter(([debouncedQuery, state]) => debouncedQuery === state.q),
     switchMap(([debouncedQuery, state, user]) => {
       const signature = JSON.stringify({
         state,
@@ -705,6 +711,7 @@ export class EntitiesListFacade {
           page: state.page,
         })
       : this.api.list({
+          view: 'card',
           ...(this.isDiscoveryFeed && state.sort === 'recent' ? { seed: state.seed } : {}),
           type: state.type || undefined,
           kind: state.kind || undefined,

@@ -144,7 +144,11 @@ export function localizeEntityDetails<T extends EntityTypedDetailsRecord>(
 export function resolveLocalizedEntity<T extends LocalizedEntityRecord>(
   entity: T,
   locale?: string,
-): T & { resolvedMedia: ResolvedMediaPayload } {
+): T & {
+  resolvedMedia: ResolvedMediaPayload;
+  content: string | null;
+  translationMeta: ReturnType<typeof resolveEntityTranslation>['translationMeta'];
+} {
   return attachResolvedMedia(resolveEntityTranslation(entity, locale));
 }
 

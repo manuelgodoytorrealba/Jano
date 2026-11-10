@@ -1,3 +1,4 @@
+import { createMediaVariants } from './media-variants';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { MediaOriginType, MediaRole, Prisma } from '@prisma/client';
 import { readFile } from 'fs/promises';
@@ -214,6 +215,7 @@ export class EntityMediaService {
 
     const storageKey = `media/${file.filename}`;
     const publicUrl = this.buildPublicUploadUrl(storageKey);
+    const variants = await createMediaVariants(storageKey);
 
     return this.prisma.$transaction(async (tx) => {
       const media = await tx.media.create({
@@ -223,6 +225,7 @@ export class EntityMediaService {
           displayUrl: publicUrl,
           originType: MediaOriginType.UPLOAD,
           storageKey,
+          variants,
           originalFilename: file.originalname,
           fileSize: file.size,
           mimeType: file.mimetype,

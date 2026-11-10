@@ -121,6 +121,32 @@ services:
     restart: 'no'
     logging: *default-logging
 
+  media-prepare:
+    image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
+    pull_policy: never
+    profiles: [tools]
+    init: true
+    restart: 'no'
+    cpus: 1
+    mem_limit: 1g
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+    command: ['node', 'dist/scripts/prepare-media-variants.js', '--apply-production']
+    volumes:
+      - backend_uploads:/app/backend/api/uploads
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging: *default-logging
+
   uploads-permissions:
     image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
     pull_policy: never

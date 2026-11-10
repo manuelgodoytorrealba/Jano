@@ -740,6 +740,7 @@ model Media {
   height           Int?
   focalX           Float?
   focalY           Float?
+  variants         Json?
   isVector         Boolean          @default(false)
   provider         MediaProvider    @default(UNKNOWN)
   qualityTier      MediaQualityTier @default(MEDIUM)

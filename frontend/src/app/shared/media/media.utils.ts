@@ -1,4 +1,7 @@
+export type MediaVariant = { url: string; width: number; height: number };
+
 export type MediaLike = {
+  variants?: MediaVariant[] | null;
   id?: string | null;
   url?: string | null;
   originType?: string | null;
@@ -14,14 +17,7 @@ export type MediaLike = {
   width?: number | null;
   height?: number | null;
   provider?:
-    | 'WIKIMEDIA_COMMONS'
-    | 'WIKIPEDIA'
-    | 'MUSEUM'
-    | 'IIIF'
-    | 'OPENVERSE'
-    | 'UNKNOWN'
-    | string
-    | null;
+    'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN' | string | null;
   qualityTier?: 'LOW' | 'MEDIUM' | 'HIGH' | 'MASTER' | string | null;
   alt?: string | null;
   source?: string | null;
@@ -57,13 +53,7 @@ export type ResolvedMediaPayload = {
 };
 
 export type MediaUsage =
-  | 'hero'
-  | 'card'
-  | 'detail'
-  | 'thumbnail'
-  | 'explorer3d'
-  | 'gallery'
-  | 'primary';
+  'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
 
 export type EntityWithResolvedMedia = {
   title?: string | null;
@@ -193,10 +183,7 @@ export function mediaObjectFit(
 
 export function mediaObjectPosition(
   media:
-    | Pick<ResolvedMediaItem, 'focalX' | 'focalY' | 'cropX' | 'cropY'>
-    | MediaLike
-    | null
-    | undefined,
+    Pick<ResolvedMediaItem, 'focalX' | 'focalY' | 'cropX' | 'cropY'> | MediaLike | null | undefined,
 ): string {
   const x = normalizeFocal(media?.cropX ?? media?.focalX);
   const y = normalizeFocal(media?.cropY ?? media?.focalY);

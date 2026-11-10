@@ -65,6 +65,7 @@
     "foundational:local-visual-pilot": "node dist/scripts/import-foundational-local-visual-pilot.js",
     "foundational:local-visual-pilot:apply": "node dist/scripts/import-foundational-local-visual-pilot.js --apply",
     "knowledge:graph-health": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/knowledge-graph-health.ts",
+    "media:prepare-variants": "node --env-file=.env -r ts-node/register scripts/prepare-media-variants.ts",
     "db:performance-report": "node --env-file=.env -r ts-node/register scripts/database-performance-report.ts",
     "foundational:idempotency": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/foundational-idempotency.ts",
     "db:reset:development": "node -r ts-node/register scripts/reset-development.ts",

@@ -6,6 +6,10 @@ export type KnowledgeEntityKind = (typeof KINDS)[number];
 
 export class ListEntitiesQuery {
   @IsOptional()
+  @IsIn(['card', 'options'])
+  view?: 'card' | 'options';
+
+  @IsOptional()
   @IsString()
   @MaxLength(64)
   @Matches(/^[a-zA-Z0-9-]+$/)
