@@ -286,7 +286,7 @@ export class HomeComponent {
     }
   }
 
-  backgroundImage(): string {
+  backgroundImage(): string | null {
     return this.appearance.currentBackgroundImageUrl();
   }
 

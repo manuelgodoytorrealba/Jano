@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Subject } from 'rxjs';
-import { AppAppearanceService, DEFAULT_BACKGROUND_IMAGE_URL } from './app-appearance.service';
+import { AppAppearanceService } from './app-appearance.service';
 import { AppSettingsApi, PublicAppSettings } from './api/app-settings.api';
 
 describe('background loading state', () => {
@@ -27,10 +27,16 @@ describe('background loading state', () => {
     expect(service.currentBackgroundImageUrl()).toBe('/uploads/app-backgrounds/custom.webp');
     response.complete();
   });
-  it('keeps the default background available when settings fail', () => {
+  it('keeps the last configured background if reloading settings fails', () => {
+    service.setBackgroundImageUrl('/uploads/app-backgrounds/definitive.webp');
+    service.load().subscribe();
+    response.error(new Error('offline'));
+    expect(service.currentBackgroundImageUrl()).toBe('/uploads/app-backgrounds/definitive.webp');
+  });
+  it('does not use a trial background when settings fail', () => {
     service.load().subscribe();
     response.error(new Error('offline'));
     expect(service.backgroundSettingsLoaded()).toBe(true);
-    expect(service.currentBackgroundImageUrl()).toBe(DEFAULT_BACKGROUND_IMAGE_URL);
+    expect(service.currentBackgroundImageUrl()).toBeNull();
   });
 });

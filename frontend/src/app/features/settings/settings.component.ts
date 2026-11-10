@@ -123,14 +123,14 @@ export class SettingsComponent implements OnDestroy {
     this.settingsApi.resetBackground().subscribe({
       next: (settings) => {
         this.backgroundSaving = false;
-        this.backgroundMessage = this.i18n.t('settings.background.fallbackRestored');
+        this.backgroundMessage = this.i18n.t('settings.background.cleared');
         this.appearance.setBackgroundImageUrl(settings.backgroundImageUrl ?? null);
         this.selectedBackgroundFile = null;
         this.revokeSelectedPreview();
       },
       error: () => {
         this.backgroundSaving = false;
-        this.backgroundError = this.i18n.t('settings.background.restoreError');
+        this.backgroundError = this.i18n.t('settings.background.clearError');
       },
     });
   }

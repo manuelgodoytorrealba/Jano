@@ -99,7 +99,7 @@ Se desactiva para esas peticiones la caché HTTP automática para no duplicar lo
 diccionarios. Si el servidor no pudo obtener ambos, el cliente conserva su
 posibilidad de reintentar. La sesión sigue comprobándose como antes.
 El fondo provisional no se solicita mientras se esperan los ajustes públicos;
-si estos fallan se conserva el fondo predeterminado.
+si estos fallan se conserva la última imagen configurada, sin imagen provisional.
 
 La preparación de medios incluye ahora las carpetas públicas revisadas
 `louboutin-20261018` y `menswear-20261018`, además de `media`. Mantiene el rechazo
@@ -109,3 +109,10 @@ se prepararon 2252 medios sin fallos; los 81 de esas dos carpetas pasaron de no
 tener variantes a disponer de ellas. Aplicar la tarea oficial `media-prepare`
 solo después de la copia coordinada y del despliegue, con los límites de CPU y
 memoria existentes. Los originales y los vínculos editoriales se conservan.
+
+El fondo de prueba deja de ser una alternativa global, del deck y de ajustes.
+Se conserva únicamente la imagen global configurada (o la personal cuando existe).
+Sin imagen configurada se mantiene el fondo de color; al fallar una recarga no se
+borra la última imagen conocida. La acción de ajustes ahora permite quitar la
+imagen, sin restaurar una foto de prueba. No se cambia la configuración guardada
+ni se eliminan archivos que también se usan como miniaturas del catálogo.

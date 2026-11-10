@@ -2,7 +2,6 @@ import { Injectable, inject, signal } from '@angular/core';
 import { catchError, of, tap } from 'rxjs';
 import { AppSettingsApi } from './api/app-settings.api';
 
-export const DEFAULT_BACKGROUND_IMAGE_URL = '/assets/home/museum-room.jpg';
 export type AppThemePreference = 'system' | 'dark' | 'light';
 export type AppResolvedTheme = 'dark' | 'light';
 
@@ -15,7 +14,6 @@ export class AppAppearanceService {
   private readonly systemThemeQuery =
     typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: light)') : null;
 
-  readonly fallbackBackgroundImageUrl = DEFAULT_BACKGROUND_IMAGE_URL;
   readonly personalBackgroundImageUrl = signal<string | null>(null);
   readonly backgroundImageUrl = signal<string | null>(null);
   readonly backgroundSettingsLoaded = signal(false);
@@ -78,7 +76,6 @@ export class AppAppearanceService {
         this.backgroundLoadError.set(null);
       }),
       catchError(() => {
-        this.backgroundImageUrl.set(null);
         this.backgroundLoadError.set('No se pudo cargar el background global.');
         this.backgroundSettingsLoaded.set(true);
         return of({ backgroundImageUrl: null });
@@ -107,12 +104,8 @@ export class AppAppearanceService {
     this.personalBackgroundImageUrl.set(null);
   }
 
-  currentBackgroundImageUrl(): string {
-    return (
-      this.personalBackgroundImageUrl() ??
-      this.backgroundImageUrl() ??
-      this.fallbackBackgroundImageUrl
-    );
+  currentBackgroundImageUrl(): string | null {
+    return this.personalBackgroundImageUrl() ?? this.backgroundImageUrl();
   }
 
   private async restorePersonalBackground(): Promise<void> {

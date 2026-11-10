@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../media/jano-media.component';
 
-import { DEFAULT_BACKGROUND_IMAGE_URL } from '../../../core/app-appearance.service';
 import { DeckItem, DeckRailAction } from './entity-deck.types';
 
 type CardState = {
@@ -38,7 +37,7 @@ export class EntityDeckComponent {
 
   items = input.required<DeckItem[]>();
 
-  backgroundImage = input<string>(DEFAULT_BACKGROUND_IMAGE_URL);
+  backgroundImage = input<string | null>(null);
   showRail = input<boolean>(true);
   showDots = input<boolean>(true);
   showNav = input<boolean>(true);

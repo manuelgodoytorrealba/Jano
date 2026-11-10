@@ -86,7 +86,7 @@ export class AdminEntitiesDeckComponent {
     }));
   }
 
-  backgroundImage(): string {
+  backgroundImage(): string | null {
     return this.appearance.currentBackgroundImageUrl();
   }
 

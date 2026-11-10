@@ -166,21 +166,26 @@
               {{
                 appearance.personalBackgroundImageUrl()
                   ? i18n.t('settings.personalBackground.current')
-                  : i18n.t('settings.personalBackground.fallback')
+                  : appearance.backgroundImageUrl()
+                    ? i18n.t('settings.personalBackground.global')
+                    : i18n.t('settings.background.empty')
               }}
             </span>
 
             <div class="background-stage__frame">
-              @if (appearance.personalBackgroundImageUrl(); as currentPersonalBackgroundUrl) {
+              @if (appearance.currentBackgroundImageUrl(); as currentBackgroundUrl) {
                 <img
-                  [src]="currentPersonalBackgroundUrl"
-                  alt="{{ i18n.t('settings.personalBackground.currentAlt') }}"
+                  [src]="currentBackgroundUrl"
+                  [alt]="
+                    i18n.t(
+                      appearance.personalBackgroundImageUrl()
+                        ? 'settings.personalBackground.currentAlt'
+                        : 'settings.background.currentAlt'
+                    )
+                  "
                 />
               } @else {
-                <img
-                  [src]="appearance.fallbackBackgroundImageUrl"
-                  alt="{{ i18n.t('settings.background.fallbackAlt') }}"
-                />
+                <p>{{ i18n.t('settings.background.empty') }}</p>
               }
             </div>
           </div>
@@ -192,7 +197,9 @@
             <strong>{{
               appearance.personalBackgroundImageUrl()
                 ? i18n.t('settings.personalBackground.activeLocal')
-                : i18n.t('settings.personalBackground.fallbackActive')
+                : appearance.backgroundImageUrl()
+                  ? i18n.t('settings.personalBackground.globalActive')
+                  : i18n.t('settings.background.empty')
             }}</strong>
             <p>
               {{ i18n.t('settings.personalBackground.meta') }}
@@ -324,7 +331,7 @@
                 {{
                   appearance.backgroundImageUrl()
                     ? i18n.t('settings.background.current')
-                    : i18n.t('settings.background.fallback')
+                    : i18n.t('settings.background.empty')
                 }}
               </span>
 
@@ -335,10 +342,7 @@
                     alt="{{ i18n.t('settings.background.currentAlt') }}"
                   />
                 } @else {
-                  <img
-                    [src]="appearance.fallbackBackgroundImageUrl"
-                    alt="{{ i18n.t('settings.background.fallbackAlt') }}"
-                  />
+                  <p>{{ i18n.t('settings.background.empty') }}</p>
                 }
               </div>
             </div>
@@ -350,7 +354,7 @@
               <strong>{{
                 appearance.backgroundImageUrl()
                   ? i18n.t('settings.background.activeProd')
-                  : i18n.t('settings.background.fallbackActive')
+                  : i18n.t('settings.background.empty')
               }}</strong>
               <p>
                 {{ i18n.t('settings.background.meta') }}
@@ -419,7 +423,7 @@
                   [disabled]="backgroundSaving"
                   (click)="resetBackground()"
                 >
-                  {{ i18n.t('settings.background.useFallback') }}
+                  {{ i18n.t('settings.background.clear') }}
                 </button>
               </div>
 

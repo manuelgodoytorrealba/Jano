@@ -1,7 +1,6 @@
 .app-shell {
   /* Global background system. Tune these tokens instead of editing route screens. */
-  --app-background-fallback: url('/assets/home/museum-room.jpg');
-  --app-background-current: var(--app-background-image, var(--app-background-fallback));
+  --app-background-current: var(--app-background-image, none);
   --app-background-blur: 10px;
   --app-background-saturate: 0.96;
   --app-background-brightness: 0.62;

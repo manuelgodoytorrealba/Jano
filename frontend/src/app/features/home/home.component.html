@@ -6,7 +6,7 @@
 >
   <div
     class="archive-page__background"
-    [style.backgroundImage]="'url(' + backgroundImage() + ')'"
+    [style.backgroundImage]="backgroundImage() ? 'url(' + backgroundImage() + ')' : 'none'"
     aria-hidden="true"
   ></div>
   <div class="archive-page__content">
