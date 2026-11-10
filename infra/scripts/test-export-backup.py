@@ -65,6 +65,29 @@ class ExportBackupTests(unittest.TestCase):
         self.assert_rejected()
         self.assertTrue((self.state / 'deploy.lock').exists())
 
+    def run_pull(self, settings):
+        return subprocess.run(
+            ['bash', str(Path(__file__).with_name('pull-encrypted-backup.sh'))],
+            env={**os.environ, 'XDG_CONFIG_HOME': str(settings.parent.parent)},
+            capture_output=True,
+        )
+
+    def test_pull_rejects_readable_configuration(self):
+        settings = self.root / 'config/jano-backup/settings'
+        settings.parent.mkdir(parents=True)
+        settings.write_text('exit 0\n')
+        settings.chmod(0o644)
+        self.assertNotEqual(self.run_pull(settings).returncode, 0)
+
+    def test_pull_rejects_symlink_configuration(self):
+        settings = self.root / 'config/jano-backup/settings'
+        settings.parent.mkdir(parents=True)
+        target = self.root / 'private-settings'
+        target.write_text('exit 0\n')
+        target.chmod(0o600)
+        settings.symlink_to(target)
+        self.assertNotEqual(self.run_pull(settings).returncode, 0)
+
     @unittest.skipUnless(shutil.which('restic'), 'restic is required for the integration check')
     def test_encrypted_restore_and_failed_export_does_not_create_snapshot(self):
         password = self.root / 'password'
