@@ -116,3 +116,10 @@ Sin imagen configurada se mantiene el fondo de color; al fallar una recarga no s
 borra la última imagen conocida. La acción de ajustes ahora permite quitar la
 imagen, sin restaurar una foto de prueba. No se cambia la configuración guardada
 ni se eliminan archivos que también se usan como miniaturas del catálogo.
+
+### First interaction: adjacent-page prefetch (2026-11-10)
+
+- Cause: starting adjacent-page HTTP requests during hydration extends application instability and delays replaying the first click, even when the current page is ready.
+- Defer adjacent-page requests until `ApplicationRef.whenStable()`, outside the Angular zone; publish completed neighbor data inside the zone. Existing request sharing, failure handling, query/page guards and teardown remain intact; a pending callback checks teardown before starting any request. Session verification and HTTP cache security defaults are unchanged.
+- Local interleaved comparison, cold mobile 390×844, CPU4×, 4Mbps/150ms, same backend/seed: two baseline runs 1842.6/1839.3ms vs candidate 1207.5/1214.1ms for click-to-selected-state. With an extra 2000ms delay on page 2 only: baseline 3865.4ms vs candidate 1222.1ms. Local HTTP is uncompressed; do not compare these absolute values to compressed public delivery or call them real-user INP.
+- Validation: 416 frontend tests; production build/i18n; lint for touched code; six SSR/proxy checks; entity open/back and mobile/desktop/mobile with no page errors.

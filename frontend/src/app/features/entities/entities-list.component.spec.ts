@@ -1,4 +1,4 @@
-import { ElementRef, signal } from '@angular/core';
+import { ApplicationRef, ElementRef, signal } from '@angular/core';
 import { afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -598,7 +598,17 @@ describe('EntitiesListComponent filters', () => {
     const fixture = TestBed.createComponent(EntitiesListComponent);
     const facade = fixture.debugElement.injector.get(EntitiesListFacade);
     await new Promise((resolve) => setTimeout(resolve, 350));
+    let ready!: () => void;
+    vi.spyOn(TestBed.inject(ApplicationRef), 'whenStable').mockReturnValue(
+      new Promise<void>((resolve) => {
+        ready = resolve;
+      }),
+    );
     facade.prepareExplorerPages({ items: [], page: 1, limit: 24, total: 72, totalPages: 3 });
+    expect(facade.explorerNextItems()).toEqual([]);
+    expect(fetchPage.mock.calls.some(([params]) => params.page === 2)).toBe(false);
+    ready();
+    await Promise.resolve();
     expect(facade.explorerNextItems().map((item) => item.slug)).toEqual([
       'persistencia-1',
       'persistencia-2',
@@ -624,6 +634,25 @@ describe('EntitiesListComponent filters', () => {
     ).toHaveLength(1);
     expect(facade.explorerNextItems()).toEqual([]);
     fixture.destroy();
+  });
+
+  it('does not start a pending prefetch after leaving the explorer', async () => {
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const facade = fixture.debugElement.injector.get(EntitiesListFacade);
+    fixture.componentInstance.pageVm$.subscribe();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    let ready!: () => void;
+    vi.spyOn(TestBed.inject(ApplicationRef), 'whenStable').mockReturnValue(
+      new Promise<void>((resolve) => {
+        ready = resolve;
+      }),
+    );
+    const fetchPage = vi.spyOn(apiStub, 'list');
+    facade.prepareExplorerPages({ items: [], page: 1, limit: 24, total: 72, totalPages: 3 });
+    fixture.destroy();
+    ready();
+    await Promise.resolve();
+    expect(fetchPage).not.toHaveBeenCalled();
   });
 
   it('scrolls to the start after the next list page arrives', async () => {

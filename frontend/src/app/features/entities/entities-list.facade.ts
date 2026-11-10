@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { ApplicationRef, DestroyRef, Injectable, NgZone, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -196,6 +196,8 @@ export class EntitiesListFacade {
   private lastFeedResults: EntityListVm | null = null;
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly zone = inject(NgZone);
+  private readonly appRef = inject(ApplicationRef);
   private explorerQueryKey = '';
   private explorerQuery: {
     state: EntitiesListQueryState;
@@ -680,21 +682,35 @@ export class EntitiesListFacade {
     for (const page of this.explorerPages.keys()) {
       if (Math.abs(page - results.page) > 1) this.explorerPages.delete(page);
     }
-    for (const direction of [-1, 1] as const) {
-      const page = results.page + direction;
-      if (page < 1 || page > results.totalPages) continue;
-      this.explorerPageRequest(page)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (neighbor) => {
-            if (queryKey !== this.explorerQueryKey || this.explorerPage !== results.page) return;
-            if (direction === -1) this.explorerPreviousItems.set(neighbor.items.slice(-2));
-            else this.explorerNextItems.set(neighbor.items.slice(0, 2));
-          },
-          // A failed prefetch must remain retryable through normal page navigation.
-          error: () => undefined,
-        });
-    }
+    // Prefetch must not delay hydration's event replay while waiting for adjacent pages.
+    this.zone.runOutsideAngular(() => {
+      void this.appRef.whenStable().then(() => {
+        if (
+          this.destroyRef.destroyed ||
+          queryKey !== this.explorerQueryKey ||
+          this.explorerPage !== results.page
+        )
+          return;
+        for (const direction of [-1, 1] as const) {
+          const page = results.page + direction;
+          if (page < 1 || page > results.totalPages) continue;
+          this.explorerPageRequest(page)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (neighbor) => {
+                if (queryKey !== this.explorerQueryKey || this.explorerPage !== results.page)
+                  return;
+                this.zone.run(() => {
+                  if (direction === -1) this.explorerPreviousItems.set(neighbor.items.slice(-2));
+                  else this.explorerNextItems.set(neighbor.items.slice(0, 2));
+                });
+              },
+              // A failed prefetch must remain retryable through normal page navigation.
+              error: () => undefined,
+            });
+        }
+      });
+    });
   }
 
   private explorerPageRequest(page: number): Observable<EntityListVm> {
