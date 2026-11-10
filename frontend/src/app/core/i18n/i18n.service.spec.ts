@@ -69,7 +69,12 @@ describe('I18nService', () => {
         provideHttpClientTesting(),
         I18nService,
         { provide: PLATFORM_ID, useValue: 'server' },
-        { provide: REQUEST, useValue: new Request('https://jano.manuelgodoy.eu/home') },
+        {
+          provide: REQUEST,
+          useValue: new Request('https://jano.manuelgodoy.eu/home', {
+            headers: { 'accept-language': 'en-GB,en;q=0.9' },
+          }),
+        },
         { provide: SSR_ASSET_ORIGIN, useValue: 'http://127.0.0.1:4200' },
       ],
     });
@@ -82,6 +87,7 @@ describe('I18nService', () => {
     http
       .expectOne(`http://127.0.0.1:4200/assets/i18n/en.json?v=${I18N_RELEASE}`)
       .flush({ greeting: 'Hello' });
-    expect(service.t('greeting')).toBe('Hola');
+    expect(service.locale()).toBe('en');
+    expect(service.t('greeting')).toBe('Hello');
   });
 });

@@ -82,24 +82,24 @@ export class App {
   }
 
   isImmersiveRoute(): boolean {
-    const url = this.router.url.split('?')[0];
-    return url === '/entities' && !this.router.url.includes('?');
+    const url = this.routeUrl().split('?')[0];
+    return url === '/entities' && !this.routeUrl().includes('?');
   }
 
   isEntitiesRoute(): boolean {
-    const url = this.router.url.split('?')[0];
+    const url = this.routeUrl().split('?')[0];
     return (
       url === '/home' || url === '/research' || url === '/entities' || url.startsWith('/entities/')
     );
   }
 
   isPublicDetailRoute(): boolean {
-    const url = this.router.url.split(/[?#]/)[0];
+    const url = this.routeUrl().split(/[?#]/)[0];
     return this.isEntityDetailRoute() || /^\/research\/[^/]+$/.test(url);
   }
 
   isEntityDetailRoute(): boolean {
-    return this.router.url.split('?')[0].startsWith('/entity/');
+    return this.routeUrl().split('?')[0].startsWith('/entity/');
   }
 
   backgroundImageStyle(): string | null {
@@ -107,7 +107,16 @@ export class App {
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;
   }
   isAuthRoute(): boolean {
-    return this.router.url.startsWith('/login') || this.router.url.startsWith('/register');
+    return this.routeUrl().startsWith('/login') || this.routeUrl().startsWith('/register');
+  }
+
+  private routeUrl(): string {
+    const url = this.router.url;
+    const location = this.document.location;
+    if (url === '/' && !this.router.navigated && location) {
+      return `${location.pathname}${location.search}`;
+    }
+    return url;
   }
 
   private setThemeColor(color: string): void {

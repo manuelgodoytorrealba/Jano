@@ -107,7 +107,8 @@ export class I18nService {
 
   private readInitialLocale(): AppLocale {
     if (!isPlatformBrowser(this.platformId)) {
-      return DEFAULT_LOCALE;
+      const language = this.request?.headers.get('accept-language')?.split(',')[0];
+      return this.normalizeLocale(language);
     }
 
     const stored = window.localStorage.getItem(STORAGE_KEY);

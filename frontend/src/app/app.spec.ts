@@ -63,6 +63,23 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
+  it.each(['/home', '/entity/la-traicion-de-las-imagenes'])(
+    'preserves the initial layout for %s before the router finishes starting',
+    (path) => {
+      const previous = window.location.pathname + window.location.search;
+      window.history.replaceState({}, '', path);
+      const fixture = TestBed.createComponent(App);
+      try {
+        expect(TestBed.inject(Router).navigated).toBe(false);
+        expect(fixture.componentInstance.isEntitiesRoute()).toBe(path === '/home');
+        expect(fixture.componentInstance.isPublicDetailRoute()).toBe(path.startsWith('/entity/'));
+      } finally {
+        fixture.destroy();
+        window.history.replaceState({}, '', previous);
+      }
+    },
+  );
+
   it('uses detail chrome for public research without treating the admin as public detail', () => {
     const fixture = TestBed.createComponent(App);
     const url = vi.spyOn(TestBed.inject(Router), 'url', 'get');

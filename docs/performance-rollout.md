@@ -68,3 +68,9 @@ la entidad. No presentar la pintura del texto de carga como carga de la escena.
 
 Referencias: [cabeceras de proxy y seguridad de Angular](https://angular.dev/best-practices/security#configuring-trusted-proxy-headers)
 y [Core Web Vitals](https://web.dev/articles/vitals).
+
+La clase de diseño inicial se obtiene de la URL del documento mientras el router
+todavía no ha completado su primera navegación. Evita pasar transitoriamente del
+diseño inmersivo al genérico y desplazar toda la pantalla durante la hidratación.
+El idioma SSR respeta `Accept-Language` para coincidir con una primera visita
+sin preferencia guardada. Verificar CLS en Inicio y detalle con carga fría.
