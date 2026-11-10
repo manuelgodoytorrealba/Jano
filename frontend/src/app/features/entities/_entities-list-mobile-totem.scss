@@ -1,3 +1,13 @@
+app-entities-explorer-totem {
+  display: none;
+}
+
+@media (max-width: 720px) and (orientation: portrait) {
+  app-entities-explorer-totem {
+    display: block;
+  }
+}
+
 @media (max-width: 720px) {
   .entities-explorer-layout.is-mobile-portrait-totem {
     --entities-mobile-control-top: calc(var(--app-safe-top) + 226px);

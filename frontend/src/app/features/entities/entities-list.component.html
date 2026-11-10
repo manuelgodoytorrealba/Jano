@@ -143,24 +143,23 @@
       @if (viewMode === 'explore') {
         @if (pageVm.results.items.length) {
           <div class="entities-explorer-stage">
-            @if (isMobilePortraitTotem()) {
-              <app-entities-explorer-totem
-                [previousItems]="explorerPreviousItems()"
-                [nextItems]="explorerNextItems()"
-                [pageError]="feedError()"
-                [items]="pageVm.results.items"
-                [activeIndex]="activeIndex()"
-                [hasPreviousPage]="pageVm.results.page > 1"
-                [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
-                (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
-                [infoOpen]="infoPanelOpen()"
-                (activeIndexChange)="activeIndex.set($event)"
-                (openEntity)="go($event)"
-                (requestInfoOpen)="openInfoPanel()"
-                (requestInfoClose)="closeInfoPanel()"
-              >
-              </app-entities-explorer-totem>
-            } @else {
+            <app-entities-explorer-totem
+              [previousItems]="explorerPreviousItems()"
+              [nextItems]="explorerNextItems()"
+              [pageError]="feedError()"
+              [items]="pageVm.results.items"
+              [activeIndex]="activeIndex()"
+              [hasPreviousPage]="pageVm.results.page > 1"
+              [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
+              (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
+              [infoOpen]="infoPanelOpen()"
+              (activeIndexChange)="activeIndex.set($event)"
+              (openEntity)="go($event)"
+              (requestInfoOpen)="openInfoPanel()"
+              (requestInfoClose)="closeInfoPanel()"
+            >
+            </app-entities-explorer-totem>
+            @if (!isMobilePortraitTotem()) {
               @defer (on immediate) {
                 <app-entities-explorer-3d
                   [restoreLayout]="isRestoredVisit()"

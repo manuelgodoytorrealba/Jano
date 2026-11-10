@@ -16,7 +16,13 @@ for (const headers of [
 ]) {
   const response = await request(headers);
   assert.equal(response.status, 200);
-  assert.ok(isSsr(await response.text()), 'Proxy headers disabled server rendering');
+  const html = await response.text();
+  assert.ok(isSsr(html), 'Proxy headers disabled server rendering');
+  assert.ok(html.includes('explorer-totem__card--active'), 'Initial mobile artwork is missing');
+  assert.ok(
+    html.includes('media="(max-width: 720px) and (orientation: portrait)"'),
+    'Mobile artwork must be selected by the browser before JavaScript',
+  );
 }
 
 const invalidHost = await request({ 'x-forwarded-host': 'attacker.invalid' });

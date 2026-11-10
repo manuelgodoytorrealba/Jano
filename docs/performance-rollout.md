@@ -82,3 +82,13 @@ de escritorio/paisaje. La vista móvil vertical conserva el tótem y no solicita
 ese módulo. Comprobar ambos anchos y un cambio de orientación, además del retorno
 desde una entidad. Comparar Inicio con una semilla fija (`?seed=...`) para mantener
 las mismas obras entre versiones y registrar los bytes de scripts descargados.
+
+El tótem móvil se incluye siempre en el HTML SSR y se selecciona con CSS. Sus
+imágenes usan `<picture>` con una condición de ancho/orientación y un recurso
+inline vacío como alternativa, de forma que escritorio no descarga medios de la
+vista móvil oculta. El componente de medios mantiene su selección habitual si
+no recibe esa condición. Así la obra prioritaria móvil puede pintarse antes de
+JavaScript. El smoke local exige el tótem y la condición de imagen en el HTML.
+Comprobar sin JavaScript, con red/CPU limitadas, al girar y al volver de una ficha.
+Sin JavaScript se conserva la tipografía del sistema; se elimina el fallback
+`noscript` que el SSR convertía en texto visible de una etiqueta HTML.

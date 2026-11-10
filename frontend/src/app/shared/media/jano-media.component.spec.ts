@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { JanoMediaComponent } from './jano-media.component';
 import { describe, expect, it } from 'vitest';
 
@@ -145,4 +146,22 @@ describe('JanoMediaComponent', () => {
     expect(component.imageSrc).toBe('/uploads/media/original.jpg');
     expect(component.srcset).toBeNull();
   });
+});
+
+it('keeps the real artwork on a conditional source rather than the fallback image', async () => {
+  const fixture = TestBed.createComponent(JanoMediaComponent);
+  try {
+    fixture.componentRef.setInput('media', { url: '/uploads/hero.jpg' });
+    fixture.componentRef.setInput('mediaQuery', '(max-width: 720px) and (orientation: portrait)');
+    fixture.detectChanges();
+    const picture = fixture.nativeElement.querySelector('picture') as HTMLPictureElement;
+    expect(picture.querySelector('source')?.getAttribute('srcset')).toBe('/uploads/hero.jpg');
+    expect(picture.querySelector('source')?.media).toContain('max-width: 720px');
+    expect(picture.querySelector('img')?.getAttribute('src')).toBe(
+      fixture.componentInstance.emptyImage,
+    );
+    expect(picture.querySelector('img')?.hasAttribute('srcset')).toBe(false);
+  } finally {
+    fixture.destroy();
+  }
 });
