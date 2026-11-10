@@ -131,3 +131,10 @@ ni se eliminan archivos que también se usan como miniaturas del catálogo.
 - Local preparation and content-hash checks preserve all 29 local originals. Three isolated Artisanal public-image fixtures verify preparation without importing production catalog data into local storage. `gallery-08.jpg`: 3,274,675 original bytes →49,944 bytes at width640; width960 remains available (111,954 bytes).
 - Checks: 462 backend tests; 417 full frontend tests plus 13 focused component tests after extending full-resolution hero coverage; both production builds; local browser fixture confirms responsive selection and original recovery on simulated variant404, with no JavaScript errors.
 - Production: use official deployment/backup, then the existing resource-limited `media-prepare` tool service; compare original hashes and measure actual gallery requests before/after. This optimizes rendered gallery images; it does not replace full-resolution hero/detail images or certify field loading percentiles.
+
+### Search interpretation variants (2026-11-10)
+
+- Search intent can produce multiple interpretations of the same query. Run at most two independent variant queries concurrently, merging in the original interpretation order so the weights and matched-field union stay unchanged. No changes to SQL scoring, published/private filters, interest recording or the response contract. Single-variant searches do not gain a second database query.
+- Local paired service measurements, 3 samples each, same backend and database: `arte` 192.6→197.6ms, `arte moderno` 456.5→394.1ms, `madera japonesa` 736.8→391.5ms. Full response hashes were identical for all 18 runs. This is a small local sample, not field latency.
+- A bounded local test used 8 total mixed searches per stage, with 1, 4 and 8 closed-loop workers, before/after respectively: 3060→2051ms, 1042→689ms, 769→481ms total; no errors. This local host and small batch do not establish production capacity.
+- Backend tests cover the existing ranking/merge behavior and a new test caps concurrent queries at two. Production requires the normal coordinated backup/deployment and public read-only remeasurement.

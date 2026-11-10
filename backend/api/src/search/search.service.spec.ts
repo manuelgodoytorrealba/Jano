@@ -512,6 +512,35 @@ describe('SearchService', () => {
     );
   });
 
+  it('limits concurrent search variants to two', async () => {
+    searchIntent.interpret.mockReturnValue({
+      normalizedQuery: 'a',
+      significantTerms: [],
+      signals: [],
+      variants: [
+        { query: 'a', reason: 'first', weight: 1 },
+        { query: 'b', reason: 'second', weight: 0.8 },
+        { query: 'c', reason: 'third', weight: 0.6 },
+      ],
+    });
+    const resolve: Array<(value: unknown[]) => void> = [];
+    prisma.$queryRaw.mockImplementation(() => new Promise((done) => resolve.push(done)));
+    const search = service.search({ q: 'a' }, { includeDrafts: false });
+    expect(resolve).toHaveLength(2);
+    const row = (score: number) => ({ id: 'same', score, trigram_score: 0 });
+    resolve[1]([row(10)]);
+    resolve[0]([row(8)]);
+    await new Promise((done) => setImmediate(done));
+    expect(resolve).toHaveLength(3);
+    resolve[2]([]);
+    await search;
+    expect(prisma.entity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { in: ['same'] } },
+      }),
+    );
+  });
+
   it('tries interpreted variants and merges the strongest result', async () => {
     searchIntent.interpret.mockReturnValue({
       rawQuery: 'caja japonesa secreta',

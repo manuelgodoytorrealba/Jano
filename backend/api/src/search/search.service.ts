@@ -974,36 +974,42 @@ export class SearchService {
   ) {
     const merged = new Map<string, SearchRow>();
 
-    for (const variant of variants) {
-      const rows = await this.searchQuery.search(variant.query, options);
-      for (const row of rows) {
-        const weightedScore = Number(row.score ?? 0) * variant.weight;
-        const previous = merged.get(row.id);
+    for (let index = 0; index < variants.length; index += 2) {
+      const batch = variants.slice(index, index + 2);
+      const results = await Promise.all(
+        batch.map((variant) => this.searchQuery.search(variant.query, options)),
+      );
+      for (const [batchIndex, rows] of results.entries()) {
+        const variant = batch[batchIndex];
+        for (const row of rows) {
+          const weightedScore = Number(row.score ?? 0) * variant.weight;
+          const previous = merged.get(row.id);
 
-        if (!previous) {
+          if (!previous) {
+            merged.set(row.id, {
+              ...row,
+              score: weightedScore,
+            });
+            continue;
+          }
+
           merged.set(row.id, {
-            ...row,
-            score: weightedScore,
+            ...previous,
+            score: Math.max(Number(previous.score ?? 0), weightedScore),
+            matched_title: previous.matched_title || row.matched_title,
+            matched_summary: previous.matched_summary || row.matched_summary,
+            matched_content: previous.matched_content || row.matched_content,
+            matched_slug: previous.matched_slug || row.matched_slug,
+            matched_alias: previous.matched_alias || row.matched_alias,
+            matched_tag: previous.matched_tag || row.matched_tag,
+            matched_detail: previous.matched_detail || row.matched_detail,
+            matched_relation: previous.matched_relation || row.matched_relation,
+            trigram_score: Math.max(
+              Number(previous.trigram_score ?? 0),
+              Number(row.trigram_score ?? 0),
+            ),
           });
-          continue;
         }
-
-        merged.set(row.id, {
-          ...previous,
-          score: Math.max(Number(previous.score ?? 0), weightedScore),
-          matched_title: previous.matched_title || row.matched_title,
-          matched_summary: previous.matched_summary || row.matched_summary,
-          matched_content: previous.matched_content || row.matched_content,
-          matched_slug: previous.matched_slug || row.matched_slug,
-          matched_alias: previous.matched_alias || row.matched_alias,
-          matched_tag: previous.matched_tag || row.matched_tag,
-          matched_detail: previous.matched_detail || row.matched_detail,
-          matched_relation: previous.matched_relation || row.matched_relation,
-          trigram_score: Math.max(
-            Number(previous.trigram_score ?? 0),
-            Number(row.trigram_score ?? 0),
-          ),
-        });
       }
     }
 
