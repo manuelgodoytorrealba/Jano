@@ -33,6 +33,7 @@ FROM production-dependencies AS runtime
 ARG JANO_RELEASE
 LABEL org.opencontainers.image.revision="$JANO_RELEASE"
 WORKDIR /app/frontend
+COPY --chown=node:node frontend/package.json ./package.json
 COPY --chown=node:node --from=build /app/frontend/dist ./dist
 
 EXPOSE 4200

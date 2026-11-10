@@ -307,6 +307,8 @@ backup() {
 }
 
 validate_release_artifacts() {
+  log 'Checking frontend runtime file permissions before stopping writes'
+  compose run --rm --no-deps frontend node -e "const fs = require('node:fs'); for (const file of ['package.json', 'dist/jano-web-app/server/server.mjs']) fs.accessSync(file, fs.constants.R_OK);"
   log "Validating Prisma schema packaged in the release image"
   compose run --rm --no-deps migrate npm exec -- prisma validate
 }
@@ -489,7 +491,7 @@ rollback() {
   [[ -f "$JANO_STATE_DIR/current-release" ]] || die 'No current production release is recorded; first deployment cannot use rollback'
   current="$(<"$JANO_STATE_DIR/current-release")"
   valid_release "$current" || die "Invalid current release: $current"
-  [[ "$target" != "$current" ]] || die "$target is already the current release"
+  # A failed deploy can replace containers before updating the recorded release.
   RELEASE="$target"
   validate_release_images
   ROLLBACK_RECOVERY_RELEASE="$current"
