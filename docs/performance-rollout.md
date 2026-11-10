@@ -74,3 +74,11 @@ todavía no ha completado su primera navegación. Evita pasar transitoriamente d
 diseño inmersivo al genérico y desplazar toda la pantalla durante la hidratación.
 El idioma SSR respeta `Accept-Language` para coincidir con una primera visita
 sin preferencia guardada. Verificar CLS en Inicio y detalle con carga fría.
+
+La cabecera también obtiene su ruta inicial del documento antes de la primera
+navegación, para no alternar el espacio reservado entre 100 y 8 píxeles en detalle.
+El explorador 3D se carga con `@defer (on immediate)` únicamente dentro de la rama
+de escritorio/paisaje. La vista móvil vertical conserva el tótem y no solicita
+ese módulo. Comprobar ambos anchos y un cambio de orientación, además del retorno
+desde una entidad. Comparar Inicio con una semilla fija (`?seed=...`) para mantener
+las mismas obras entre versiones y registrar los bytes de scripts descargados.

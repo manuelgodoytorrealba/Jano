@@ -161,22 +161,28 @@
               >
               </app-entities-explorer-totem>
             } @else {
-              <app-entities-explorer-3d
-                [restoreLayout]="isRestoredVisit()"
-                [items]="pageVm.results.items"
-                [activeIndex]="activeIndex()"
-                [hasPreviousPage]="pageVm.results.page > 1"
-                [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
-                (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
-                [infoOpen]="infoPanelOpen()"
-                [infoClosable]="true"
-                [infoModal]="isMobilePortraitTotem()"
-                (activeIndexChange)="activeIndex.set($event)"
-                (openEntity)="go($event)"
-                (requestInfoOpen)="openInfoPanel()"
-                (requestInfoClose)="closeInfoPanel()"
-              >
-              </app-entities-explorer-3d>
+              @defer (on immediate) {
+                <app-entities-explorer-3d
+                  [restoreLayout]="isRestoredVisit()"
+                  [items]="pageVm.results.items"
+                  [activeIndex]="activeIndex()"
+                  [hasPreviousPage]="pageVm.results.page > 1"
+                  [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
+                  (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
+                  [infoOpen]="infoPanelOpen()"
+                  [infoClosable]="true"
+                  [infoModal]="isMobilePortraitTotem()"
+                  (activeIndexChange)="activeIndex.set($event)"
+                  (openEntity)="go($event)"
+                  (requestInfoOpen)="openInfoPanel()"
+                  (requestInfoClose)="closeInfoPanel()"
+                >
+                </app-entities-explorer-3d>
+              } @loading {
+                <app-loading [label]="i18n.t('explorer.loading')" />
+              } @error {
+                <p role="alert">{{ i18n.t('error.tryAgain') }}</p>
+              }
             }
           </div>
         } @else {

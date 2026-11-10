@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   NavigationCancel,
@@ -51,11 +52,12 @@ type UtilityItem = {
 export class AppChromeComponent {
   private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1024;
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
   readonly appearance = inject(AppAppearanceService);
-  private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
+  private readonly currentUrl = signal(this.initialUrl());
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
   readonly headerCollapsed = signal(this.shouldStartHeaderCollapsed());
@@ -158,8 +160,15 @@ export class AppChromeComponent {
     this.syncHeaderState();
   }
 
+  private initialUrl(): string {
+    const url = this.router.url;
+    return this.normalizeUrl(
+      url === '/' && !this.router.navigated ? (this.document.location?.pathname ?? url) : url,
+    );
+  }
+
   private shouldStartHeaderCollapsed(): boolean {
-    const url = this.normalizeUrl(this.router.url);
+    const url = this.initialUrl();
     return shouldCollapseHeaderInitially(this.readCompactHeaderEnabled(), url);
   }
 
