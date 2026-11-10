@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+umask 077
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 COMPOSE_FILE="$ROOT_DIR/infra/docker-compose.prod.yml"
@@ -512,6 +513,8 @@ rollback() {
 
 self_test() {
   local mode
+  mode="$(umask)"
+  ((8#$mode == 8#077)) || die 'Production files must be private by default'
   valid_release abcdef1 || die 'Valid release rejected'
   if valid_release 'not-a-release'; then
     die 'Invalid release accepted'

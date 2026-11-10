@@ -162,6 +162,16 @@ El script debe:
 
 Un backup que solo existe en el mismo disco que PostgreSQL no protege frente a pérdida del servidor.
 
+El procedimiento crea archivos privados (umask 077). En instalaciones anteriores,
+restringir también el directorio de copias a 700 y sus archivos a 600.
+Las copias finalizadas no se modifican. Se pueden consolidar archivos idénticos
+con `hardlink --ignore-time --respect-name`, primero en modo `--dry-run`,
+excluyendo directorios `.partial` y bajo el mismo bloqueo que los despliegues.
+Esto conserva todas las rutas y contenidos, pero los duplicados comparten inode;
+para editar una copia debe crearse antes un archivo independiente. Verificar los
+SHA-256 de todas las copias después. No sustituye una copia externa ni aplica
+automáticamente la retención anterior.
+
 ### 2.4 Migraciones
 
 La imagen de migración debe ser exactamente la misma release que se desplegará:
