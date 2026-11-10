@@ -1,0 +1,67 @@
+# Copia externa cifrada de las copias completas
+
+El PC de Manuel descarga cada día la última copia coordinada completada en el
+servidor y la guarda en un repositorio restic cifrado. No detiene la web ni crea
+una copia nueva de la base de datos: conserva fuera del servidor los puntos
+creados por el procedimiento oficial de despliegue.
+
+## Componentes
+
+- `infra/scripts/export-backup.sh`: exporta solo los seis archivos permitidos de
+  `.deploy/last-backup`, después de verificar ruta, ausencia de enlaces simbólicos
+  y SHA-256. Usa el bloqueo oficial para no coincidir con un despliegue. Su salida
+  estándar contiene exclusivamente el archivo tar; los mensajes van a stderr.
+- Una clave SSH dedicada tiene `restrict` y un comando forzado hacia ese script.
+  No permite una sesión general, escritura, terminal ni reenvío de puertos. La
+  clave privada permanece en el PC, no en el servidor ni en el repositorio Git.
+- `infra/scripts/pull-encrypted-backup.sh`: lee la configuración privada del PC y
+  usa `restic backup --stdin-from-command`. Si SSH o el exportador fallan, restic
+  no crea un snapshot. Después comprueba los datos cifrados con `check --read-data`.
+- Las unidades de `infra/systemd` se instalan como servicio y temporizador de
+  usuario. Se ejecutan a las 03:30, con hasta diez minutos de retraso aleatorio;
+  `Persistent=true` recupera una ejecución pendiente cuando vuelve a iniciarse
+  el gestor de usuario. El PC debe estar encendido y tener acceso a la red del
+  servidor. Los fallos quedan en el registro del servicio.
+
+## Configuración de esta instalación
+
+Configuración y contraseña de restic: `~/.config/jano-backup/`, accesible solo por
+el usuario. Repositorio cifrado: `~/Backups/Jano/restic`. Clave SSH dedicada:
+`~/.ssh/jano_backup_readonly`. Copia instalada del cliente:
+`~/.local/lib/jano-backup/pull-encrypted-backup.sh`.
+
+El servicio no elimina snapshots ni copias originales. La contraseña debe
+conservarse además en un gestor de contraseñas o soporte independiente antes de
+depender de otras réplicas del repositorio. No registrar su contenido en Git,
+informes ni registros. La clave SSH dedicada se puede retirar del archivo
+`authorized_keys` del servidor para revocar exclusivamente este acceso.
+
+## Comprobación y recuperación
+
+`python3 infra/scripts/test-export-backup.py` comprueba exportación válida,
+corrupción, ruta externa, enlace simbólico, bloqueo concurrente y una integración
+restic con recuperación cifrada y rechazo de una fuente fallida.
+
+Estado de la programación: `systemctl --user list-timers jano-backup.timer`.
+Última ejecución: `journalctl --user -u jano-backup.service`.
+
+Para consultar o recuperar, cargar la configuración privada sin imprimirla:
+
+```bash
+set -a
+source ~/.config/jano-backup/settings
+set +a
+restic snapshots
+restic check --read-data
+restic dump latest jano-backup.tar > /ruta/privada/recuperacion.tar
+```
+
+Extraer únicamente en un directorio privado vacío y verificar los dos SHA-256
+antes de seguir el procedimiento de restauración de `deployment.md`. No restaurar
+sobre producción para ensayar la recuperación.
+
+Esta instalación protege frente a la pérdida del servidor, pero no frente a la
+pérdida simultánea de ambos equipos en la misma ubicación. Quedan pendientes un
+tercer destino permanente y copias periódicas nuevas de producción. Estas últimas
+deben preservar la coordinación entre PostgreSQL y uploads; no programar un dump
+en caliente junto a archivos cambiantes como si fuera una copia coordinada.
