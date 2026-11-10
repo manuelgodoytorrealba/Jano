@@ -8,6 +8,8 @@ export const PUBLIC_MEDIA_DIRECTORIES = [
   'media',
   'louboutin-20261018',
   'menswear-20261018',
+  'artisanal-20261014-visuals',
+  'margiela-20261014',
 ] as const;
 
 export type MediaVariant = { url: string; width: number; height: number };

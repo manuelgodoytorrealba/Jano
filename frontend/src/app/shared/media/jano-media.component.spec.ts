@@ -109,7 +109,7 @@ describe('JanoMediaComponent', () => {
     expect(component.src).toBeNull();
     expect(component.state()).toBe('placeholder');
   });
-  it.each(['card', 'thumbnail', 'explorer3d'] as const)(
+  it.each(['card', 'thumbnail', 'explorer3d', 'gallery'] as const)(
     'accepts responsive %s media and retries the original if the variant fails',
     async (usage) => {
       const component = new JanoMediaComponent();
@@ -136,16 +136,19 @@ describe('JanoMediaComponent', () => {
     },
   );
 
-  it('keeps the original for detail and gallery views', () => {
-    const component = new JanoMediaComponent();
-    component.usage = 'detail';
-    component.media = {
-      url: '/uploads/media/original.jpg',
-      variants: [{ url: '/thumb.webp', width: 640, height: 960 }],
-    };
-    expect(component.imageSrc).toBe('/uploads/media/original.jpg');
-    expect(component.srcset).toBeNull();
-  });
+  it.each(['detail', 'hero'] as const)(
+    'keeps the original for full-resolution %s views',
+    (usage) => {
+      const component = new JanoMediaComponent();
+      component.usage = usage;
+      component.media = {
+        url: '/uploads/media/original.jpg',
+        variants: [{ url: '/thumb.webp', width: 640, height: 960 }],
+      };
+      expect(component.imageSrc).toBe('/uploads/media/original.jpg');
+      expect(component.srcset).toBeNull();
+    },
+  );
 });
 
 it('keeps the real artwork on a conditional source rather than the fallback image', async () => {

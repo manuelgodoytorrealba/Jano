@@ -85,7 +85,7 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
 
   get responsiveVariants() {
     if (
-      !['card', 'thumbnail', 'explorer3d'].includes(this.usage) ||
+      !['card', 'thumbnail', 'explorer3d', 'gallery'].includes(this.usage) ||
       this.failedVariantsFor === this.src
     ) {
       return [];

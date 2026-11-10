@@ -45,27 +45,29 @@ describe('public media variants', () => {
     expect((await createMediaVariants('media/art.png', root))[0].url).not.toBe(variants[0].url);
   });
 
-  it.each(['louboutin-20261018', 'menswear-20261018'])(
-    'prepares reviewed legacy %s images without following escaped links',
-    async (area) => {
-      await mkdir(join(root, area));
-      const source = join(root, area, 'old.jpg');
-      await sharp({ create: { width: 800, height: 600, channels: 3, background: '#123456' } })
-        .jpeg()
-        .toFile(source);
-      const original = await readFile(source);
-      const variants = await createMediaVariants(`${area}/old.jpg`, root);
-      expect(variants.map((v) => v.width)).toEqual([320, 640, 800]);
-      expect(await readFile(source)).toEqual(original);
-      await symlink('/etc/hosts', join(root, area, 'escape'));
-      await expect(createMediaVariants(`${area}/escape`, root)).rejects.toThrow();
-      await mkdir(join(root, 'research'), { recursive: true });
-      await sharp({ create: { width: 2, height: 2, channels: 3, background: '#000000' } })
-        .png()
-        .toFile(join(root, 'research', 'private.png'));
-      await expect(createMediaVariants(`${area}/../research/private.png`, root)).rejects.toThrow();
-    },
-  );
+  it.each([
+    'louboutin-20261018',
+    'menswear-20261018',
+    'artisanal-20261014-visuals',
+    'margiela-20261014',
+  ])('prepares reviewed legacy %s images without following escaped links', async (area) => {
+    await mkdir(join(root, area));
+    const source = join(root, area, 'old.jpg');
+    await sharp({ create: { width: 800, height: 600, channels: 3, background: '#123456' } })
+      .jpeg()
+      .toFile(source);
+    const original = await readFile(source);
+    const variants = await createMediaVariants(`${area}/old.jpg`, root);
+    expect(variants.map((v) => v.width)).toEqual([320, 640, 800]);
+    expect(await readFile(source)).toEqual(original);
+    await symlink('/etc/hosts', join(root, area, 'escape'));
+    await expect(createMediaVariants(`${area}/escape`, root)).rejects.toThrow();
+    await mkdir(join(root, 'research'), { recursive: true });
+    await sharp({ create: { width: 2, height: 2, channels: 3, background: '#000000' } })
+      .png()
+      .toFile(join(root, 'research', 'private.png'));
+    await expect(createMediaVariants(`${area}/../research/private.png`, root)).rejects.toThrow();
+  });
 
   it('rejects private paths, traversal and symlinks outside public entity media', async () => {
     await mkdir(join(root, 'research'));
