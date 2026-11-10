@@ -89,7 +89,7 @@
         </div>
       </ng-template>
       <ng-container *ngTemplateOutlet="entityContext"></ng-container>
-      @if (isMobileViewport && !isArticle(entity) && !workspaceFocused) {
+      @if (!isArticle(entity) && !workspaceFocused) {
         <figure class="entity-mobile-media">
           <button
             type="button"

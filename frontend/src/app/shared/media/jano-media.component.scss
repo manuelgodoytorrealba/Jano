@@ -37,6 +37,13 @@
   transform: scale(1);
 }
 
+.jano-media__reveal.is-priority {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: none;
+}
+
 .jano-media__img {
   background: transparent;
   transform-origin: center center;

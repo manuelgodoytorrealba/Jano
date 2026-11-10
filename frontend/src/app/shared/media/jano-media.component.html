@@ -1,7 +1,11 @@
 @if (src) {
   <div class="jano-media__viewport">
     @for (requestId of [imageRequestId]; track requestId) {
-      <div class="jano-media__reveal" [class.is-ready]="state() === 'ready'">
+      <div
+        class="jano-media__reveal"
+        [class.is-ready]="state() === 'ready'"
+        [class.is-priority]="priority === 'high'"
+      >
         <img
           #image
           class="jano-media__img"

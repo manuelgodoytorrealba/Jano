@@ -335,10 +335,13 @@ healthcheck() {
 
 smoke_tests() {
   local public_url="${JANO_PUBLIC_URL%/}"
+  local home_html
   log "Running public smoke tests against $public_url"
   curl --fail --silent --show-error --max-time 15 "$public_url/healthz" >/dev/null
   curl --fail --silent --show-error --max-time 15 "$public_url/api/health/live" >/dev/null
   curl --fail --silent --show-error --max-time 15 "$public_url/api/health/ready" >/dev/null
+  home_html="$(curl --fail --silent --show-error --max-time 15 "$public_url/home")"
+  [[ "$home_html" == *'ng-server-context="ssr"'* ]] || die 'Public home page is not server-rendered'
   log "Public smoke tests passed for release $RELEASE"
 }
 

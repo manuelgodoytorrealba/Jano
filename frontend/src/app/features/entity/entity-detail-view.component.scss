@@ -394,6 +394,12 @@
   cursor: pointer;
   opacity: 0.8;
 }
+@media (min-width: 761px) {
+  .entity-mobile-media {
+    display: none;
+  }
+}
+
 .entity-mobile-media__expand svg {
   width: 20px;
   height: 20px;

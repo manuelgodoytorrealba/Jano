@@ -33,3 +33,38 @@ Antes y durante la tarea comprobar espacio, uso de memoria, errores y tiempos de
 - Conservar la release anterior y la copia coordinada. El rollback de imágenes no elimina la columna nullable añadida, compatible con los clientes anteriores. No restaurar una base antigua sobre nuevas escrituras para revertir solo el código.
 
 Quedan fuera de esta fase el índice persistente para búsquedas complejas, una migración de proveedor y la eliminación de copias antiguas. El crecimiento del disco debe seguir vigilándose después de ampliar su capacidad.
+
+## Renderizado público y presupuesto de carga
+
+Cloudflare Tunnel añade `X-Forwarded-For`. Angular degradaba esas peticiones a
+renderizado en el navegador, aunque el acceso directo al contenedor sí devolvía
+HTML completo. El frontend de producción declara únicamente los tres encabezados
+que utiliza este proxy: `x-forwarded-host`, `x-forwarded-proto` y `x-forwarded-for`.
+Se conserva la lista explícita de hosts y el puerto enlazado a loopback; no usar
+`trustProxyHeaders: true` ni permitir todos los hosts para resolverlo.
+
+`node infra/scripts/check-ssr.mjs http://127.0.0.1:14200` comprueba una instancia
+aislada con esa configuración: HTML completo con y sin proxy, rechazo de host y
+protocolo inválidos y ausencia de confianza en encabezados adicionales. El smoke
+público del despliegue exige ahora HTML con `ng-server-context="ssr"` en `/home`;
+un estado HTTP 200 por sí solo no garantiza que el renderizado esté funcionando.
+
+El logotipo compartido usa una variante WebP de 256 píxeles (13.140 bytes frente
+a 471.187 del PNG). El original se conserva; la nueva URL evita depender de una
+copia antigua en la caché del navegador.
+Las imágenes marcadas con prioridad alta se muestran desde el HTML del servidor,
+sin esperar a la hidratación ni a la animación de revelado; el resto conserva su
+transición habitual. Comprobar el detalle también con JavaScript desactivado.
+La imagen móvil se incluye en el HTML de ambas plataformas y se selecciona con
+CSS, en lugar de esperar a conocer el ancho en el navegador. Las traducciones
+SSR se obtienen por el puerto interno del frontend, evitando llamadas al dominio
+público y al WAF durante el renderizado.
+
+Repetir las medidas antes y después en la URL pública, con caché del navegador
+vacía y los mismos límites de red y CPU. Separar medianas de laboratorio de los
+percentiles de usuarios reales. El LCP no incluye imágenes dibujadas en el canvas
+del explorador: medir además preparación de la escena, imágenes e ida y vuelta a
+la entidad. No presentar la pintura del texto de carga como carga de la escena.
+
+Referencias: [cabeceras de proxy y seguridad de Angular](https://angular.dev/best-practices/security#configuring-trusted-proxy-headers)
+y [Core Web Vitals](https://web.dev/articles/vitals).

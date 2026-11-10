@@ -3,7 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18N_RELEASE } from './i18n-release';
-import { I18nService } from './i18n.service';
+import { I18nService, SSR_ASSET_ORIGIN } from './i18n.service';
+import { PLATFORM_ID, REQUEST } from '@angular/core';
 
 describe('I18nService', () => {
   let service: I18nService;
@@ -58,5 +59,29 @@ describe('I18nService', () => {
     expect(service.normalizeLocale('fr-FR')).toBe('es');
     service.setLocale('fr');
     expect(service.locale()).toBe('es');
+  });
+
+  it('loads server dictionaries internally instead of requesting the public proxy', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        I18nService,
+        { provide: PLATFORM_ID, useValue: 'server' },
+        { provide: REQUEST, useValue: new Request('https://jano.manuelgodoy.eu/home') },
+        { provide: SSR_ASSET_ORIGIN, useValue: 'http://127.0.0.1:4200' },
+      ],
+    });
+    service = TestBed.inject(I18nService);
+    http = TestBed.inject(HttpTestingController);
+    service.load().subscribe();
+    http
+      .expectOne(`http://127.0.0.1:4200/assets/i18n/es.json?v=${I18N_RELEASE}`)
+      .flush({ greeting: 'Hola' });
+    http
+      .expectOne(`http://127.0.0.1:4200/assets/i18n/en.json?v=${I18N_RELEASE}`)
+      .flush({ greeting: 'Hello' });
+    expect(service.t('greeting')).toBe('Hola');
   });
 });

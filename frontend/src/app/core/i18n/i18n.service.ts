@@ -1,5 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, PLATFORM_ID, REQUEST, computed, inject, signal } from '@angular/core';
+import {
+  Injectable,
+  InjectionToken,
+  PLATFORM_ID,
+  REQUEST,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { catchError, forkJoin, map, of, tap } from 'rxjs';
 import { I18N_RELEASE } from './i18n-release';
@@ -12,11 +20,17 @@ const STORAGE_KEY = 'jano.locale';
 
 type TranslationMap = Record<string, string>;
 
+export const SSR_ASSET_ORIGIN = new InjectionToken<string>('SSR_ASSET_ORIGIN', {
+  providedIn: 'root',
+  factory: () => '',
+});
+
 @Injectable({ providedIn: 'root' })
 export class I18nService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly request = inject(REQUEST, { optional: true });
+  private readonly assetOrigin = inject(SSR_ASSET_ORIGIN);
   private readonly dictionaries = signal<Record<AppLocale, TranslationMap>>({ es: {}, en: {} });
   readonly locale = signal<AppLocale>(this.readInitialLocale());
   readonly ready = signal(false);
@@ -88,7 +102,7 @@ export class I18nService {
   private dictionaryUrl(locale: AppLocale): string {
     const assetPath = `/assets/i18n/${locale}.json?v=${encodeURIComponent(I18N_RELEASE)}`;
     if (!isPlatformServer(this.platformId) || !this.request?.url) return assetPath;
-    return new URL(assetPath, this.request.url).toString();
+    return new URL(assetPath, this.assetOrigin || this.request.url).toString();
   }
 
   private readInitialLocale(): AppLocale {
