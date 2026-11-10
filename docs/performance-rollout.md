@@ -92,3 +92,20 @@ JavaScript. El smoke local exige el tótem y la condición de imagen en el HTML.
 Comprobar sin JavaScript, con red/CPU limitadas, al girar y al volver de una ficha.
 Sin JavaScript se conserva la tipografía del sistema; se elimina el fallback
 `noscript` que el SSR convertía en texto visible de una etiqueta HTML.
+
+Las traducciones públicas se transfieren en el HTML con una clave que incluye
+la release; el navegador reutiliza ambos idiomas y consume esa copia una vez.
+Se desactiva para esas peticiones la caché HTTP automática para no duplicar los
+diccionarios. Si el servidor no pudo obtener ambos, el cliente conserva su
+posibilidad de reintentar. La sesión sigue comprobándose como antes.
+El fondo provisional no se solicita mientras se esperan los ajustes públicos;
+si estos fallan se conserva el fondo predeterminado.
+
+La preparación de medios incluye ahora las carpetas públicas revisadas
+`louboutin-20261018` y `menswear-20261018`, además de `media`. Mantiene el rechazo
+de traversal y de enlaces simbólicos que escapen del directorio aprobado. No
+convertir otras carpetas ni documentos privados por una regla genérica. En local
+se prepararon 2252 medios sin fallos; los 81 de esas dos carpetas pasaron de no
+tener variantes a disponer de ellas. Aplicar la tarea oficial `media-prepare`
+solo después de la copia coordinada y del despliegue, con los límites de CPU y
+memoria existentes. Los originales y los vínculos editoriales se conservan.

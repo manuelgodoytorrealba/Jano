@@ -103,6 +103,7 @@ export class App {
   }
 
   backgroundImageStyle(): string | null {
+    if (!this.appearance.backgroundSettingsLoaded()) return 'none';
     const url = this.appearance.currentBackgroundImageUrl();
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;
   }

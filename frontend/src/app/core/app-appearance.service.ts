@@ -18,6 +18,7 @@ export class AppAppearanceService {
   readonly fallbackBackgroundImageUrl = DEFAULT_BACKGROUND_IMAGE_URL;
   readonly personalBackgroundImageUrl = signal<string | null>(null);
   readonly backgroundImageUrl = signal<string | null>(null);
+  readonly backgroundSettingsLoaded = signal(false);
   readonly backgroundLoadError = signal<string | null>(null);
   readonly themePreference = signal<AppThemePreference>(this.readStoredThemePreference());
   readonly resolvedTheme = signal<AppResolvedTheme>(this.resolveTheme(this.themePreference()));
@@ -73,11 +74,13 @@ export class AppAppearanceService {
     return this.api.getPublicSettings().pipe(
       tap((settings) => {
         this.backgroundImageUrl.set(settings.backgroundImageUrl ?? null);
+        this.backgroundSettingsLoaded.set(true);
         this.backgroundLoadError.set(null);
       }),
       catchError(() => {
         this.backgroundImageUrl.set(null);
         this.backgroundLoadError.set('No se pudo cargar el background global.');
+        this.backgroundSettingsLoaded.set(true);
         return of({ backgroundImageUrl: null });
       }),
     );

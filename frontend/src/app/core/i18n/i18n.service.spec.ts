@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18N_RELEASE } from './i18n-release';
 import { I18nService, SSR_ASSET_ORIGIN } from './i18n.service';
-import { PLATFORM_ID, REQUEST } from '@angular/core';
+import { PLATFORM_ID, REQUEST, TransferState, makeStateKey } from '@angular/core';
 
 describe('I18nService', () => {
   let service: I18nService;
@@ -59,6 +59,21 @@ describe('I18nService', () => {
     expect(service.normalizeLocale('fr-FR')).toBe('es');
     service.setLocale('fr');
     expect(service.locale()).toBe('es');
+  });
+
+  it('reuses both server dictionaries without a second network request', () => {
+    const key = makeStateKey<{ es: Record<string, string>; en: Record<string, string> }>(
+      `jano-i18n:${I18N_RELEASE}`,
+    );
+    const state = TestBed.inject(TransferState);
+    state.set(key, { es: { greeting: 'Hola' }, en: { greeting: 'Hello' } });
+    service.load().subscribe();
+    expect(service.t('greeting')).toBe('Hola');
+    service.setLocale('en');
+    expect(service.t('greeting')).toBe('Hello');
+    expect(service.ready()).toBe(true);
+    expect(state.hasKey(key)).toBe(false);
+    http.expectNone((request) => request.url.includes('/i18n/'));
   });
 
   it('loads server dictionaries internally instead of requesting the public proxy', () => {

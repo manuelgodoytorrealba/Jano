@@ -33,6 +33,7 @@ describe('App', () => {
           useValue: {
             load: () => of(true),
             currentBackgroundImageUrl: () => null,
+            backgroundSettingsLoaded: signal(true),
             resolvedTheme: signal('dark'),
           },
         },
@@ -55,6 +56,15 @@ describe('App', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('does not request a temporary background while settings are loading', () => {
+    const fixture = TestBed.createComponent(App);
+    const appearance = TestBed.inject(AppAppearanceService);
+    appearance.backgroundSettingsLoaded.set(false);
+    expect(fixture.componentInstance.backgroundImageStyle()).toBe('none');
+    appearance.backgroundSettingsLoaded.set(true);
+    expect(fixture.componentInstance.backgroundImageStyle()).toBeNull();
   });
 
   it('should create the app', () => {

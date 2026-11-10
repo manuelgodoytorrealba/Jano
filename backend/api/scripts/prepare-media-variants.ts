@@ -1,5 +1,9 @@
 import { PrismaService } from '../src/prisma/prisma.service';
-import { createBackgroundVariant, createMediaVariants } from '../src/media/media-variants';
+import {
+  createBackgroundVariant,
+  createMediaVariants,
+  PUBLIC_MEDIA_DIRECTORIES,
+} from '../src/media/media-variants';
 
 async function main() {
   if (process.env.NODE_ENV === 'production' && !process.argv.includes('--apply-production'))
@@ -9,7 +13,10 @@ async function main() {
   let failed = 0;
   try {
     const items = await prisma.media.findMany({
-      where: { storageKey: { startsWith: 'media/' }, isVector: false },
+      where: {
+        OR: PUBLIC_MEDIA_DIRECTORIES.map((area) => ({ storageKey: { startsWith: `${area}/` } })),
+        isVector: false,
+      },
       select: { id: true, storageKey: true },
     });
     for (const item of items) {

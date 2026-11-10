@@ -4,6 +4,8 @@ import {
   InjectionToken,
   PLATFORM_ID,
   REQUEST,
+  TransferState,
+  makeStateKey,
   computed,
   inject,
   signal,
@@ -19,6 +21,9 @@ const DEFAULT_LOCALE: AppLocale = 'es';
 const STORAGE_KEY = 'jano.locale';
 
 type TranslationMap = Record<string, string>;
+const DICTIONARIES_STATE = makeStateKey<Record<AppLocale, TranslationMap>>(
+  `jano-i18n:${I18N_RELEASE}`,
+);
 
 export const SSR_ASSET_ORIGIN = new InjectionToken<string>('SSR_ASSET_ORIGIN', {
   providedIn: 'root',
@@ -28,6 +33,7 @@ export const SSR_ASSET_ORIGIN = new InjectionToken<string>('SSR_ASSET_ORIGIN', {
 @Injectable({ providedIn: 'root' })
 export class I18nService {
   private readonly http = inject(HttpClient);
+  private readonly transferState = inject(TransferState);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly request = inject(REQUEST, { optional: true });
   private readonly assetOrigin = inject(SSR_ASSET_ORIGIN);
@@ -42,12 +48,25 @@ export class I18nService {
   );
 
   load() {
+    if (isPlatformBrowser(this.platformId) && this.transferState.hasKey(DICTIONARIES_STATE)) {
+      this.dictionaries.set(this.transferState.get(DICTIONARIES_STATE, { es: {}, en: {} }));
+      this.transferState.remove(DICTIONARIES_STATE);
+      this.ready.set(true);
+      return of(true);
+    }
     return forkJoin({
       es: this.loadDictionary('es'),
       en: this.loadDictionary('en'),
     }).pipe(
       tap((dictionaries) => {
         this.dictionaries.set(dictionaries);
+        if (
+          isPlatformServer(this.platformId) &&
+          Object.keys(dictionaries.es).length &&
+          Object.keys(dictionaries.en).length
+        ) {
+          this.transferState.set(DICTIONARIES_STATE, dictionaries);
+        }
         this.ready.set(true);
       }),
       map(() => true),
@@ -91,7 +110,7 @@ export class I18nService {
   }
 
   private loadDictionary(locale: AppLocale) {
-    return this.http.get<TranslationMap>(this.dictionaryUrl(locale)).pipe(
+    return this.http.get<TranslationMap>(this.dictionaryUrl(locale), { transferCache: false }).pipe(
       catchError((error: unknown) => {
         console.error(`[i18n] Failed to load dictionary for ${locale}`, error);
         return of({} as TranslationMap);

@@ -3,11 +3,18 @@ import { access, mkdir, readFile, realpath, rename, unlink, writeFile } from 'no
 import { join, resolve, sep } from 'node:path';
 import sharp from 'sharp';
 
+// shortcut: other legacy directories keep originals; add reviewed public directories when preparing them.
+export const PUBLIC_MEDIA_DIRECTORIES = [
+  'media',
+  'louboutin-20261018',
+  'menswear-20261018',
+] as const;
+
 export type MediaVariant = { url: string; width: number; height: number };
 
 async function publicImagePath(
   storageKey: string,
-  area: 'media' | 'app-backgrounds',
+  area: (typeof PUBLIC_MEDIA_DIRECTORIES)[number] | 'app-backgrounds',
   uploads: string,
 ) {
   if (!storageKey.startsWith(`${area}/`) || storageKey.includes('\\')) {
@@ -26,7 +33,9 @@ export async function createMediaVariants(
   storageKey: string,
   uploads = resolve('uploads'),
 ): Promise<MediaVariant[]> {
-  const { root, source } = await publicImagePath(storageKey, 'media', uploads);
+  const area = PUBLIC_MEDIA_DIRECTORIES.find((directory) => storageKey.startsWith(`${directory}/`));
+  if (!area) throw new Error('Variants require a reviewed public media directory');
+  const { root, source } = await publicImagePath(storageKey, area, uploads);
   const bytes = await readFile(source);
   const key = createHash('sha256').update('card-webp-v1:').update(bytes).digest('hex');
   const directory = join(root, 'media-variants');
