@@ -95,3 +95,8 @@ ambos servicios antes de intervenir. Una carpeta temporal sin el marcador de
 propiedad del proceso no se elimina automáticamente. Las pruebas aisladas son
 `python3 infra/scripts/test-periodic-backup.py` y
 `python3 infra/scripts/test-export-backup.py`.
+
+Para probar además una captura y restauración de PostgreSQL y uploads con Docker,
+usar `python3 infra/scripts/test-periodic-real-integration.py`. La prueba crea
+contenedores y volúmenes temporales aislados; requiere restic y la imagen local
+`postgres:16.15-trixie`. No usa los datos de producción.
