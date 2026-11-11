@@ -1,9 +1,26 @@
 import { Component, Input, inject } from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { JanoMediaComponent } from '../media/jano-media.component';
+import { MediaLike } from '../media/media.utils';
 @Component({
   selector: 'app-article-hero',
   standalone: true,
+  imports: [JanoMediaComponent],
   template: `<header>
+    @if (media) {
+      <figure>
+        <app-jano-media [media]="media" usage="hero" [lazy]="false" priority="high" />
+        <figcaption>
+          {{ media.alt }}
+          @if (media.photoBy || media.license) {
+            <details>
+              <summary>{{ i18n.t('detail.mobileCredits') }}</summary>
+              <p>{{ media.photoBy }} {{ media.license }}</p>
+            </details>
+          }
+        </figcaption>
+      </figure>
+    }
     <div class="meta">
       <span>{{ i18n.t('entity.article') }}</span>
       @if (author) {
@@ -28,6 +45,24 @@ import { I18nService } from '../../core/i18n/i18n.service';
       }
       header {
         padding: clamp(8px, 2vw, 24px);
+      }
+      figure {
+        margin: 0 0 24px;
+      }
+      app-jano-media {
+        aspect-ratio: 3 / 2;
+        height: auto;
+        border-radius: 12px;
+      }
+      figcaption {
+        margin-top: 10px;
+        color: var(--color-text-soft);
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+      details p {
+        font-size: inherit;
+        overflow-wrap: anywhere;
       }
       .meta {
         display: flex;
@@ -77,6 +112,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 export class ArticleHeroComponent {
   readonly i18n = inject(I18nService);
   @Input() title = '';
+  @Input() media: MediaLike | null = null;
   @Input() summary: string | null | undefined;
   @Input() author: string | null | undefined;
   @Input() date: string | null | undefined;
