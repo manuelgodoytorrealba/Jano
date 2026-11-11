@@ -67,11 +67,14 @@ tercer destino permanente.
 ## Copias coordinadas periódicas
 
 El temporizador `jano-periodic-backup.timer` del servidor crea un punto diario a
-las 02:00. Detiene frontend y backend, vuelca PostgreSQL y copia los uploads a una
-zona temporal privada; después reanuda ambos servicios y verifica su salud antes
-de cifrar y verificar el snapshot incremental. No se borran snapshots ni copias
+las 02:00. Primero copia los uploads a una zona temporal privada con JANO activo.
+Después detiene frontend y backend, vuelca PostgreSQL y sincroniza los cambios
+finales por checksum; a continuación reanuda ambos servicios y verifica su salud
+antes de cifrar y verificar el snapshot incremental. No se borran snapshots ni copias
 anteriores. El proceso rechaza otro escritor del volumen, un bloqueo de despliegue
-existente y menos de 4 GiB libres en el repositorio. La pausa depende del tamaño
+existente y menos de 4 GiB libres en el repositorio. La copia usa rsync y su
+biblioteca del host dentro del contenedor de PostgreSQL; si faltan o son
+incompatibles, la preparación falla antes de detener la aplicación. La pausa depende del tamaño
 de los datos y las peticiones en curso.
 
 El repositorio y su contraseña se configuran en el servidor mediante

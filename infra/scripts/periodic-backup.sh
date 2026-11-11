@@ -39,8 +39,11 @@ printf '%s\n' "$$" > "$LOCK_DIR/pid"
 printf '%s\n' periodic > "$LOCK_DIR/periodic-owner"
 
 restart_services() {
-  compose start backend frontend || return 1
-  local service container health attempt
+  local service container health attempt backend_id frontend_id
+  backend_id="$(compose ps -aq backend)" || return 1
+  frontend_id="$(compose ps -aq frontend)" || return 1
+  [[ -n "$backend_id" && -n "$frontend_id" ]] || return 1
+  docker start "$backend_id" "$frontend_id" || return 1
   for service in backend frontend; do
     container="$(compose ps -q "$service")" || return 1
     [[ -n "$container" ]] || return 1
@@ -93,14 +96,27 @@ done
 mkdir -m 700 "$capture"
 printf '%s\n' "$$" > "$capture/.periodic-owner"
 mkdir -m 700 "$capture/uploads"
+sync_uploads() {
+  docker run --rm --pull=never --network none \
+    --volume "$UPLOADS_VOLUME:/data:ro" \
+    --mount "type=bind,src=$capture/uploads,dst=/stage" \
+    --mount type=bind,src=/usr/bin/rsync,dst=/usr/local/bin/rsync,readonly \
+    --mount type=bind,src=/lib/x86_64-linux-gnu/libpopt.so.0,dst=/usr/lib/x86_64-linux-gnu/libpopt.so.0,readonly \
+    --entrypoint /usr/local/bin/rsync postgres:16.15-trixie \
+    -a --delete --chown="$(id -u):$(id -g)" "$@" /data/ /stage/
+}
+echo 'Preparing uploads while JANO is running'
+sync_uploads
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+pause_started="$(date +%s%3N)"
 printf '%s\n' "$JANO_RELEASE" > "$MARKER"
 compose stop frontend backend
 compose exec -T db sh -eu -c 'exec pg_dump --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" --format=custom --no-owner --no-acl' > "$capture/database.dump"
 [[ -s "$capture/database.dump" ]]
-docker run --rm --pull=never --network none --volume "$UPLOADS_VOLUME:/data:ro" postgres:16.15-trixie tar -C /data -cf - . | tar -xf - -C "$capture/uploads" --no-same-owner --no-same-permissions
+sync_uploads --checksum
 restart_services
 rm -f "$MARKER"
+printf 'Application available after %s ms\n' "$(($(date +%s%3N)-pause_started))"
 
 docker run --rm --pull=never --network none -i postgres:16.15-trixie pg_restore --list < "$capture/database.dump" > "$capture/database.list"
 printf 'JANO_RELEASE=%s\nCREATED_AT=%s\n' "$JANO_RELEASE" "$timestamp" > "$capture/release.env"

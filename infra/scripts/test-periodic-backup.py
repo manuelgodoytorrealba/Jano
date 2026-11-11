@@ -20,11 +20,11 @@ if args[0]=='compose':
     elif 'stop' in args:
         if fail=='stop': sys.exit(2)
         if fail=='hang': time.sleep(60)
-    elif 'start' in args:
-        if fail=='start': sys.exit(2)
     elif 'exec' in args:
         if fail=='dump': sys.exit(2)
         sys.stdout.write('database fixture')
+elif args[0]=='start':
+    if fail=='start': sys.exit(2)
 elif args[0]=='inspect':
     fmt=args[args.index('--format')+1]
     if 'Destination' in fmt:
@@ -37,8 +37,12 @@ elif args[0]=='ps':
 elif args[0]=='run':
     if 'pg_restore' in args:
         sys.stdin.buffer.read(); print('database list')
-    elif fail=='tar': sys.exit(2)
-    else: sys.exit(subprocess.call(['tar','-cf','-','-C',os.environ['UPLOADS_FIXTURE'],'.']))
+    elif '--entrypoint' in args:
+        if fail=='tar' and '--checksum' in args: sys.exit(2)
+        if fail=='precopy' and '--checksum' not in args: sys.exit(2)
+        mount=next(x for x in args if x.startswith('type=bind,src=') and x.endswith(',dst=/stage'))
+        dest=mount.removeprefix('type=bind,src=').removesuffix(',dst=/stage')
+        sys.exit(subprocess.call(['rsync','-a','--delete','--checksum',os.environ['UPLOADS_FIXTURE']+'/',dest+'/']))
 '''
 FAKE_RESTIC = r'''#!/usr/bin/env python3
 import os,sys
@@ -98,7 +102,7 @@ class PeriodicBackupTests(unittest.TestCase):
         self.assertEqual(result.returncode,0,result.stderr)
         calls=self.log.read_text()
         self.assertLess(calls.index('restic check'),calls.index('restic tag'))
-        self.assertIn('start backend frontend',calls)
+        self.assertIn('start backend-id frontend-id',calls)
         self.assertFalse(self.marker.exists())
         self.assertFalse(self.lock.exists())
         self.assertFalse((self.store/'capture').exists())
@@ -110,7 +114,7 @@ class PeriodicBackupTests(unittest.TestCase):
                 self.log.unlink(missing_ok=True)
                 result=self.run_backup(failure)
                 self.assertNotEqual(result.returncode,0)
-                self.assertIn('start backend frontend',self.log.read_text())
+                self.assertIn('start backend-id frontend-id',self.log.read_text())
                 self.assertNotIn('restic tag',self.log.read_text())
                 self.assertFalse(self.marker.exists())
                 self.assertFalse(self.lock.exists())
@@ -137,6 +141,12 @@ class PeriodicBackupTests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0)
         self.assertEqual((self.store/'capture/keep').read_text(),'user data')
 
+    def test_precopy_failure_does_not_stop_services(self):
+        result=self.run_backup('precopy')
+        self.assertNotEqual(result.returncode,0)
+        self.assertNotIn('stop frontend backend',self.log.read_text())
+        self.assertFalse(self.lock.exists())
+
     def test_other_volume_writer_prevents_stopping_services(self):
         result=self.run_backup('other-writer')
         self.assertNotEqual(result.returncode,0)
@@ -158,7 +168,7 @@ class PeriodicBackupTests(unittest.TestCase):
             result=subprocess.run(['bash',str(self.scripts/'periodic-recover.sh')],
                                   env=self.env,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
-            self.assertIn('start backend frontend',self.log.read_text())
+            self.assertIn('start backend-id frontend-id',self.log.read_text())
             self.assertFalse(self.marker.exists())
             self.assertFalse(self.lock.exists())
             self.assertFalse((self.store/'capture').exists())

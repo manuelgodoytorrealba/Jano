@@ -24,7 +24,10 @@ if [[ -e "$MARKER" ]]; then
   [[ "$JANO_RELEASE" =~ ^[0-9a-f]{7,40}$ ]]
   export JANO_RELEASE
   compose() { docker compose --env-file "$ENV_FILE" -f "$ROOT_DIR/infra/docker-compose.prod.yml" "$@"; }
-  compose start backend frontend
+  backend_id="$(compose ps -aq backend)"
+  frontend_id="$(compose ps -aq frontend)"
+  [[ -n "$backend_id" && -n "$frontend_id" ]]
+  docker start "$backend_id" "$frontend_id"
   for service in backend frontend; do
     container="$(compose ps -q "$service")"
     [[ -n "$container" ]]
