@@ -118,53 +118,7 @@ export class SearchQueryRepository {
       ) relation_data
     `;
 
-    return this.prisma.$queryRaw<SearchRow[]>`
-      ${relationDocuments}
-      SELECT
-        e."id",
-        (
-          ${fullTextRank} * 100
-          + CASE WHEN lower(e."title") = ${normalized} THEN 100 ELSE 0 END
-          + CASE WHEN lower(coalesce(translated.title_text, '')) = ${normalized} THEN 100 ELSE 0 END
-          + CASE WHEN e."title" ILIKE ${startsWith} THEN 50 ELSE 0 END
-          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${startsWith} THEN 50 ELSE 0 END
-          + CASE WHEN e."title" ILIKE ${like} THEN 25 ELSE 0 END
-          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${like} THEN 25 ELSE 0 END
-          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${startsWith} THEN 45 ELSE 0 END
-          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${like} THEN 22 ELSE 0 END
-          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${startsWith} THEN 20 ELSE 0 END
-          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${like} THEN 10 ELSE 0 END
-          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${startsWith} THEN 18 ELSE 0 END
-          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${like} THEN 9 ELSE 0 END
-          + CASE WHEN e."summary" ILIKE ${like} THEN 8 ELSE 0 END
-          + CASE WHEN coalesce(translated.summary_text, '') ILIKE ${like} THEN 8 ELSE 0 END
-          + CASE WHEN e."content" ILIKE ${like} THEN 2 ELSE 0 END
-          + CASE WHEN coalesce(translated.content_text, '') ILIKE ${like} THEN 2 ELSE 0 END
-          + CASE WHEN coalesce(relation_data.relation_text, '') ILIKE ${like} THEN 6 ELSE 0 END
-          + CASE WHEN e."slug" ILIKE ${startsWith} THEN 12 ELSE 0 END
-          + GREATEST(
-              similarity(lower(e."title"), ${normalized}),
-              similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
-              similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
-              similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
-              similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
-            ) * 18
-        )::double precision AS "score",
-        (e."title" ILIKE ${like} OR coalesce(translated.title_text, '') ILIKE ${like}) AS "matched_title",
-        (e."summary" ILIKE ${like} OR coalesce(translated.summary_text, '') ILIKE ${like}) AS "matched_summary",
-        (e."content" ILIKE ${like} OR coalesce(translated.content_text, '') ILIKE ${like}) AS "matched_content",
-        (e."slug" ILIKE ${like}) AS "matched_slug",
-        (coalesce(alias_data.alias_text, '') ILIKE ${like}) AS "matched_alias",
-        (coalesce(tag_data.tag_text, '') ILIKE ${like}) AS "matched_tag",
-        (coalesce(detail_data.detail_text, '') ILIKE ${like}) AS "matched_detail",
-        (coalesce(relation_data.relation_text, '') ILIKE ${like}) AS "matched_relation",
-        GREATEST(
-          similarity(lower(e."title"), ${normalized}),
-          similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
-          similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
-          similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
-          similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
-        )::double precision AS "trigram_score"
+    const entitySource = Prisma.sql`
       FROM "Entity" e
       CROSS JOIN LATERAL (
         SELECT
@@ -266,18 +220,8 @@ export class SearchQueryRepository {
         ) period_data
       ) detail_data
       ${relationJoin}
-      -- Keep complex-query documents from being rebuilt for both filtering and ranking.
-      CROSS JOIN LATERAL (
-        SELECT
-          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
-          setweight(to_tsvector('simple', alias_data.alias_text), 'A') ||
-          setweight(to_tsvector('simple', tag_data.tag_text), 'B') ||
-          setweight(to_tsvector('simple', detail_data.detail_text), 'B') ||
-          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
-          setweight(to_tsvector('simple', coalesce(relation_data.relation_text, '')), 'C') ||
-          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
-        ${singleLiteralWord ? Prisma.empty : Prisma.sql`OFFSET 0`}
-      ) weighted
+    `;
+    const matchingFilter = Prisma.sql`
       WHERE 1 = 1
         ${visibilityFilter}
         ${typeFilter}
@@ -304,13 +248,112 @@ export class SearchQueryRepository {
             similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
           ) >= ${trigramThreshold}
         )
+    `;
+    const weightedDocument = Prisma.sql`
+      -- Keep complex-query documents from being rebuilt for both filtering and ranking.
+      CROSS JOIN LATERAL (
+        SELECT
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
+          setweight(to_tsvector('simple', alias_data.alias_text), 'A') ||
+          setweight(to_tsvector('simple', tag_data.tag_text), 'B') ||
+          setweight(to_tsvector('simple', detail_data.detail_text), 'B') ||
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
+          setweight(to_tsvector('simple', coalesce(relation_data.relation_text, '')), 'C') ||
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
+        ${singleLiteralWord ? Prisma.empty : Prisma.sql`OFFSET 0`}
+      ) weighted
+    `;
+    // Only priority groups that can reach LIMIT need the expensive full-text score.
+    // rank() retains every tie at the boundary; the final ordering still selects the winners.
+    const candidates = singleLiteralWord
+      ? Prisma.sql`
+        , matching AS MATERIALIZED (
+          SELECT e AS entity, translated.title_text, translated.summary_text,
+            translated.content_text, alias_data.alias_text, tag_data.tag_text,
+            detail_data.detail_text, relation_data.relation_text
+          ${entitySource}
+          ${matchingFilter}
+        ), candidates AS (
+          SELECT matching.*, rank() OVER (ORDER BY
+            CASE WHEN lower((matching.entity)."title") = ${normalized} THEN 1 ELSE 0 END DESC,
+            CASE WHEN coalesce(matching.alias_text, '') ILIKE ${startsWith} THEN 1 ELSE 0 END DESC,
+            CASE WHEN (matching.entity)."title" ILIKE ${startsWith} THEN 1 ELSE 0 END DESC
+          ) AS priority
+          FROM matching
+        )
+      `
+      : Prisma.empty;
+    const rankedSource = singleLiteralWord
+      ? Prisma.sql`
+        FROM candidates candidate
+        CROSS JOIN LATERAL (SELECT (candidate.entity).*) e
+        CROSS JOIN LATERAL (SELECT candidate.title_text, candidate.summary_text, candidate.content_text) translated
+        CROSS JOIN LATERAL (SELECT candidate.alias_text) alias_data
+        CROSS JOIN LATERAL (SELECT candidate.tag_text) tag_data
+        CROSS JOIN LATERAL (SELECT candidate.detail_text) detail_data
+        CROSS JOIN LATERAL (SELECT candidate.relation_text) relation_data
+        ${weightedDocument}
+        WHERE candidate.priority <= ${options.limit}
+      `
+      : Prisma.sql`${entitySource} ${weightedDocument} ${matchingFilter}`;
+
+    return this.prisma.$queryRaw<SearchRow[]>`
+      ${relationDocuments}
+      ${candidates}
+      SELECT
+        e."id",
+        (
+          ${fullTextRank} * 100
+          + CASE WHEN lower(e."title") = ${normalized} THEN 100 ELSE 0 END
+          + CASE WHEN lower(coalesce(translated.title_text, '')) = ${normalized} THEN 100 ELSE 0 END
+          + CASE WHEN e."title" ILIKE ${startsWith} THEN 50 ELSE 0 END
+          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${startsWith} THEN 50 ELSE 0 END
+          + CASE WHEN e."title" ILIKE ${like} THEN 25 ELSE 0 END
+          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${like} THEN 25 ELSE 0 END
+          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${startsWith} THEN 45 ELSE 0 END
+          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${like} THEN 22 ELSE 0 END
+          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${startsWith} THEN 20 ELSE 0 END
+          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${like} THEN 10 ELSE 0 END
+          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${startsWith} THEN 18 ELSE 0 END
+          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${like} THEN 9 ELSE 0 END
+          + CASE WHEN e."summary" ILIKE ${like} THEN 8 ELSE 0 END
+          + CASE WHEN coalesce(translated.summary_text, '') ILIKE ${like} THEN 8 ELSE 0 END
+          + CASE WHEN e."content" ILIKE ${like} THEN 2 ELSE 0 END
+          + CASE WHEN coalesce(translated.content_text, '') ILIKE ${like} THEN 2 ELSE 0 END
+          + CASE WHEN coalesce(relation_data.relation_text, '') ILIKE ${like} THEN 6 ELSE 0 END
+          + CASE WHEN e."slug" ILIKE ${startsWith} THEN 12 ELSE 0 END
+          + GREATEST(
+              similarity(lower(e."title"), ${normalized}),
+              similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
+              similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
+              similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
+              similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
+            ) * 18
+        )::double precision AS "score",
+        (e."title" ILIKE ${like} OR coalesce(translated.title_text, '') ILIKE ${like}) AS "matched_title",
+        (e."summary" ILIKE ${like} OR coalesce(translated.summary_text, '') ILIKE ${like}) AS "matched_summary",
+        (e."content" ILIKE ${like} OR coalesce(translated.content_text, '') ILIKE ${like}) AS "matched_content",
+        (e."slug" ILIKE ${like}) AS "matched_slug",
+        (coalesce(alias_data.alias_text, '') ILIKE ${like}) AS "matched_alias",
+        (coalesce(tag_data.tag_text, '') ILIKE ${like}) AS "matched_tag",
+        (coalesce(detail_data.detail_text, '') ILIKE ${like}) AS "matched_detail",
+        (coalesce(relation_data.relation_text, '') ILIKE ${like}) AS "matched_relation",
+        GREATEST(
+          similarity(lower(e."title"), ${normalized}),
+          similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
+          similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
+          similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
+          similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
+        )::double precision AS "trigram_score"
+      ${rankedSource}
       ORDER BY
         CASE WHEN lower(e."title") = ${normalized} THEN 1 ELSE 0 END DESC,
         CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${startsWith} THEN 1 ELSE 0 END DESC,
         CASE WHEN e."title" ILIKE ${startsWith} THEN 1 ELSE 0 END DESC,
         "score" DESC,
         "trigram_score" DESC,
-        e."updatedAt" DESC
+        e."updatedAt" DESC,
+        e."id" ASC
       LIMIT ${options.limit};
     `;
   }

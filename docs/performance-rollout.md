@@ -146,3 +146,11 @@ ni se eliminan archivos que también se usan como miniaturas del catálogo.
 - Local comparison: 60 query/locale/visibility/filter combinations preserve every returned row, score and order. Backend: 468 tests, typecheck and targeted lint pass.
 - Interleaved read-only SQL comparisons on the production database (3 pairs/query, limit 60): `arte moderno` median 1009.6 → 987.6 ms; `arte OR pintura` 1237.6 → 1040.2 ms; `arte -moderno` 1112.6 → 1009.4 ms. All results identical. These are query timings, not end-user page load or field percentiles.
 - A separate similarity-expression reuse prototype showed no consistent benefit and was discarded. Single-word latency remains a priority; this change does not claim to improve it.
+
+### Phase 9 — score only competitive literal-query candidates (2026-11-11)
+
+- Profiling places over 90% of local `arte` search time in entity search/ranking. Hydration and secondary sections contribute only a few milliseconds.
+- Literal queries now retain complete priority groups using `rank()` before computing full-text scores. The groups exactly match the existing leading order: exact title, alias prefix, title prefix. Every boundary tie remains eligible; score, trigram and date still choose the final results. Filters remain inside candidate selection.
+- Add entity ID as the last tie-breaker. Previously fully tied rows could change order or membership at LIMIT with a different execution plan. Such ties now have deterministic results; this can change which equally ranked item appears compared with older releases.
+- 85 local query/filter/locale/visibility combinations match the previous SQL exactly when both use that final tie-breaker. Full service local paired medians (5 pairs): `arte` 194.7 → 65.7 ms, `picasso` 69.5 → 70.3 ms, `madera japonesa` 379.7 → 374.9 ms. This is not a universal single-word speedup.
+- 468 backend tests pass, including checks that the literal path retains tied priority groups and that complex queries preserve their existing document-reuse path. Typecheck and lint pass. No migrations, dependencies or stale-data caches.

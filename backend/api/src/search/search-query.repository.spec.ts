@@ -36,6 +36,9 @@ describe('SearchQueryRepository', () => {
     const [strings, ...values] = prisma.$queryRaw.mock.calls[0];
     const sql = Prisma.sql(strings, ...values);
     expect(sql.text.includes('OFFSET 0')).toBe(materialized);
+    expect(sql.text.includes('rank() OVER')).toBe(!materialized);
+    expect(sql.text.includes('WHERE candidate.priority <=')).toBe(!materialized);
+    expect(sql.text).toContain('e."id" ASC');
     expect(sql.text).toContain(`"status" = 'PUBLISHED'`);
   });
 });
