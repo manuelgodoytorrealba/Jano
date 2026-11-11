@@ -418,4 +418,8 @@
   margin-right: var(--detail-menu-space, 68px);
   min-width: 0;
   box-sizing: border-box;
+
+  @media (max-width: 760px) {
+    margin-right: 0;
+  }
 }

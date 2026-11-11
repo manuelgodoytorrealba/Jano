@@ -51,6 +51,26 @@ import { I18nService } from '../../core/i18n/i18n.service';
         line-height: 1.7;
         color: var(--color-text-soft);
       }
+      @media (max-width: 760px) {
+        header {
+          padding: 0;
+        }
+        .meta {
+          gap: 8px 12px;
+          font-size: 0.875rem;
+          line-height: 1.5;
+        }
+        h1 {
+          margin-block: 1rem;
+          font-size: clamp(2rem, 8.5vw, 2.5rem);
+          line-height: 1.15;
+          text-wrap: balance;
+        }
+        p {
+          font-size: 1.25rem;
+          line-height: 1.6;
+        }
+      }
     `,
   ],
 })
