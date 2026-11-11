@@ -35,6 +35,7 @@ import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { NavigationMemoryService } from '../../core/navigation-memory.service';
+import { pageScrollRoot } from '../../core/page-scroll-root';
 import { I18nService } from '../../core/i18n/i18n.service';
 import {
   articleByline,
@@ -202,7 +203,8 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
         ({
           slug: this.entity?.slug ?? '',
           tab: this.informationTab,
-          windowY: this.pendingScroll ?? (this.isBrowser ? window.scrollY : 0),
+          windowY:
+            this.pendingScroll ?? (this.isBrowser ? pageScrollRoot(this.document).scrollTop : 0),
           workspaceMode: this.workspaceMode,
           workspaceFocused: this.workspaceFocused,
           outgoingLimit: this.outgoingRelationLimit,
@@ -300,7 +302,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     afterNextRender(
       () => {
         if (this.navigation.visit().key !== key) return;
-        window.scrollTo({ top: state.windowY, behavior: 'instant' });
+        pageScrollRoot(this.document).scrollTop = state.windowY;
         this.pendingScroll = null;
         const focus = state.focusHref
           ? this.document.querySelector<HTMLAnchorElement>(
@@ -373,7 +375,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
 
   toggleWorkspaceFocus(): void {
     if (this.isBrowser && this.isMobileViewport && !this.workspaceFocused) {
-      this.mobileReadingScrollY = window.scrollY;
+      this.mobileReadingScrollY = pageScrollRoot(this.document).scrollTop;
     }
     this.beginWorkspaceTransition();
     this.workspaceFocused = !this.workspaceFocused;
@@ -381,7 +383,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     if (this.isBrowser && this.isMobileViewport && !this.workspaceFocused) {
       afterNextRender(
         () => {
-          window.scrollTo({ top: this.mobileReadingScrollY, behavior: 'instant' });
+          pageScrollRoot(this.document).scrollTop = this.mobileReadingScrollY;
           this.document
             .querySelector<HTMLButtonElement>(
               this.workspaceMode === 'image'

@@ -9,9 +9,10 @@ import {
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DOCUMENT } from '@angular/common';
 import { distinctUntilChanged, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { NavigationMemoryService } from '../../core/navigation-memory.service';
+import { pageScrollRoot } from '../../core/page-scroll-root';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { PublicEntity } from '../../core/api/entities.models';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
@@ -36,6 +37,7 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph' | 'info';
 })
 export class EntityComponent implements OnDestroy {
   private readonly navigation = inject(NavigationMemoryService);
+  private readonly document = inject(DOCUMENT);
   private api = inject(EntitiesApi);
   private readonly seo = inject(SeoService);
   private readonly chromeRail = inject(AppChromeRailService);
@@ -167,7 +169,7 @@ export class EntityComponent implements OnDestroy {
       return;
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    pageScrollRoot(this.document).scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   @HostListener('document:click', ['$event'])
@@ -217,7 +219,7 @@ export class EntityComponent implements OnDestroy {
         typeof window !== 'undefined' &&
         this.navigation.read<{ slug: string }>('detail')?.slug !== slug
       ) {
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        pageScrollRoot(this.document).scrollTop = 0;
       }
 
       this.currentEntity.set(null);
