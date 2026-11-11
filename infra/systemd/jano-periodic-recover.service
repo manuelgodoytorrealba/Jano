@@ -1,0 +1,14 @@
+[Unit]
+Description=Recover JANO if a periodic backup was interrupted
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /srv/apps/jano/infra/scripts/periodic-recover.sh
+Restart=on-failure
+RestartSec=15s
+TimeoutStartSec=5min
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

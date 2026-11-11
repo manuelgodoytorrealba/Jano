@@ -33,7 +33,8 @@ class ExportBackupTests(unittest.TestCase):
             (self.backup / name).write_text('fixture')
 
     def run_export(self):
-        return subprocess.run(['bash', str(self.script)], capture_output=True)
+        return subprocess.run(['bash', str(self.script)], capture_output=True,
+                              env={**os.environ, 'XDG_CONFIG_HOME': str(self.root / 'config'), 'RESTIC_CACHE_DIR': str(self.root / 'cache')})
 
     def assert_rejected(self):
         result = self.run_export()
@@ -64,6 +65,55 @@ class ExportBackupTests(unittest.TestCase):
         (self.state / 'deploy.lock').mkdir()
         self.assert_rejected()
         self.assertTrue((self.state / 'deploy.lock').exists())
+
+    @unittest.skipUnless(shutil.which('restic'), 'restic is required')
+    def test_exports_newer_verified_incremental_snapshot(self):
+        periodic = self.root / 'periodic'
+        periodic.mkdir()
+        capture = periodic / 'capture'
+        (capture / 'uploads').mkdir(parents=True)
+        (capture / 'uploads/image.txt').write_bytes(b'image-v2')
+        dump = b'database-v2'
+        (capture / 'database.dump').write_bytes(dump)
+        (capture / 'database.dump.sha256').write_text(hashlib.sha256(dump).hexdigest() + '  database.dump\n')
+        (capture / 'database.list').write_text('fixture')
+        (capture / 'release.env').write_text('JANO_RELEASE=abcdef12\nCREATED_AT=20261111T170000Z\n')
+        password = self.root / 'periodic-password'
+        password.write_text('test-only-password')
+        password.chmod(0o600)
+        environment = {**os.environ, 'RESTIC_REPOSITORY': str(periodic / 'repo'),
+                       'RESTIC_PASSWORD_FILE': str(password)}
+        def restic(*args):
+            subprocess.run(['restic', *args], env=environment, check=True, capture_output=True)
+        restic('init')
+        restic('backup', '--host', 'jano-production', '--tag', 'periodic-verified', str(capture))
+        shutil.rmtree(capture)
+        config = self.root / 'config/jano-periodic'
+        config.mkdir(parents=True)
+        settings = config / 'settings'
+        settings.write_text(f'JANO_PERIODIC_DIR={periodic}\nRESTIC_REPOSITORY={periodic}/repo\nRESTIC_PASSWORD_FILE={password}\n')
+        settings.chmod(0o600)
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        with tarfile.open(fileobj=io.BytesIO(result.stdout)) as archive:
+            self.assertEqual(archive.extractfile('database.dump').read(), dump)
+            with tarfile.open(fileobj=io.BytesIO(archive.extractfile('uploads.tar.gz').read()), mode='r:gz') as uploads:
+                self.assertEqual(uploads.extractfile('./image.txt').read(), b'image-v2')
+        self.assertFalse(list(periodic.glob('export.*')))
+        newer = self.state / 'backups/20261112T170000Z-abcdef12'
+        shutil.copytree(self.backup, newer)
+        (self.state / 'last-backup').write_text(str(newer))
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        with tarfile.open(fileobj=io.BytesIO(result.stdout)) as archive:
+            self.assertEqual(archive.extractfile('database.dump').read(), b'fixture database.dump')
+        (self.state / 'last-backup').write_text(str(self.backup))
+        snapshots = json.loads(subprocess.run(['restic', 'snapshots', '--json'], env=environment, check=True, capture_output=True).stdout)
+        pack = next(path for path in (periodic / 'repo/data').rglob('*') if path.is_file())
+        pack.unlink()
+        shutil.rmtree(self.root / 'cache', ignore_errors=True)
+        self.assertNotEqual(len(snapshots), 0)
+        self.assert_rejected()
 
     def run_pull(self, settings):
         return subprocess.run(

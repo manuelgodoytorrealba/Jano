@@ -61,7 +61,34 @@ antes de seguir el procedimiento de restauración de `deployment.md`. No restaur
 sobre producción para ensayar la recuperación.
 
 Esta instalación protege frente a la pérdida del servidor, pero no frente a la
-pérdida simultánea de ambos equipos en la misma ubicación. Quedan pendientes un
-tercer destino permanente y copias periódicas nuevas de producción. Estas últimas
-deben preservar la coordinación entre PostgreSQL y uploads; no programar un dump
-en caliente junto a archivos cambiantes como si fuera una copia coordinada.
+pérdida simultánea de ambos equipos en la misma ubicación. Queda pendiente un
+tercer destino permanente.
+
+## Copias coordinadas periódicas
+
+El temporizador `jano-periodic-backup.timer` del servidor crea un punto diario a
+las 02:00. Detiene frontend y backend, vuelca PostgreSQL y copia los uploads a una
+zona temporal privada; después reanuda ambos servicios y verifica su salud antes
+de cifrar y verificar el snapshot incremental. No se borran snapshots ni copias
+anteriores. El proceso rechaza otro escritor del volumen, un bloqueo de despliegue
+existente y menos de 4 GiB libres en el repositorio. La pausa depende del tamaño
+de los datos y las peticiones en curso.
+
+El repositorio y su contraseña se configuran en el servidor mediante
+`~/.config/jano-periodic/settings`. El directorio configurado contiene `repo`,
+se recomienda en `/srv/media/jano-periodic` y debe ser privado (0700). La
+contraseña debe tener una copia independiente. El espacio seguirá creciendo con
+los datos nuevos: el control de espacio no sustituye la vigilancia de capacidad.
+
+El exportador elige el punto verificado más reciente entre el periódico y el de
+despliegue, reconstruye el formato existente y verifica las sumas antes de enviarlo
+al PC. Si el PC está apagado, el snapshot permanece en el servidor y la copia
+externa espera la siguiente ejecución; sigue siendo necesaria la alerta de edad.
+
+`jano-periodic-recover.service` y `ExecStopPost` intentan reanudar la aplicación
+si el proceso se interrumpe durante la captura. Si no lo consiguen, permanecen el
+marcador y el bloqueo para evitar operaciones inseguras. Revisar los registros de
+ambos servicios antes de intervenir. Una carpeta temporal sin el marcador de
+propiedad del proceso no se elimina automáticamente. Las pruebas aisladas son
+`python3 infra/scripts/test-periodic-backup.py` y
+`python3 infra/scripts/test-export-backup.py`.
