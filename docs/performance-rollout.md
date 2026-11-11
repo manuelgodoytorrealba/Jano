@@ -138,3 +138,11 @@ ni se eliminan archivos que también se usan como miniaturas del catálogo.
 - Local paired service measurements, 3 samples each, same backend and database: `arte` 192.6→197.6ms, `arte moderno` 456.5→394.1ms, `madera japonesa` 736.8→391.5ms. Full response hashes were identical for all 18 runs. This is a small local sample, not field latency.
 - A bounded local test used 8 total mixed searches per stage, with 1, 4 and 8 closed-loop workers, before/after respectively: 3060→2051ms, 1042→689ms, 769→481ms total; no errors. This local host and small batch do not establish production capacity.
 - Backend tests cover the existing ranking/merge behavior and a new test caps concurrent queries at two. Production requires the normal coordinated backup/deployment and public read-only remeasurement.
+
+### Phase 8 — reuse complex-query full-text documents (2026-11-11)
+
+- Keep the weighted full-text lateral query behind `OFFSET 0` only for nonliteral queries. PostgreSQL can then reuse its document for matching and ranking. Literal queries keep their existing path so nonmatching entities do not incur document construction.
+- No schema, ranking weights, permissions, dependencies or cache changes.
+- Local comparison: 60 query/locale/visibility/filter combinations preserve every returned row, score and order. Backend: 468 tests, typecheck and targeted lint pass.
+- Interleaved read-only SQL comparisons on the production database (3 pairs/query, limit 60): `arte moderno` median 1009.6 → 987.6 ms; `arte OR pintura` 1237.6 → 1040.2 ms; `arte -moderno` 1112.6 → 1009.4 ms. All results identical. These are query timings, not end-user page load or field percentiles.
+- A separate similarity-expression reuse prototype showed no consistent benefit and was discarded. Single-word latency remains a priority; this change does not claim to improve it.

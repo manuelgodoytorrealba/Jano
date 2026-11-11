@@ -266,6 +266,7 @@ export class SearchQueryRepository {
         ) period_data
       ) detail_data
       ${relationJoin}
+      -- Keep complex-query documents from being rebuilt for both filtering and ranking.
       CROSS JOIN LATERAL (
         SELECT
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
@@ -275,6 +276,7 @@ export class SearchQueryRepository {
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
           setweight(to_tsvector('simple', coalesce(relation_data.relation_text, '')), 'C') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
+        ${singleLiteralWord ? Prisma.empty : Prisma.sql`OFFSET 0`}
       ) weighted
       WHERE 1 = 1
         ${visibilityFilter}
