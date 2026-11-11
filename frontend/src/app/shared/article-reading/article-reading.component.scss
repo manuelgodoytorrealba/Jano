@@ -100,7 +100,10 @@ dialog p {
     order: 0;
   }
   app-rich-text {
-    font-size: 19px;
+    --rt-reading-size: 1.25rem;
+    --rt-reading-line-height: 1.65;
+    font-size: 1.25rem;
+    line-height: 1.65;
   }
   img {
     max-height: 480px;
