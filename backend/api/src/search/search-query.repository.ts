@@ -249,17 +249,35 @@ export class SearchQueryRepository {
           ) >= ${trigramThreshold}
         )
     `;
+    const plainConjunction =
+      /^[\p{L}\p{N}]+(?:\s+[\p{L}\p{N}]+)+$/u.test(q) &&
+      !q.split(/\s+/).some((term) => /^or$/i.test(term));
+    // shortcut: assumes simple has no stemming/synonyms; revisit this precheck if its dictionary changes.
+    // Use PostgreSQL's lexemes so ignored tokens cannot exclude a valid full-text match.
+    const fullTextCandidate = plainConjunction
+      ? Prisma.sql`concat_ws(' ', e."title", translated.title_text, alias_data.alias_text,
+          tag_data.tag_text, detail_data.detail_text, e."summary", translated.summary_text,
+          relation_data.relation_text, e."content", translated.content_text)
+          ILIKE ALL (ARRAY(
+            SELECT '%' || term || '%'
+            FROM unnest(tsvector_to_array(to_tsvector('simple', ${q}))) AS term
+            WHERE length(term) >= 4
+          ))`
+      : Prisma.sql`true`;
+
     const weightedDocument = Prisma.sql`
       -- Keep complex-query documents from being rebuilt for both filtering and ranking.
       CROSS JOIN LATERAL (
         SELECT
+          CASE WHEN ${fullTextCandidate} THEN
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
           setweight(to_tsvector('simple', alias_data.alias_text), 'A') ||
           setweight(to_tsvector('simple', tag_data.tag_text), 'B') ||
           setweight(to_tsvector('simple', detail_data.detail_text), 'B') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
           setweight(to_tsvector('simple', coalesce(relation_data.relation_text, '')), 'C') ||
-          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C')
+          ELSE ''::tsvector END AS document
         ${singleLiteralWord ? Prisma.empty : Prisma.sql`OFFSET 0`}
       ) weighted
     `;

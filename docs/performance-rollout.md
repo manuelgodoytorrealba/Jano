@@ -154,3 +154,12 @@ ni se eliminan archivos que también se usan como miniaturas del catálogo.
 - Add entity ID as the last tie-breaker. Previously fully tied rows could change order or membership at LIMIT with a different execution plan. Such ties now have deterministic results; this can change which equally ranked item appears compared with older releases.
 - 85 local query/filter/locale/visibility combinations match the previous SQL exactly when both use that final tie-breaker. Full service local paired medians (5 pairs): `arte` 194.7 → 65.7 ms, `picasso` 69.5 → 70.3 ms, `madera japonesa` 379.7 → 374.9 ms. This is not a universal single-word speedup.
 - 468 backend tests pass, including checks that the literal path retains tied priority groups and that complex queries preserve their existing document-reuse path. Typecheck and lint pass. No migrations, dependencies or stale-data caches.
+
+### Phase 10 — skip impossible full-text conjunctions (2026-11-11)
+
+- Plain multiword searches first check whether their required lexemes appear in the same source text used for the weighted document. If a required lexeme is absent, its full-text match/rank is zero and document construction can be skipped. Existing substring/trigram matching still runs.
+- PostgreSQL extracts the lexemes with the existing `simple` dictionary; only lexemes of length >= 4 participate in the inexpensive check. Empty arrays allow the normal path. Queries with quotes, punctuation, negation or OR retain their existing path.
+- Local: 115 before/after query/filter/locale/draft combinations preserve full rows, scores and order; 876 synthetic query/text combinations include accents, Unicode, short terms and numbers, with no excluded positive-rank match. 478 backend tests, typecheck and lint pass.
+- Paired full-service timings on production data (3 pairs): `arte moderno` median 1072.8 → 598.6 ms; `madera japonesa` 1087.3 → 570.4 ms. All returned responses match exactly. Laboratory samples, not field percentiles.
+- No schema/cache/dependency changes. A scoped JIT-disable experiment offered a smaller benefit and was discarded to avoid extra transactions and round trips.
+- Assumption: the existing PostgreSQL `simple` configuration remains a lowercase-only dictionary without stemming/synonym rewriting; revisit the precheck if search dictionaries change. See [PostgreSQL dictionaries](https://www.postgresql.org/docs/current/textsearch-dictionaries.html).
