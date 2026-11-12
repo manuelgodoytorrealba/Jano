@@ -911,6 +911,8 @@ model SourceRefTranslation {
 }
 
 model ResearchProject {
+  savedBy SavedResearchPublication[]
+  collectionItems CollectionResearchPublication[]
   evidenceDecisions ResearchEvidenceDecision[]
   id            String                @id @default(cuid())
   title         String
@@ -1691,6 +1693,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  savedResearchPublications SavedResearchPublication[]
   savedEntities             SavedEntity[]
   collections               Collection[]
   discoverySignals          UserDiscoverySignal[]
@@ -1779,6 +1782,7 @@ model Collection {
   user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   coverMedia Media?             @relation("CollectionCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
   items      CollectionEntity[]
+  researchItems CollectionResearchPublication[]
 
   @@unique([userId, name])
   @@index([userId])
@@ -1887,4 +1891,23 @@ model ResearchOutlineSectionMaterial {
   @@id([sectionId, materialVersionId])
   @@index([materialVersionId])
   @@index([sectionId, sortOrder])
+}
+
+model SavedResearchPublication {
+  userId String
+  researchId String
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  research ResearchProject @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  @@id([userId, researchId])
+  @@index([researchId])
+}
+model CollectionResearchPublication {
+  collectionId String
+  researchId String
+  createdAt DateTime @default(now())
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  research ResearchProject @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  @@id([collectionId, researchId])
+  @@index([researchId])
 }

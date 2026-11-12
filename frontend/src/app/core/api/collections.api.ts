@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { SavedResearchItem } from './saved.api';
 import { apiUrl } from './api-base';
 import { PublicEntity, PublicEntityMediaAsset, PublicEntityResolvedMedia } from './entities.models';
 
@@ -41,6 +42,7 @@ export type CollectionGraph = {
 };
 
 export type Collection = {
+  researchItems?: SavedResearchItem[];
   id: string;
   userId: string;
   name: string;
@@ -84,9 +86,9 @@ export class CollectionsApi {
     return this.http.patch<Collection>(`${this.baseUrl}/${collectionId}`, data);
   }
 
-  addEntity(collectionId: string, entityId: string) {
+  addEntity(collectionId: string, entityId: string, target: 'entity' | 'research' = 'entity') {
     return this.http.post<CollectionItem>(
-      `${this.baseUrl}/${collectionId}/entities/${entityId}`,
+      `${this.baseUrl}/${collectionId}/${target === 'research' ? 'research' : 'entities'}/${entityId}`,
       {},
     );
   }
@@ -97,9 +99,9 @@ export class CollectionsApi {
     });
   }
 
-  removeEntity(collectionId: string, entityId: string) {
+  removeEntity(collectionId: string, entityId: string, target: 'entity' | 'research' = 'entity') {
     return this.http.delete<{ ok: boolean }>(
-      `${this.baseUrl}/${collectionId}/entities/${entityId}`,
+      `${this.baseUrl}/${collectionId}/${target === 'research' ? 'research' : 'entities'}/${entityId}`,
     );
   }
 }

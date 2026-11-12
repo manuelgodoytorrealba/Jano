@@ -33,30 +33,22 @@
           </p>
         </div>
         <div class="publication__actions">
-          <button
-            type="button"
-            class="publication__button publication__button--primary"
-            (click)="startReading()"
+          <app-content-actions
+            [isSaved]="saved.isSaved()"
+            [saveLoading]="auth.isLoggedIn && (!saved.saveStatusResolved() || saved.saveLoading())"
+            [collectionsOpen]="saved.showCollectionsPanel()"
+            (saveToggle)="savePublication(publication.id)"
+            (collectionsToggle)="collectPublication(publication.id)"
+            (shareToggle)="sharePublication(publication.title, publication.objective)"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 5v15M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Z" />
-            </svg>
-            {{ 'research.publication.read' | t }}
-          </button>
-          <button
-            type="button"
-            class="publication__button"
-            (click)="sharePublication(publication.title, publication.objective)"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <path d="m9 10 6-4M9 14l6 4" />
-            </svg>
-            {{ 'button.share' | t }}
-          </button>
+            @if (saved.showCollectionsPanel() && auth.isLoggedIn) {
+              <app-collections-chooser [targetId]="publication.id" [saved]="saved" />
+            }
+          </app-content-actions>
         </div>
+        @if (saved.feedback()) {
+          <p class="publication__feedback" role="status">{{ saved.feedback() }}</p>
+        }
         @if (shareFeedback()) {
           <p class="publication__feedback" role="status">{{ shareFeedback() | t }}</p>
         }
@@ -78,29 +70,12 @@
         />
       </ng-template>
       <ng-template #mapInvite>
-        <button type="button" class="publication__map-invite" (click)="openOverlay('map')">
-          <span
-            >{{ 'research.publication.exploreConnections' | t
-            }}<small
-              >{{ publication.entities.length }} {{ 'research.publication.entities' | t }} ·
-              {{ publication.relations.length }} {{ 'research.publication.relations' | t }}</small
-            ></span
-          >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            aria-hidden="true"
-          >
-            <rect x="9" y="2" width="6" height="6" rx="1" />
-            <path d="M12 8v5M5 17v-4h14v4" />
-            <rect x="2" y="17" width="6" height="5" rx="1" />
-            <rect x="16" y="17" width="6" height="5" rx="1" />
-          </svg>
-        </button>
+        <app-connections-invite
+          class="publication__map-invite"
+          [entities]="publication.entities.length"
+          [relations]="publication.relations.length"
+          (open)="openOverlay('map')"
+        />
       </ng-template>
       <div
         class="publication__workspace"
@@ -374,46 +349,17 @@
           <header class="publication__panel-head">
             <h2>{{ 'research.publication.connectionsHint' | t }}</h2>
             @if (publication.entities.length) {
-              @if (isMobile()) {
-                <ng-container *ngTemplateOutlet="mapInvite" />
-              } @else {
-                <button type="button" class="publication__button" (click)="openOverlay('map')">
-                  {{ 'research.publication.exploreConnections' | t }} ↗
-                </button>
-              }
+              <ng-container *ngTemplateOutlet="mapInvite" />
             }
           </header>
           <div class="publication__entities">
             @for (item of publication.entities; track item.id) {
-              @if (item.canonicalEntity) {
-                <a
-                  class="publication__entity"
-                  [routerLink]="['/entity', item.canonicalEntity.slug]"
-                >
-                  @if (item.canonicalEntity.imageUrl) {
-                    <img
-                      [src]="item.canonicalEntity.imageUrl"
-                      [alt]="item.canonicalEntity.title"
-                      loading="lazy"
-                    />
-                  }
-                  <div>
-                    <h3>{{ item.canonicalEntity.title }}</h3>
-                    @if (item.summary) {
-                      <p>{{ item.summary }}</p>
-                    }
-                  </div>
-                </a>
-              } @else {
-                <article class="publication__entity">
-                  <div>
-                    <h3>{{ item.title }}</h3>
-                    @if (item.summary) {
-                      <p>{{ item.summary }}</p>
-                    }
-                  </div>
-                </article>
-              }
+              <app-connection-card
+                [title]="item.canonicalEntity?.title ?? item.title"
+                [slug]="item.canonicalEntity?.slug ?? null"
+                [image]="item.canonicalEntity?.imageUrl"
+                [summary]="item.summary"
+              />
             } @empty {
               <p class="publication__empty">{{ 'research.publication.noEntities' | t }}</p>
             }
@@ -431,17 +377,11 @@
           <ol class="publication__sources">
             @for (item of publication.sources; track item.source.id) {
               <li>
-                <div>
-                  <h3>{{ item.source.title }}</h3>
+                <app-knowledge-source [title]="item.source.title" [url]="item.source.url">
                   @if (sourceMeta(item.source)) {
                     <p>{{ sourceMeta(item.source) }}</p>
                   }
-                </div>
-                @if (item.source.url) {
-                  <a [href]="item.source.url" target="_blank" rel="noopener noreferrer"
-                    >{{ 'research.publication.openSource' | t }} ↗</a
-                  >
-                }
+                </app-knowledge-source>
               </li>
             } @empty {
               <li>

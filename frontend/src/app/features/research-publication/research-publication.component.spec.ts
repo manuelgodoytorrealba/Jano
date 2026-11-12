@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
@@ -88,6 +89,7 @@ describe('Public research reading', () => {
     await TestBed.configureTestingModule({
       imports: [ResearchPublicationComponent],
       providers: [
+        provideHttpClient(),
         provideRouter([]),
         { provide: NavigationMemoryService, useValue: memory },
         {
@@ -123,6 +125,25 @@ describe('Public research reading', () => {
     fixture.detectChanges();
     return fixture;
   }
+
+  it('replaces the read action with the shared saved content controls and retains the publication destination at login', () => {
+    const fixture = TestBed.createComponent(ResearchPublicationComponent);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelectorAll('.publication__actions app-content-actions button').length).toBe(
+      3,
+    );
+    expect(root.querySelector('.publication__actions')?.textContent).not.toContain(
+      'research.publication.read',
+    );
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    root
+      .querySelector<HTMLButtonElement>('.publication__actions app-content-actions button')!
+      .click();
+    expect(navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { redirectTo: '/research/atlas' },
+    });
+  });
 
   it('restores the reading visit in its actual scroll container after returning from an entity', async () => {
     memory.read.mockReturnValue({

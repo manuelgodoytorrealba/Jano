@@ -34,46 +34,16 @@
           </div>
           @if (showActions) {
             <div class="entity-context__actions">
-              <button
-                type="button"
-                (click)="onSave(entity.id)"
-                [disabled]="saveLoading"
-                [attr.aria-pressed]="isSaved"
-                [attr.aria-busy]="saveLoading"
-                [attr.aria-label]="
-                  isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave')
-                "
+              <app-content-actions
+                [isSaved]="isSaved"
+                [saveLoading]="saveLoading"
+                [collectionsOpen]="collectionsOpen"
+                (saveToggle)="onSave(entity.id)"
+                (collectionsToggle)="onCollections()"
+                (shareToggle)="onShare()"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 3h12v18l-6-4-6 4z" [attr.fill]="isSaved ? 'currentColor' : 'none'" />
-                </svg>
-                <span>{{
-                  isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave')
-                }}</span>
-                <span class="entity-context__action-sizer" aria-hidden="true">{{
-                  i18n.t('detail.favoriteSaved')
-                }}</span>
-              </button>
-              <button
-                type="button"
-                class="entity-collections-toggle"
-                (click)="onCollections()"
-                [attr.aria-expanded]="collectionsOpen"
-                aria-controls="entity-collections-panel"
-                [attr.aria-label]="i18n.t('mySpace.collections')"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v12H3z" /></svg>
-                <span>{{ i18n.t('mySpace.collections') }}</span>
-              </button>
-              <button type="button" (click)="onShare()" [attr.aria-label]="i18n.t('button.share')">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <path d="m9 10 6-4M9 14l6 4" />
-                </svg>
-                <span>{{ i18n.t('button.share') }}</span>
-              </button>
+                <ng-content select="[entityCollections]" />
+              </app-content-actions>
               @if (actionFeedback) {
                 <p
                   class="entity-action-feedback"
@@ -83,7 +53,6 @@
                   {{ actionFeedback }}
                 </p>
               }
-              <ng-content select="[entityCollections]"></ng-content>
             </div>
           }
         </div>
@@ -276,7 +245,9 @@
       </ng-template>
 
       @if (showEditorialFlow(entity) && (!isMobileViewport || !workspaceFocused)) {
-        <section class="entity-information entity-section entity-glass entity-section--wide">
+        <section
+          class="entity-information entity-section entity-glass entity-section--wide jano-research-studio"
+        >
           <header
             class="entity-information__header"
             [class.entity-information__header--article]="isArticle(entity)"
@@ -527,6 +498,16 @@
               <div class="entity-section__head">
                 <p class="section-label">{{ i18n.t('entity.relations') }}</p>
               </div>
+              @if (
+                renderGraph && (entity.outgoing?.length ?? 0) + (entity.incoming?.length ?? 0) > 0
+              ) {
+                <app-connections-invite
+                  class="entity-connections-invite"
+                  [entities]="connectionCounts(entity).entities"
+                  [relations]="connectionCounts(entity).relations"
+                  (open)="openMobileWorkspace('graph')"
+                />
+              }
               <div class="relations-group">
                 <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
                 @if ((entity.outgoing?.length ?? 0) === 0) {
@@ -534,42 +515,30 @@
                 } @else {
                   <ul class="relations-list">
                     @for (r of visibleOutgoingRelations(entity); track r.id) {
-                      <li class="relation-card relation-card--friendly entity-glass">
-                        <app-relation-controls
-                          [endpoint]="r.to"
-                          [label]="i18n.t('entity.open') + ': ' + r.to.title"
-                        />
-                        <div class="relation-card__topline">
-                          <span class="relation-card__label">{{
-                            r.relationTypeLabel ??
-                              relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
-                          }}</span>
-                          <a
-                            class="relation-card__link"
-                            [routerLink]="['/entity', r.to.slug]"
-                            [attr.aria-label]="i18n.t('entity.open') + ': ' + r.to.title"
-                            >{{ r.to.title }}</a
-                          >
-                          <span class="relation-card__type">{{ entityTypeLabel(r.to.type) }}</span>
-                        </div>
-                        @if (r.justification) {
-                          @if (isMobileViewport) {
-                            <details class="relation-card__explanation">
+                      <li>
+                        <app-connection-card
+                          [title]="r.to.title"
+                          [slug]="r.to.slug"
+                          [entity]="r.to"
+                          [summary]="r.to.summary"
+                        >
+                          <p class="connection-relation-label">
+                            {{
+                              r.relationTypeLabel ??
+                                relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
+                            }}
+                            · {{ entityTypeLabel(r.to.type) }}
+                          </p>
+                          @if (r.justification) {
+                            <details class="connection-explanation">
                               <summary>{{ i18n.t('search.whyRelated') }}</summary>
                               <app-rich-text
                                 [text]="r.justification"
                                 [previewAccess]="richTextPreviewAccess"
                               />
                             </details>
-                          } @else {
-                            <div class="relation-card__text">
-                              <app-rich-text
-                                [text]="r.justification"
-                                [previewAccess]="richTextPreviewAccess"
-                              ></app-rich-text>
-                            </div>
                           }
-                        }
+                        </app-connection-card>
                       </li>
                     }
                   </ul>
@@ -597,45 +566,31 @@
                 } @else {
                   <ul class="relations-list">
                     @for (r of visibleIncomingRelations(entity); track r.id) {
-                      <li class="relation-card relation-card--friendly entity-glass">
-                        <app-relation-controls
-                          [endpoint]="r.from"
-                          [label]="i18n.t('entity.open') + ': ' + r.from.title"
-                        />
-                        <div class="relation-card__topline">
-                          <span class="relation-card__label">{{
-                            r.relationTypeInverseLabel ??
-                              r.relationTypeLabel ??
-                              relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
-                          }}</span>
-                          <a
-                            class="relation-card__link"
-                            [routerLink]="['/entity', r.from.slug]"
-                            [attr.aria-label]="i18n.t('entity.open') + ': ' + r.from.title"
-                            >{{ r.from.title }}</a
-                          >
-                          <span class="relation-card__type">{{
-                            entityTypeLabel(r.from.type)
-                          }}</span>
-                        </div>
-                        @if (r.justification) {
-                          @if (isMobileViewport) {
-                            <details class="relation-card__explanation">
+                      <li>
+                        <app-connection-card
+                          [title]="r.from.title"
+                          [slug]="r.from.slug"
+                          [entity]="r.from"
+                          [summary]="r.from.summary"
+                        >
+                          <p class="connection-relation-label">
+                            {{
+                              r.relationTypeInverseLabel ??
+                                r.relationTypeLabel ??
+                                relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
+                            }}
+                            · {{ entityTypeLabel(r.from.type) }}
+                          </p>
+                          @if (r.justification) {
+                            <details class="connection-explanation">
                               <summary>{{ i18n.t('search.whyRelated') }}</summary>
                               <app-rich-text
                                 [text]="r.justification"
                                 [previewAccess]="richTextPreviewAccess"
                               />
                             </details>
-                          } @else {
-                            <div class="relation-card__text">
-                              <app-rich-text
-                                [text]="r.justification"
-                                [previewAccess]="richTextPreviewAccess"
-                              ></app-rich-text>
-                            </div>
                           }
-                        }
+                        </app-connection-card>
                       </li>
                     }
                   </ul>
@@ -670,93 +625,47 @@
                 <div class="entity-section__head">
                   <p class="section-label">{{ i18n.t('entity.sources') }}</p>
                 </div>
-                <ul class="relations-list">
+                <ol class="entity-source-list">
                   @for (r of entity.sourceRefs; track r.id) {
                     @let sourceLink = externalSourceLink(r.source?.url ?? r.url);
-                    <li class="relation-source">
-                      <div class="source-reference">
-                        <span class="source-reference__icon" aria-hidden="true">
-                          <svg class="source-reference__symbol" viewBox="0 0 32 32">
-                            <path
-                              class="entity-information__icon-shape"
-                              d="M7 3h12l6 6v19a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
-                            />
-                            <path
-                              class="entity-information__icon-detail"
-                              d="M19 3v6h6M10 10h5M10 14h10M10 18h7M10 22h4"
-                            />
-                            <path
-                              d="m18 24 2.5-2.5a3 3 0 0 1 4.2 4.2L23 27.4m-3-1.8-2.5 2.5a3 3 0 0 1-4.2-4.2L15 22.2"
-                            />
-                          </svg>
-                        </span>
-                        <div class="source-reference__content">
-                          <span class="source-reference__type">{{
-                            sourceTypeLabel(r.source?.type ?? r.sourceType)
-                          }}</span>
-                          <span class="relation-card__text">
-                            @if (sourceLink) {
-                              <a
-                                class="source-reference__link"
-                                [href]="sourceLink.href"
-                                target="_blank"
-                                rel="noopener"
-                                [attr.aria-label]="
-                                  (r.source?.title ?? r.sourceTitle ?? sourceLink.domain) +
-                                  ' · ' +
-                                  i18n.t('source.opensNewTab')
-                                "
-                              >
-                                <strong>{{
-                                  r.source?.title ?? r.sourceTitle ?? sourceLink.domain
-                                }}</strong>
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                  <path
-                                    d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"
-                                  />
-                                </svg>
-                              </a>
-                            } @else {
-                              <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
-                            }
-                            @if (r.source?.author || r.sourceAuthor) {
-                              — {{ r.source?.author ?? r.sourceAuthor }}
-                            }
-                            @if (
-                              r.source?.publisher ||
-                              r.sourcePublisher ||
-                              r.source?.year ||
-                              r.sourceYear
-                            ) {
-                              ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}
-                              @if (r.source?.year || r.sourceYear) {
-                                , {{ r.source?.year ?? r.sourceYear }}
-                              }
-                              )
-                            }
-                            @if (r.page) {
-                              — p. {{ r.page }}
-                            }
-                          </span>
-                          @if (sourceLink) {
-                            <span class="source-reference__domain">{{ sourceLink.domain }}</span>
+                    <li>
+                      <app-knowledge-source
+                        [title]="
+                          r.source?.title ??
+                          r.sourceTitle ??
+                          sourceLink?.domain ??
+                          sourceTypeLabel(r.source?.type ?? r.sourceType)
+                        "
+                        [url]="r.source?.url ?? r.url"
+                      >
+                        <p class="connection-source-meta">
+                          {{ sourceTypeLabel(r.source?.type ?? r.sourceType) }}
+                          @if (r.source?.author || r.sourceAuthor) {
+                            · {{ r.source?.author ?? r.sourceAuthor }}
                           }
-                        </div>
-                      </div>
-                      @if (r.quote) {
-                        <div class="quote-block">“{{ r.quote }}”</div>
-                      }
-                      @if (r.note) {
-                        <div class="relation-card__text">
-                          <app-rich-text
-                            [text]="r.note"
-                            [previewAccess]="richTextPreviewAccess"
-                          ></app-rich-text>
-                        </div>
-                      }
+                          @if (r.source?.publisher || r.sourcePublisher) {
+                            · {{ r.source?.publisher ?? r.sourcePublisher }}
+                          }
+                          @if (r.source?.year || r.sourceYear) {
+                            · {{ r.source?.year ?? r.sourceYear }}
+                          }
+                          @if (r.page) {
+                            · p. {{ r.page }}
+                          }
+                        </p>
+                        @if (sourceLink) {
+                          <p class="connection-source-meta">{{ sourceLink.domain }}</p>
+                        }
+                        @if (r.quote) {
+                          <blockquote class="quote-block">“{{ r.quote }}”</blockquote>
+                        }
+                        @if (r.note) {
+                          <app-rich-text [text]="r.note" [previewAccess]="richTextPreviewAccess" />
+                        }
+                      </app-knowledge-source>
                     </li>
                   }
-                </ul>
+                </ol>
               </section>
             } @else {
               <p class="text-muted">{{ i18n.t('entity.noSources') }}</p>

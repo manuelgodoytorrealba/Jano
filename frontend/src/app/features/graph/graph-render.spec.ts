@@ -104,3 +104,32 @@ describe('experimental graph thumbnails', () => {
     });
   });
 });
+
+it('keeps desktop geometry in world space so a doubled camera zoom doubles both photos and distances', async () => {
+  const { buildRenderedGraphNodes } = await import('./graph-render');
+  const options = {
+    nodes: [
+      {
+        id: 'a',
+        label: 'a',
+        slug: 'a',
+        type: 'ARTWORK',
+        degree: 1,
+        image: '/api/entities/a/graph-thumbnail',
+      },
+    ],
+    positions: { a: { x: 120, y: 50 } },
+    centerId: 'a',
+    selectedNodeId: 'a',
+    selectedNeighbors: new Set<string>(),
+    fitScale: 0.5,
+    spatialNodes: true,
+  };
+  const initial = buildRenderedGraphNodes({ ...options, viewportScale: 0.5 })[0];
+  const zoomed = buildRenderedGraphNodes({ ...options, viewportScale: 1 })[0];
+  expect(initial.size).toBe(24);
+  expect(initial.renderScale).toBe(1);
+  expect(zoomed.transform).toBe(initial.transform);
+  expect(zoomed.size).toBe(initial.size);
+  expect(zoomed.size * 1).toBe(initial.size * 0.5 * 2);
+});

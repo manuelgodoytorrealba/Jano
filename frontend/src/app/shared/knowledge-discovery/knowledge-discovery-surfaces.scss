@@ -1,0 +1,14 @@
+:host {
+  --knowledge-border: rgba(255, 255, 255, 0.12);
+  --knowledge-inset: rgba(0, 0, 0, 0.16);
+  --knowledge-surface:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(24, 26, 25, 0.94);
+}
+:host-context([data-theme='light']) {
+  --knowledge-border: rgba(20, 20, 20, 0.1);
+  --knowledge-inset: rgba(22, 20, 18, 0.035);
+  --knowledge-surface:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.66)),
+    rgba(242, 240, 236, 0.94);
+}

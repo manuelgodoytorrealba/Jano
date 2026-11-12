@@ -18,7 +18,8 @@ import { PublicEntity } from '../../core/api/entities.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { entitySymbol } from '../../shared/entity-symbols';
-import { relationDirectionLabel } from './entity-detail.presenter';
+import { ConnectionsInviteComponent } from '../../shared/knowledge-discovery/connections-invite.component';
+import { entityConnectionCounts, relationDirectionLabel } from './entity-detail.presenter';
 
 export function previewConnections(graph: GraphResponseDto) {
   const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
@@ -49,7 +50,7 @@ export function previewConnections(graph: GraphResponseDto) {
 @Component({
   selector: 'app-entity-connections-preview',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ConnectionsInviteComponent],
   templateUrl: './entity-connections-preview.component.html',
   styleUrl: './entity-connections-preview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +62,7 @@ export class EntityConnectionsPreviewComponent implements OnChanges, OnDestroy {
   @Output() readRelations = new EventEmitter<void>();
   readonly i18n = inject(I18nService);
   readonly symbol = entitySymbol;
+  readonly connectionCounts = entityConnectionCounts;
   readonly connections = signal<ReturnType<typeof previewConnections>>([]);
   readonly loading = signal(true);
   readonly failed = signal(false);

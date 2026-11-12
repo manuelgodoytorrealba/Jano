@@ -38,3 +38,7 @@ Research puede alimentar de nuevo una versión no publicada mediante incorporaci
 ## Ownership
 
 Publication posee identidad de obra, estructura pública, composición, versiones y Review editorial. Research conserva Outline, notas, dossier, Draft investigador y Review investigador. Biblioteca conserva los materiales; Publication posee únicamente su selección, placement y presentación editorial.
+
+## Favoritos y colecciones de lectura pública
+
+Las investigaciones publicadas pueden guardarse como favoritos y asociarse a colecciones personales mediante referencias al `ResearchProject` publicado. Estas referencias no promueven entidades al Knowledge Core, no copian el corpus y no conceden acceso al Research privado. Las lecturas personales sólo muestran publicaciones que siguen publicadas; las colecciones conservan su propiedad por usuario y su grafo continúa derivándose exclusivamente de entidades canónicas.

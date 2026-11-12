@@ -377,9 +377,6 @@
   margin-left: auto;
 }
 .publication__chapter-picker,
-.publication__map-invite {
-  display: none;
-}
 .publication__panel {
   padding-top: 26px;
 }
@@ -466,17 +463,16 @@
   padding-left: 24px;
 }
 .publication__sources li {
-  padding: 20px 0 20px 8px;
-  border-bottom: 1px solid var(--research-border-soft);
+  padding: 0;
 }
 .publication__sources li::marker {
   color: var(--research-text-muted);
   font-size: 12px;
 }
 .publication__sources p {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--research-text-soft);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.65;
   overflow-wrap: anywhere;
 }
@@ -663,39 +659,6 @@
   .publication__chapter-navigation .publication__button {
     max-width: 100%;
   }
-  .publication__map-invite {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    text-align: left;
-    margin-top: 24px;
-    padding: 18px;
-    align-items: center;
-    gap: 20px;
-    border: 1px solid var(--research-border-soft);
-    border-radius: 17px;
-    color: inherit;
-    font: inherit;
-    font-size: 17px;
-    cursor: pointer;
-    background: var(--publication-surface);
-  }
-  .publication__map-invite small {
-    display: block;
-    margin-top: 5px;
-    color: var(--research-text-soft);
-    font-size: 14px;
-  }
-  .publication__panel-head:has(.publication__map-invite) {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .publication__panel-head .publication__map-invite {
-    margin-top: 0;
-  }
-  .publication__map-invite svg {
-    flex-shrink: 0;
-  }
   .publication__index {
     grid-template-columns: 1fr;
   }
@@ -765,3 +728,8 @@
   display: contents;
 }
 @include opening.styles;
+
+.publication__panel-head:has(app-connections-invite) {
+  align-items: stretch;
+  flex-direction: column;
+}

@@ -55,6 +55,19 @@
         }
       </section>
 
+      @if (collection.researchItems?.length) {
+        <section class="entity-section entity-glass entity-section--wide">
+          <h2>{{ i18n.t('nav.research') }}</h2>
+          <ul class="relations-list">
+            @for (item of collection.researchItems; track item.researchId) {
+              <li>
+                <a [routerLink]="['/research', item.researchId]">{{ item.research.title }}</a>
+                <p>{{ item.research.objective }}</p>
+              </li>
+            }
+          </ul>
+        </section>
+      }
       <section
         class="entity-section entity-glass entity-section--wide entity-story collection-title-block"
       >

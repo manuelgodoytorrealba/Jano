@@ -1,0 +1,37 @@
+<button
+  type="button"
+  (click)="saveToggle.emit()"
+  [disabled]="saveLoading"
+  [attr.aria-pressed]="isSaved"
+  [attr.aria-busy]="saveLoading"
+  [attr.aria-label]="isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave')"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M6 3h12v18l-6-4-6 4z" [attr.fill]="isSaved ? 'currentColor' : 'none'" />
+  </svg>
+  <span>{{ isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave') }}</span>
+  <span class="entity-context__action-sizer" aria-hidden="true">{{
+    i18n.t('detail.favoriteSaved')
+  }}</span>
+</button>
+<button
+  type="button"
+  class="entity-collections-toggle"
+  (click)="collectionsToggle.emit()"
+  [attr.aria-expanded]="collectionsOpen"
+  aria-controls="entity-collections-panel"
+  [attr.aria-label]="i18n.t('mySpace.collections')"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v12H3z" /></svg>
+  <span>{{ i18n.t('mySpace.collections') }}</span>
+</button>
+<button type="button" (click)="shareToggle.emit()" [attr.aria-label]="i18n.t('button.share')">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <path d="m9 10 6-4M9 14l6 4" />
+  </svg>
+  <span>{{ i18n.t('button.share') }}</span>
+</button>
+<ng-content />

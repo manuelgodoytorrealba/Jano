@@ -1,3 +1,4 @@
+import { CollectionsChooserComponent } from '../../shared/saved-content/collections-chooser.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -30,7 +31,7 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph' | 'info';
   standalone: true,
   selector: 'app-entity',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, EntityDetailViewComponent],
+  imports: [CollectionsChooserComponent, AsyncPipe, EntityDetailViewComponent],
   providers: [EntitySavedCollectionsFacade],
   templateUrl: './entity-detail-shell.component.html',
   styleUrls: ['./entity.component.scss'],

@@ -76,13 +76,14 @@ export function fitGraphBounds(
   bounds: GraphBounds,
   size: { width: number; height: number },
   padding = 96,
+  maxScale = 1.5,
 ): GraphViewport {
   const usableWidth = Math.max(size.width - padding * 2, 1);
   const usableHeight = Math.max(size.height - padding * 2, 1);
   const scale = clamp(
     Math.min(usableWidth / bounds.width, usableHeight / bounds.height),
     GRAPH_MIN_SCALE,
-    1.5,
+    maxScale,
   );
 
   return {

@@ -1,3 +1,5 @@
+import { ResearchBookmarksService } from './research-bookmarks.service';
+import { ResearchBookmarksController } from './research-bookmarks.controller';
 import { Module } from '@nestjs/common';
 import { AIModule } from '../ai/ai.module';
 import { LibraryModule } from '../library/library.module';
@@ -35,8 +37,9 @@ import { ResearchGenerationStatusService } from './research-generation-status.se
 import { ResearchOwnerGuard } from './research-owner.guard';
 @Module({
   imports: [PrismaModule, AIModule, SourcesModule, LibraryModule, EntitiesModule, KnowledgeModule],
-  controllers: [ResearchController, ResearchPublicController],
+  controllers: [ResearchController, ResearchPublicController, ResearchBookmarksController],
   providers: [
+    ResearchBookmarksService,
     ResearchOwnerGuard,
     ResearchOutlineService,
     ResearchDraftService,

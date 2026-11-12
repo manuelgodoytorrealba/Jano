@@ -1763,3 +1763,9 @@
   left: auto;
   right: calc(var(--app-safe-right) + var(--app-shell-gap));
 }
+
+@media (max-width: 860px) {
+  .app-chrome__detail-preferences {
+    display: none;
+  }
+}

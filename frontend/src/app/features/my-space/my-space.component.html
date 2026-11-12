@@ -83,6 +83,49 @@
                 </button>
               </div>
             </div>
+            @if (researchSaveError()) {
+              <p role="alert">{{ researchSaveError() }}</p>
+            }
+            @if (researchSaved$ | async; as researchSaved) {
+              @if (researchSaved.length && savedType() === 'all') {
+                <section class="saved-section">
+                  <h2>{{ i18n.t('nav.research') }}</h2>
+                  <div class="saved-gallery" [class.saved-gallery--list]="savedView() === 'list'">
+                    @for (row of researchSaved; track row.researchId) {
+                      @if (
+                        !savedQuery().trim() ||
+                        (row.research.title + ' ' + (row.research.objective ?? ''))
+                          .toLocaleLowerCase()
+                          .includes(savedQuery().trim().toLocaleLowerCase())
+                      ) {
+                        <article class="saved-card">
+                          <a class="saved-card__thumb" [routerLink]="['/research', row.researchId]"
+                            ><app-jano-media
+                              [media]="{ url: row.research.coverImageUrl }"
+                              [alt]="row.research.title"
+                              usage="card"
+                          /></a>
+                          <div class="saved-card__body">
+                            <a
+                              class="saved-card__title"
+                              [routerLink]="['/research', row.researchId]"
+                              >{{ row.research.title }}</a
+                            >
+                            <button
+                              class="saved-card__remove"
+                              type="button"
+                              (click)="removeSavedResearch(row.researchId)"
+                            >
+                              {{ i18n.t('button.remove') }}
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    }
+                  </div>
+                </section>
+              }
+            }
             @if (savedItems.length) {
               @if (visibleSaved(savedItems).length) {
                 <section class="saved-section">
@@ -176,7 +219,7 @@
                   <div class="space-empty__sub">{{ i18n.t('mySpace.changeFilters') }}</div>
                 </div>
               }
-            } @else {
+            } @else if (!(researchSaved$ | async)?.length) {
               <div class="space-empty">
                 <div class="space-empty__title">{{ i18n.t('mySpace.noSaved') }}</div>
                 <div class="space-empty__sub">{{ i18n.t('mySpace.noSavedSub') }}</div>

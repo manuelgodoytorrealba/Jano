@@ -37,3 +37,51 @@ describe('image graph initial framing', () => {
     expect(viewport.scale).toBeGreaterThan(icons.scale);
   });
 });
+
+describe('desktop spatial framing', () => {
+  it('fits an asymmetric graph around its bounds, including complete photos and caption space', () => {
+    const ids = ['center', 'top', 'left', 'right'];
+    const graph: GraphData = {
+      centerId: 'center',
+      nodes: ids.map((id) => ({
+        id,
+        slug: id,
+        label: id,
+        type: 'ARTWORK',
+        degree: 1,
+        image: '/api/entities/' + id + '/graph-thumbnail',
+      })),
+      edges: [],
+      entityTypes: ['ARTWORK'],
+      relationTypes: [],
+    };
+    const positions = {
+      center: { x: 0, y: 0 },
+      top: { x: 0, y: -520 },
+      left: { x: -340, y: 220 },
+      right: { x: 340, y: 220 },
+    };
+    for (const filteredNodeIds of [ids, ['center', 'top'], ['center']]) {
+      const viewport = createGraphFocusedViewport({
+        graph,
+        positions,
+        size: { width: 600, height: 440 },
+        filteredNodeIds,
+        haloSizeForNode: () => 80,
+        padding: 56,
+        preferBoundsCenter: true,
+        spatialNodes: true,
+      })!;
+      expect(viewport.scale).toBeLessThanOrEqual(0.9);
+      for (const id of filteredNodeIds) {
+        const p = positions[id as keyof typeof positions];
+        const x = viewport.x + p.x * viewport.scale,
+          y = viewport.y + p.y * viewport.scale;
+        expect(x - 40 * viewport.scale).toBeGreaterThan(0);
+        expect(x + 40 * viewport.scale).toBeLessThan(600);
+        expect(y - 40 * viewport.scale).toBeGreaterThan(0);
+        expect(y + 80 * viewport.scale).toBeLessThan(440);
+      }
+    }
+  });
+});

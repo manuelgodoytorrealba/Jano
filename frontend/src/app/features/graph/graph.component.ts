@@ -349,6 +349,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       selectedNodeId,
       selectedNeighbors,
       imagesEnabled: this.imagesEnabled(),
+      spatialNodes: !this.isMobileViewport,
       viewportScale: this.graphViewportReady ? this.graphScale() : 0,
       fitScale: this.graphNodeFitScale() ?? this.graphScale(),
       compactLabels: this.detailLayout && this.isMobileViewport,
@@ -508,9 +509,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     const incomingGraphData = changes['graphData']?.currentValue as
-      | GraphResponseDto
-      | null
-      | undefined;
+      GraphResponseDto | null | undefined;
     if (incomingGraphData && incomingGraphData !== this.appliedGraphData) {
       this.appliedGraphData = incomingGraphData;
       this.applyGraphResponse(incomingGraphData);
@@ -629,6 +628,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.velocities = {};
     this.pinCenterNode();
     this.warmupGraphLayout(shouldPreserveRuntime ? 10 : undefined);
+    if (!this.isMobileViewport && this.detailLayout && !shouldPreserveRuntime) {
+      for (const point of Object.values(this.positions)) {
+        point.x *= 0.7;
+        point.y *= 0.7;
+      }
+      stopGraphMotion(this.graph(), this.positions, this.velocities);
+    }
 
     this.entityTypeFilters.set(
       shouldPreserveRuntime
@@ -672,7 +678,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       : loadedState.graphViewportReady;
     this.initialGraphViewportReady.set(shouldPreserveRuntime);
     this.graphLayoutActive =
-      !(this.isMobileViewport && this.detailLayout && this.revealedNodeIds()) &&
+      !(this.detailLayout && (!this.isMobileViewport || this.revealedNodeIds())) &&
       loadedState.graphLayoutActive;
     this.graphLayoutFrames = loadedState.graphLayoutFrames;
     this.graphSettledFrames = loadedState.graphSettledFrames;
@@ -1013,6 +1019,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   restartExploration(): void {
+    if (!this.isMobileViewport && this.graph()) {
+      this.cancelPendingInitialGraphFocus(true);
+      this.stabilizeGraphLayout();
+      this.inspectorVisible.set(false);
+      this.hoveredNodeId.set(null);
+      this.hoveredEdgeId.set(null);
+      this.tooltip.set(null);
+      this.resetGraphView();
+      return;
+    }
     if (this.graphData && this.detailLayout && !this.overviewMode) {
       this.applyGraphResponse(this.graphData);
       this.resetGraphView();
@@ -1743,7 +1759,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       positions: this.positions,
       filteredNodeIds: this.graphDerived().filteredNodes.map((node) => node.id),
       haloSizeForNode: (nodeId) => this.nodeHaloSize(nodeId) + (this.overviewMode ? 92 : 56),
-      preferBoundsCenter: this.isMobileViewport || this.overviewMode,
+      preferBoundsCenter: true,
+      spatialNodes: !this.isMobileViewport,
       padding: this.isMobileViewport
         ? 76
         : this.overviewMode

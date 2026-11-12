@@ -18,6 +18,7 @@ export function createGraphFocusedViewport(options: {
   haloSizeForNode: (nodeId: string) => number;
   preferBoundsCenter?: boolean;
   padding?: number;
+  spatialNodes?: boolean;
 }): GraphViewport | null {
   const { graph, size, positions, filteredNodeIds, haloSizeForNode } = options;
   if (!graph || !size.width || !size.height) {
@@ -27,10 +28,12 @@ export function createGraphFocusedViewport(options: {
   // Initial-fit padding reserves the baseline photos; zoom growth uses this fit as its reference.
   const hasFixedSizeImages = graph.nodes.some((node) => !!node.image);
   const bounds = measureGraphBounds(filteredNodeIds, positions, (nodeId) =>
-    hasFixedSizeImages ? 0 : haloSizeForNode(nodeId) + 56,
+    hasFixedSizeImages && !options.spatialNodes
+      ? 0
+      : haloSizeForNode(nodeId) + (options.spatialNodes ? 0 : 56),
   );
   const fitted = bounds
-    ? fitGraphBounds(bounds, size, options.padding ?? 108)
+    ? fitGraphBounds(bounds, size, options.padding ?? 108, options.spatialNodes ? 0.9 : 1.5)
     : createGraphViewport(size.width, size.height, 0.82);
 
   if (options.preferBoundsCenter) {

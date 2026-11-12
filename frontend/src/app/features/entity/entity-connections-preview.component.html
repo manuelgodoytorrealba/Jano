@@ -65,10 +65,12 @@
   } @else if (failed()) {
     <p class="connections__status">{{ i18n.t('detail.connectionsUnavailable') }}</p>
   }
-  <button class="connections__open entity-mobile-map__open" type="button" (click)="openMap.emit()">
-    {{ i18n.t('detail.mobileOpenMap') }}
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" /></svg>
-  </button>
+  <app-connections-invite
+    class="entity-mobile-map__open"
+    [entities]="connectionCounts(entity).entities"
+    [relations]="connectionCounts(entity).relations"
+    (open)="openMap.emit()"
+  />
   <button class="connections__read" type="button" (click)="readRelations.emit()">
     {{ i18n.t('detail.mobileRelationList') }}
   </button>

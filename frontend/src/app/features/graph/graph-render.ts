@@ -86,6 +86,7 @@ export function buildRenderedGraphNodes(options: {
   viewportScale?: number;
   fitScale?: number;
   imagesEnabled?: boolean;
+  spatialNodes?: boolean;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
     ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
@@ -113,9 +114,13 @@ export function buildRenderedGraphNodes(options: {
     };
     const imageUrl =
       options.imagesEnabled === false ? null : graphNodeImage(node, options.viewportScale ?? 1);
-    // Grow geometry while compensating the group so captions and borders stay readable.
-    const size = (node.id === options.centerId ? 34 : 28) * zoomSize;
-    const renderScale = 1 / viewportScale;
+    // Desktop nodes share the camera scale; mobile retains screen-sized touch targets.
+    const size = options.spatialNodes
+      ? node.id === options.centerId
+        ? 24
+        : 20
+      : (node.id === options.centerId ? 34 : 28) * zoomSize;
+    const renderScale = options.spatialNodes ? 1 : 1 / viewportScale;
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {
@@ -141,7 +146,7 @@ export function buildRenderedGraphNodes(options: {
       haloSize: size + 12,
       shapePath: graphNodeShapePath(nodeVisual.shape, size),
       symbolPath: symbol.path,
-      labelTransform: `translate(0 ${size + 26})`,
+      labelTransform: `translate(0 ${size + 26})${options.spatialNodes ? ` scale(${1 / viewportScale})` : ''}`,
       labelTextAnchor: 'middle',
       nodeVisual,
       titleLabel: compactGraphLabel(

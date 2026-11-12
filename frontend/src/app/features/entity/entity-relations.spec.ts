@@ -1,11 +1,25 @@
-import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { entityConnectionCounts } from './entity-detail.presenter';
 import { describe, expect, it } from 'vitest';
 import { PublicEntity } from '../../core/api/entities.models';
 import { EntityDetailViewComponent } from './entity-detail-view.component';
-import { RelationControlsComponent } from './relation-controls.component';
 
 describe('entity relations', () => {
+  it('counts distinct graph entities and relations across both directions, including self links', () => {
+    const center = { id: 'center' };
+    const other = { id: 'other' };
+    const self = { id: 'self', from: center, to: center };
+    const entity = {
+      id: 'center',
+      outgoing: [{ id: 'a', to: other }, self],
+      incoming: [{ id: 'b', from: other }, self],
+    } as PublicEntity;
+    expect(entityConnectionCounts(entity)).toEqual({ entities: 2, relations: 3 });
+    expect(entityConnectionCounts({ id: 'empty' } as PublicEntity)).toEqual({
+      entities: 1,
+      relations: 0,
+    });
+  });
+
   it('expands and collapses both directions independently without dropping relations', () => {
     const view = Object.create(EntityDetailViewComponent.prototype) as EntityDetailViewComponent;
     view.outgoingRelationLimit = 3;
@@ -26,38 +40,5 @@ describe('entity relations', () => {
     expect(view.visibleOutgoingRelations(entity)).toHaveLength(3);
     expect(view.visibleIncomingRelations(entity)).toHaveLength(3);
     expect(view.visibleOutgoingRelations(null)).toEqual([]);
-  });
-
-  it('uses assigned media and falls back to the entity icon on a failed image', () => {
-    TestBed.configureTestingModule({
-      imports: [RelationControlsComponent],
-      providers: [provideRouter([])],
-    });
-    const fixture = TestBed.createComponent(RelationControlsComponent);
-    fixture.componentRef.setInput('endpoint', {
-      id: 'artist',
-      slug: 'artist',
-      title: 'Artist',
-      type: 'ARTIST',
-      resolvedMedia: { thumbnail: { url: '/uploads/artist.jpg' } },
-    });
-    fixture.componentRef.setInput('label', 'Open Artist');
-    fixture.detectChanges();
-    const root = fixture.nativeElement as HTMLElement;
-    expect(root.querySelector('img')?.getAttribute('src')).toBe('/uploads/artist.jpg');
-    root.querySelector('img')!.dispatchEvent(new Event('error'));
-    fixture.detectChanges();
-    expect(root.querySelector('img')).toBeNull();
-    expect(root.querySelector('.relation-entity-icon svg')).not.toBeNull();
-    fixture.componentRef.setInput('endpoint', {
-      id: 'concept',
-      slug: 'concept',
-      title: 'Concept',
-      type: 'CONCEPT',
-    });
-    fixture.detectChanges();
-    expect(root.querySelector('img')).toBeNull();
-    expect(root.querySelector('.relation-entity-icon svg')).not.toBeNull();
-    expect(root.querySelector('a')?.getAttribute('href')).toBe('/entity/concept');
   });
 });

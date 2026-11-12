@@ -1,0 +1,88 @@
+<section
+  id="entity-collections-panel"
+  class="collections-panel"
+  [attr.aria-label]="i18n.t('collection.addTo')"
+>
+  <header>
+    <h2>{{ i18n.t('collection.addTo') }}</h2>
+    <button
+      type="button"
+      (click)="saved.closeCollectionsPanel()"
+      [attr.aria-label]="i18n.t('button.close')"
+    >
+      ×
+    </button>
+  </header>
+  <input
+    class="ds-input"
+    type="search"
+    [attr.aria-label]="i18n.t('collection.search')"
+    [placeholder]="i18n.t('collection.search')"
+    [value]="saved.collectionSearch()"
+    (input)="saved.collectionSearch.set($any($event.target).value)"
+  />
+  @if (saved.collectionMessage()) {
+    <p role="alert">{{ saved.collectionMessage() }}</p>
+  }
+  @if (saved.collections$ | async; as collections) {
+    @if (saved.collectionsLoading() && !collections.length) {
+      <p role="status">{{ i18n.t('common.loading') }}</p>
+    } @else {
+      <div class="collections-panel__list">
+        @for (collection of saved.filteredCollections(collections); track collection.id) {
+          <div class="collection-option">
+            <div>
+              <strong>{{ collection.name }}</strong
+              ><small>{{ collection.itemCount }} {{ i18n.t('common.items') }}</small>
+            </div>
+            <button
+              type="button"
+              [disabled]="saved.addingToCollection()"
+              (click)="saved.toggleCollection(collection, targetId)"
+              [attr.aria-label]="
+                (saved.containsEntity(collection, targetId)
+                  ? i18n.t('button.remove')
+                  : i18n.t('button.add')) +
+                ': ' +
+                collection.name
+              "
+            >
+              {{
+                saved.containsEntity(collection, targetId)
+                  ? '✓ ' + i18n.t('button.remove')
+                  : i18n.t('button.add')
+              }}
+            </button>
+          </div>
+        } @empty {
+          <p>{{ i18n.t('collection.noMatches') }}</p>
+        }
+      </div>
+    }
+  }
+  <button
+    type="button"
+    (click)="saved.createOpen.set(!saved.createOpen())"
+    [attr.aria-expanded]="saved.createOpen()"
+  >
+    + {{ i18n.t('collection.new') }}
+  </button>
+  @if (saved.createOpen()) {
+    <form (submit)="$event.preventDefault(); saved.createCollectionAndAttach(targetId)">
+      <input
+        class="ds-input"
+        required
+        [attr.aria-label]="i18n.t('collection.namePlaceholder')"
+        [placeholder]="i18n.t('collection.namePlaceholder')"
+        [value]="saved.createCollectionName()"
+        (input)="saved.createCollectionName.set($any($event.target).value)"
+      />
+      <button
+        type="submit"
+        [disabled]="saved.creatingCollection() || !saved.createCollectionName().trim()"
+      >
+        {{ i18n.t('collection.create') }}
+      </button>
+    </form>
+  }
+</section>

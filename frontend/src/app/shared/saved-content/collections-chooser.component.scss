@@ -1,9 +1,13 @@
+:host {
+  display: contents;
+}
 .collections-panel {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
   z-index: 75;
   width: min(360px, calc(100vw - 44px));
+  box-sizing: border-box;
   padding: 16px;
   display: grid;
   gap: 12px;
@@ -77,6 +81,16 @@
 }
 @media (max-width: 760px) {
   .collections-panel {
-    right: calc(-1 * (var(--detail-menu-space, 54px) + 14px));
+    position: fixed;
+    top: calc(var(--app-safe-top) + 76px);
+    left: calc(var(--app-safe-left) + 16px);
+    right: calc(var(--app-safe-right) + 16px);
+    width: auto;
+    max-height: calc(
+      var(--app-visual-viewport-height, 100dvh) - var(--app-safe-top) - var(--app-safe-bottom) -
+        100px
+    );
+    z-index: 110;
+    overscroll-behavior: contain;
   }
 }

@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.card {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--knowledge-border);
+  border-radius: 18px;
+  background: var(--knowledge-inset);
+  color: var(--research-text, var(--color-text));
+}
+app-jano-media {
+  display: block;
+  width: calc(100% - 24px);
+  height: 190px;
+  margin: 12px 12px 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.content {
+  padding: 18px;
+}
+h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  margin: 8px 0 0;
+  color: var(--research-text-soft, var(--color-text-soft));
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .card {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    align-items: start;
+  }
+  .card:not(:has(app-jano-media)) {
+    grid-template-columns: 1fr;
+  }
+  app-jano-media {
+    width: 96px;
+    height: 132px;
+    margin: 12px 0 12px 12px;
+  }
+  .content {
+    padding: 14px;
+  }
+  h3 {
+    font-size: 16px;
+  }
+}
+
+h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.card:has(a):hover {
+  border-color: currentColor;
+}

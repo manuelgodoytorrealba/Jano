@@ -1,3 +1,7 @@
+import { ContentActionsComponent } from '../../shared/saved-content/content-actions.component';
+import { ConnectionCardComponent } from '../../shared/knowledge-discovery/connection-card.component';
+import { ConnectionsInviteComponent } from '../../shared/knowledge-discovery/connections-invite.component';
+import { KnowledgeSourceComponent } from '../../shared/knowledge-discovery/knowledge-source.component';
 import { ArticleHeroComponent } from '../../shared/article-reading/article-hero.component';
 import { ArticleReadingComponent } from '../../shared/article-reading/article-reading.component';
 import { EntityConnectionsPreviewComponent } from './entity-connections-preview.component';
@@ -22,7 +26,6 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { RelationControlsComponent } from './relation-controls.component';
 import { EntityScrollProgressComponent } from './entity-scroll-progress.component';
 import { GraphComponent } from '../graph/graph.component';
 import {
@@ -48,6 +51,7 @@ import {
   detailHeroSubtitle,
   detailMedia,
   entityTags,
+  entityConnectionCounts,
   entityTypeLabel,
   externalSourceLink,
   firstRelated,
@@ -90,8 +94,11 @@ type DetailVisitState = {
   selector: 'app-entity-detail-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ContentActionsComponent,
+    ConnectionCardComponent,
+    ConnectionsInviteComponent,
+    KnowledgeSourceComponent,
     NgTemplateOutlet,
-    RelationControlsComponent,
     EntityConnectionsPreviewComponent,
     RouterLink,
     GraphComponent,
@@ -124,6 +131,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private readonly injector = inject(Injector);
   private restoredVisitKey = '';
   private mobileReadingScrollY = 0;
+  private mobileWorkspaceTrigger: string | null = null;
   private pendingScroll: number | null = null;
   private transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -363,6 +371,8 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     this.workspaceMode = mode;
   }
 
+  readonly connectionCounts = entityConnectionCounts;
+
   showMobileRelations(): void {
     this.informationTab = 'relations';
     this.document.getElementById('entity-tab-relations')?.focus();
@@ -376,6 +386,11 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   toggleWorkspaceFocus(): void {
     if (this.isBrowser && this.isMobileViewport && !this.workspaceFocused) {
       this.mobileReadingScrollY = pageScrollRoot(this.document).scrollTop;
+      this.mobileWorkspaceTrigger = this.document.activeElement?.closest(
+        '.entity-connections-invite',
+      )
+        ? '#entity-panel-relations app-connections-invite button'
+        : null;
     }
     this.beginWorkspaceTransition();
     this.workspaceFocused = !this.workspaceFocused;
@@ -384,13 +399,13 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
       afterNextRender(
         () => {
           pageScrollRoot(this.document).scrollTop = this.mobileReadingScrollY;
-          this.document
-            .querySelector<HTMLButtonElement>(
-              this.workspaceMode === 'image'
+          const trigger = this.document.querySelector<HTMLButtonElement>(
+            this.mobileWorkspaceTrigger ??
+              (this.workspaceMode === 'image'
                 ? '.entity-mobile-media__open'
-                : '.entity-mobile-map__open',
-            )
-            ?.focus({ preventScroll: true });
+                : '.entity-mobile-map__open button'),
+          );
+          trigger?.focus({ preventScroll: true });
         },
         { injector: this.injector },
       );

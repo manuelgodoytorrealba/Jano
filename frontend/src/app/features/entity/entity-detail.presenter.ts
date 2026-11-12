@@ -35,19 +35,7 @@ const HIDDEN_OUTGOING_RELATIONS = new Set([
   'MENTIONS',
 ]);
 
-export function externalSourceLink(value: string | null | undefined): {
-  href: string;
-  domain: string;
-} | null {
-  if (!value?.trim()) return null;
-  try {
-    const url = new URL(value.trim());
-    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return null;
-    return { href: url.href, domain: url.hostname.replace(/^www\./, '') };
-  } catch {
-    return null;
-  }
-}
+export { externalSourceLink } from '../../shared/knowledge-discovery/external-source-link';
 
 export function primaryMedia(
   entity: PublicEntity | null | undefined,
@@ -449,4 +437,19 @@ function toDisplayText(value: unknown): string {
   return typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint'
     ? String(value).trim()
     : '';
+}
+
+export function entityConnectionCounts(entity: PublicEntity): {
+  entities: number;
+  relations: number;
+} {
+  const relations = [...(entity.outgoing ?? []), ...(entity.incoming ?? [])];
+  return {
+    entities: new Set([
+      entity.id,
+      ...(entity.outgoing ?? []).map((r) => r.to.id),
+      ...(entity.incoming ?? []).map((r) => r.from.id),
+    ]).size,
+    relations: new Set(relations.map((r) => r.id ?? r)).size,
+  };
 }

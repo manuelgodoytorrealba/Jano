@@ -18,15 +18,38 @@ export class SavedApi {
     return this.http.get<SavedItem[]>(this.baseUrl);
   }
 
-  save(entityId: string) {
-    return this.http.post<SavedItem>(`${this.baseUrl}/${entityId}`, {});
+  listResearch() {
+    return this.http.get<SavedResearchItem[]>(apiUrl('/me/research-saved'));
   }
 
-  remove(entityId: string) {
-    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}`);
+  save(entityId: string, target: 'entity' | 'research' = 'entity') {
+    return this.http.post<SavedItem>(
+      `${target === 'research' ? apiUrl('/me/research-saved') : this.baseUrl}/${entityId}`,
+      {},
+    );
   }
 
-  check(entityId: string) {
-    return this.http.get<{ saved: boolean }>(`${this.baseUrl}/check/${entityId}`);
+  remove(entityId: string, target: 'entity' | 'research' = 'entity') {
+    return this.http.delete<{ ok: boolean }>(
+      `${target === 'research' ? apiUrl('/me/research-saved') : this.baseUrl}/${entityId}`,
+    );
+  }
+
+  check(entityId: string, target: 'entity' | 'research' = 'entity') {
+    return this.http.get<{ saved: boolean }>(
+      `${target === 'research' ? apiUrl('/me/research-saved') : this.baseUrl}/check/${entityId}`,
+    );
   }
 }
+
+export type SavedResearchItem = {
+  researchId: string;
+  createdAt: string;
+  research: {
+    id: string;
+    title: string;
+    objective: string | null;
+    coverImageUrl: string | null;
+    publishedAt: string | null;
+  };
+};

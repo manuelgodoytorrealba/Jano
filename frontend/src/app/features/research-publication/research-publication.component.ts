@@ -1,3 +1,11 @@
+import { HostListener } from '@angular/core';
+import { AuthService } from '../../core/auth/auth.service';
+import { SavedCollectionsFacade } from '../../shared/saved-content/saved-collections.facade';
+import { ContentActionsComponent } from '../../shared/saved-content/content-actions.component';
+import { CollectionsChooserComponent } from '../../shared/saved-content/collections-chooser.component';
+import { ConnectionCardComponent } from '../../shared/knowledge-discovery/connection-card.component';
+import { ConnectionsInviteComponent } from '../../shared/knowledge-discovery/connections-invite.component';
+import { KnowledgeSourceComponent } from '../../shared/knowledge-discovery/knowledge-source.component';
 import { AsyncPipe, DOCUMENT, NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -48,7 +56,13 @@ type PublicationView =
 
 @Component({
   standalone: true,
+  providers: [SavedCollectionsFacade],
   imports: [
+    ContentActionsComponent,
+    CollectionsChooserComponent,
+    ConnectionCardComponent,
+    ConnectionsInviteComponent,
+    KnowledgeSourceComponent,
     AsyncPipe,
     NgTemplateOutlet,
     RouterLink,
@@ -63,6 +77,42 @@ type PublicationView =
 })
 export class ResearchPublicationComponent implements OnDestroy {
   readonly hasArticleImages = hasArticleImages;
+  readonly auth = inject(AuthService);
+  readonly saved = inject(SavedCollectionsFacade);
+
+  savePublication(id: string): void {
+    if (!this.auth.isLoggedIn) {
+      this.authenticateForPublication(id);
+      return;
+    }
+    this.saved.toggleSave(id);
+  }
+  collectPublication(id: string): void {
+    if (!this.auth.isLoggedIn) {
+      this.authenticateForPublication(id);
+      return;
+    }
+    this.saved.toggleCollectionsPanel();
+  }
+  private authenticateForPublication(id: string): void {
+    void this.router.navigate(['/login'], { queryParams: { redirectTo: '/research/' + id } });
+  }
+  @HostListener('document:click', ['$event'])
+  closeCollectionsOutside(event: Event): void {
+    if (
+      this.saved.showCollectionsPanel() &&
+      event.target instanceof Element &&
+      !event.target.closest('.collections-panel, .entity-collections-toggle')
+    )
+      this.saved.closeCollectionsPanel();
+  }
+  @HostListener('document:keydown.escape')
+  closeCollections(): void {
+    if (!this.saved.showCollectionsPanel()) return;
+    this.saved.closeCollectionsPanel();
+    this.host.nativeElement.querySelector<HTMLButtonElement>('.entity-collections-toggle')?.focus();
+  }
+
   private readonly route = inject(ActivatedRoute);
   private readonly navigation = inject(NavigationMemoryService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -132,6 +182,8 @@ export class ResearchPublicationComponent implements OnDestroy {
           if (this.publicationId !== publication.id) {
             this.closeOverlay();
             this.publicationId = publication.id;
+            this.saved.reset();
+            this.saved.resolveSavedStatus(publication.id);
             this.activeTab.set('content');
             this.activeChapterId.set(this.route.snapshot.queryParamMap.get('chapter'));
             this.readingScroll = null;
@@ -165,6 +217,7 @@ export class ResearchPublicationComponent implements OnDestroy {
   );
 
   constructor() {
+    this.saved.targetType = 'research';
     this.navigation.register(
       'research-reading',
       () =>

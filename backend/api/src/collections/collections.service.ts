@@ -1,3 +1,4 @@
+import { publicationBookmarkSelect } from '../research/research-bookmarks.service';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
@@ -14,6 +15,7 @@ type CollectionItemWithEntity = {
 } & Record<string, unknown>;
 
 type CollectionRecord = {
+  researchItems?: unknown[];
   items?: CollectionItemWithEntity[] | null;
 } & Record<string, unknown>;
 
@@ -39,6 +41,15 @@ export class CollectionsService {
   };
 
   private readonly collectionInclude = {
+    researchItems: {
+      where: { research: { status: 'PUBLISHED' as const } },
+      orderBy: { createdAt: 'asc' as const },
+      select: {
+        researchId: true,
+        createdAt: true,
+        research: { select: publicationBookmarkSelect },
+      },
+    },
     coverMedia: true,
     items: {
       orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }],
@@ -59,7 +70,7 @@ export class CollectionsService {
     return {
       ...collection,
       items,
-      itemCount: items.length,
+      itemCount: items.length + (collection.researchItems?.length ?? 0),
       graph,
     };
   }

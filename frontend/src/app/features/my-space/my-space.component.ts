@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
+import { BehaviorSubject, catchError, combineLatest, map, of, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { Collection, CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi, SavedItem } from '../../core/api/saved.api';
@@ -19,7 +19,7 @@ type CollectionView = 'grid' | 'list';
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, JanoMediaComponent],
+  imports: [AsyncPipe, RouterLink, JanoMediaComponent],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -47,6 +47,23 @@ export class MySpaceComponent {
   readonly collectionQuery = signal('');
   readonly collectionSort = signal<CollectionSort>('recent');
   readonly collectionView = signal<CollectionView>('grid');
+
+  readonly researchSaveError = signal('');
+  researchSaved$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
+    switchMap(([user]) =>
+      user ? this.savedApi.listResearch().pipe(catchError(() => of([]))) : of([]),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+  removeSavedResearch(id: string): void {
+    this.researchSaveError.set('');
+    this.savedApi.remove(id, 'research').subscribe({
+      next: () => this.refresh$.next(),
+      error: () => {
+        this.researchSaveError.set(this.i18n.t('error.removeFailed'));
+      },
+    });
+  }
 
   saved$ = combineLatest([this.auth.user$, this.refresh$, this.removedSavedIds$]).pipe(
     switchMap(([user, _, removedSavedIds]) => {
