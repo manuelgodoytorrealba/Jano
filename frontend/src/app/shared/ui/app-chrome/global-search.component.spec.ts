@@ -101,6 +101,19 @@ describe('recent searches and prompts across layouts', () => {
     };
   }
 
+  it('submits from the keyboard with only image and color actions in the field', () => {
+    const { fixture, input, navigate } = setup();
+    expect(fixture.nativeElement.querySelector('.app-chrome__search-submit')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.app-chrome__search-icon')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.search-visual-tools button').length).toBe(2);
+    expect(input.getAttribute('enterkeyhint')).toBe('search');
+    input.value = 'Goya';
+    fixture.nativeElement
+      .querySelector('form')
+      .dispatchEvent(new Event('submit', { cancelable: true }));
+    expect(navigate).toHaveBeenCalledWith(['/search'], { queryParams: { q: 'Goya', type: null } });
+  });
+
   it('exposes the same working history and prompt in mobile and desktop, and persists without duplicates', () => {
     const { fixture, component, navigate, input } = setup();
     component.chooseRecentSearch(input, ' Picasso ');

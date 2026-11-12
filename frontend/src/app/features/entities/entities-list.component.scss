@@ -96,8 +96,14 @@
 .entities-feed-renew svg {
   stroke-width: 2.3;
 }
-.entities-feed-renew {
-  position: static;
-  left: auto;
-  top: auto;
+@media (max-width: 720px) {
+  .entities-feed-renew {
+    position: absolute;
+    top: 64px;
+    right: 0;
+    left: auto;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
 }

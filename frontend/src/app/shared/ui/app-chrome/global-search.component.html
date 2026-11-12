@@ -11,16 +11,11 @@
   </button>
 
   <div class="app-chrome__search-control">
-    <span class="app-chrome__search-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <circle cx="10.75" cy="10.75" r="5.75" />
-        <path d="m15 15 4.25 4.25" />
-      </svg>
-    </span>
     <input
       #searchInput
       class="ds-input app-chrome__search-input"
       type="search"
+      enterkeyhint="search"
       autocomplete="off"
       [placeholder]="i18n.t('search.headerPlaceholder')"
       [attr.aria-label]="i18n.t('search.headerPlaceholder')"
@@ -59,18 +54,6 @@
         ×
       </button>
     }
-
-    <button
-      type="submit"
-      class="app-chrome__search-submit"
-      [attr.aria-label]="i18n.t('search.searchFor')"
-      [title]="i18n.t('search.searchFor')"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="10.75" cy="10.75" r="5.75" />
-        <path d="m15 15 4.25 4.25" />
-      </svg>
-    </button>
   </div>
 
   @if (showSearchSuggestions()) {

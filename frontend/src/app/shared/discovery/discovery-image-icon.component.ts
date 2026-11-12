@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { entitySymbol } from '../entity-symbols';
 
 @Component({
   selector: 'app-discovery-image-icon',
   standalone: true,
-  template: `<svg class="work" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="path" /></svg
+  template: `<svg class="work" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="15.5" cy="8.5" r="1.5" />
+      <path d="m3.5 16 4.1-4.1a2 2 0 0 1 2.8 0l8.1 8.1" /></svg
     ><svg class="plus" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8" /></svg>`,
   styles: [
     `
@@ -43,6 +45,4 @@ import { entitySymbol } from '../entity-symbols';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DiscoveryImageIconComponent {
-  readonly path = entitySymbol('ARTWORK', 'WORK').path;
-}
+export class DiscoveryImageIconComponent {}

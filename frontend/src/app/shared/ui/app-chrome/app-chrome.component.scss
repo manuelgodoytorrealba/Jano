@@ -1329,6 +1329,8 @@
   }
 
   .app-chrome__header-toggle--open {
+    left: auto;
+    right: calc(var(--app-safe-right) + var(--app-shell-gap));
     width: 54px;
     height: 54px;
     border-radius: 18px;

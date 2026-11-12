@@ -42,7 +42,7 @@
 
 .app-chrome__search-input.ds-input {
   height: 48px;
-  padding-left: 44px;
+  padding-left: 20px;
   border-radius: 22px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
@@ -828,12 +828,12 @@
 }
 @media (max-width: 900px) {
   .search-visual-tools {
-    right: 42px;
+    right: 12px;
   }
   .app-chrome__search-input.ds-input {
-    padding-right: 146px;
+    padding-right: 118px;
   }
   .app-chrome__search-clear {
-    right: 114px;
+    right: 86px;
   }
 }
