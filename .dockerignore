@@ -24,3 +24,6 @@ PERFORMANCE_REPORT.md
 README.md
 VISION.md
 eslint.config.mjs
+
+.tools
+**/.cache

@@ -59,6 +59,7 @@ type FilterSupport = {
 };
 type EntitiesListFilterOptionVm = { slug: string; label: string };
 type EntitiesListQueryState = {
+  layers: string;
   seed: string;
   title: string;
   type: string;
@@ -315,6 +316,7 @@ export class EntitiesListFacade {
         institution: (queryParamMap.get('institution') ?? '').trim(),
         nationality: (queryParamMap.get('nationality') ?? '').trim(),
         tag: (queryParamMap.get('tag') ?? '').trim(),
+        layers: queryParamMap.get('layers') ?? '',
         sort: this.normalizeSort(queryParamMap.get('sort'), queryParamMap.get('q')),
         filterSupport: this.filterSupportForType(type),
       } satisfies EntitiesListQueryState;
@@ -742,6 +744,7 @@ export class EntitiesListFacade {
           institution: state.filterSupport.institution ? state.institution || undefined : undefined,
           nationality: state.filterSupport.nationality ? state.nationality || undefined : undefined,
           tag: state.tag || undefined,
+          layers: state.layers || undefined,
         });
     const pages = this.explorerPages;
     const queryKey = this.explorerQueryKey;
@@ -849,6 +852,7 @@ export class EntitiesListFacade {
       institution: null,
       nationality: null,
       tag: null,
+      layers: null,
       sort: null,
       page: 1,
     });
@@ -898,6 +902,7 @@ export class EntitiesListFacade {
       !state.type &&
       !state.kind &&
       !state.q &&
+      !state.layers &&
       !state.tag &&
       !state.status &&
       !state.contentLevel &&

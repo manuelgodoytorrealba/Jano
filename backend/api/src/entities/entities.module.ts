@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { DiscoveryModule } from '../discovery/discovery.module';
 import { EntityReadController } from './entity-read.controller';
 import { EntityReadService } from './entity-read.service';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -16,7 +17,7 @@ import { EntityTypeDefinitionController } from './entity-type-definition.control
 import { EntityTypeDefinitionService } from './entity-type-definition.service';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, DiscoveryModule],
   controllers: [
     EntityGraphController,
     EntityMediaController,

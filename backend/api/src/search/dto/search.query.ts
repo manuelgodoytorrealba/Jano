@@ -1,5 +1,16 @@
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  MaxLength,
+  Matches,
+  IsUUID,
+} from 'class-validator';
 
 export type SearchEntityType = string;
 
@@ -7,6 +18,11 @@ const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'
 export type SearchKnowledgeEntityKind = (typeof KINDS)[number];
 
 export class SearchQuery {
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(10000) page?: number;
+  @IsOptional() @IsString() @MaxLength(8000) layers?: string;
+  @IsOptional() @IsUUID() image?: string;
+  @IsOptional() @IsString() @Matches(/^#[a-f0-9]{6}(,#[a-f0-9]{6})?$/i) colors?: string;
+
   @IsOptional()
   @IsString()
   q?: string;

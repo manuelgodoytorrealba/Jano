@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { DiscoveryService } from '../discovery/discovery.service';
+import { VisualSearchService } from '../discovery/visual-search.service';
+import { cosine, paletteScore, readVisualIndex } from '../discovery/image-features';
+import { Injectable, Optional } from '@nestjs/common';
 import {
   EntityStatus,
   HomeDeckSurface,
@@ -139,9 +142,137 @@ export class SearchService {
     private prisma: PrismaService,
     private searchIntent: SearchIntentService,
     private searchQuery: SearchQueryRepository,
+    @Optional() private readonly discovery?: DiscoveryService,
+    @Optional() private readonly visual?: VisualSearchService,
   ) {}
 
-  async search(query: SearchQuery, options: { includeDrafts: boolean; userId?: string }) {
+  private async discover(query: SearchQuery, owner?: string) {
+    const locale = normalizeLocale(query.locale);
+    const image = query.image ? this.visual!.getQuery(query.image, owner) : undefined;
+    const colors = (query.colors ?? '').split(',').filter(Boolean);
+    const intent = this.searchIntent.interpret((query.q ?? '').trim(), locale);
+    const imageTerms = (image?.terms ?? []).map((term) => ({
+      query: term,
+      reason: 'image reading',
+      weight: 0.5,
+    }));
+    const text =
+      query.q?.trim() || imageTerms.length
+        ? await this.searchVariantRows(
+            query.q?.trim()
+              ? intent.variants.length
+                ? intent.variants
+                : [{ query: query.q.trim(), reason: 'raw query', weight: 1 }]
+              : imageTerms,
+            {
+              limit: 10000,
+              types: query.type ?? [],
+              kinds: query.kind ?? [],
+              tag: query.tag ?? '',
+              locale,
+              includeDrafts: false,
+            },
+          )
+        : [];
+    const textIds = new Set(text.map((row) => row.id));
+    const textRank = new Map(text.map((row, index) => [row.id, index + 1]));
+    const context = await this.discovery!.context(
+      { locale },
+      query.q?.trim() && !image && !colors.length ? [...textIds] : undefined,
+    );
+    // shortcut: exact scans suit this catalogue; use a vector index when measured latency grows with catalogue size.
+    const entities = await this.prisma.entity.findMany({
+      where: {
+        id: { in: context.ids },
+        status: 'PUBLISHED',
+        ...(query.type?.length ? { type: { in: query.type } } : {}),
+        ...(query.kind?.length ? { kind: { in: query.kind } } : {}),
+      },
+      include: { ...this.entityInclude(locale), mediaLinks: { include: { media: true } } },
+    });
+    let indexed = 0;
+    const ranked = entities
+      .flatMap((entity) => {
+        const indices = entity.mediaLinks
+          .map((link) => readVisualIndex(link.media.visualIndex))
+          .filter((v) => v !== null);
+        if (indices.length) indexed++;
+        if ((image || colors.length) && !indices.length) return [];
+        const similarity = image
+          ? Math.max(...indices.map((v) => cosine(v.embedding, image.embedding)))
+          : 0;
+        const color = colors.length
+          ? Math.max(...indices.map((v) => paletteScore(v.palette, colors)))
+          : 0;
+        // shortcut: CLIP q8 floor calibrated on the local catalogue; validate against labelled camera photos before changing models.
+        if (image && similarity < 0.7) return [];
+        if (query.q?.trim() && !textIds.has(entity.id)) return [];
+        if (colors.length && color < 0.35) return [];
+        const fields = [
+          ...(image ? ['image'] : []),
+          ...(colors.length ? ['color'] : []),
+          ...(textIds.has(entity.id) ? ['text'] : []),
+        ];
+        return [
+          {
+            entity,
+            score:
+              similarity * 0.8 +
+              color * 0.5 +
+              (textRank.has(entity.id) ? 0.3 / textRank.get(entity.id)! : 0),
+            fields,
+          },
+        ];
+      })
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          Number(b.entity.type === 'ARTWORK') - Number(a.entity.type === 'ARTWORK') ||
+          a.entity.title.localeCompare(b.entity.title),
+      );
+    const filtered = await this.discovery!.context(
+      { layers: query.layers, locale },
+      ranked.map((row) => row.entity.id),
+    );
+    const allowed = new Set(filtered.ids);
+    const matches = ranked.filter((row) => allowed.has(row.entity.id));
+    const limit = query.limit ?? 40;
+    const totalPages = Math.max(1, Math.ceil(matches.length / limit));
+    const page = Math.min(query.page ?? 1, totalPages);
+    const items = matches
+      .slice((page - 1) * limit, page * limit)
+      .map(({ entity, score, fields }) =>
+        this.serializeSearchEntity(entity, locale, score, fields),
+      );
+    return {
+      query: query.q ?? '',
+      total: matches.length,
+      page,
+      totalPages,
+      items,
+      groups: {},
+      sections: items.length
+        ? [{ ...this.itemSection('entities', 'Entidades', items), total: matches.length }]
+        : [],
+      facets: filtered.facets,
+      visualCoverage: { indexed, total: entities.length },
+      analysis: image?.description ?? null,
+      interpretation: {
+        normalizedQuery: query.q ?? '',
+        significantTerms: [],
+        signals: [],
+        variantsTried: [],
+      },
+    };
+  }
+
+  async search(
+    query: SearchQuery,
+    options: { includeDrafts: boolean; userId?: string; imageOwner?: string },
+  ) {
+    if ((query.layers || query.colors || query.image) && this.discovery && this.visual) {
+      return this.discover(query, options.imageOwner);
+    }
     const q = (query.q ?? '').trim();
     const tag = (query.tag ?? '').trim();
     const locale = normalizeLocale(query.locale);

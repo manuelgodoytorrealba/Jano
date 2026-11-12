@@ -7,7 +7,7 @@
 .operations-page {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 56px 32px 80px;
+  padding: var(--app-page-gap) 32px 80px;
 }
 .operations-head {
   display: flex;

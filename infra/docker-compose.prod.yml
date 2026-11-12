@@ -58,6 +58,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       JANO_RELEASE: ${JANO_RELEASE:?JANO_RELEASE is required}
       METRICS_TOKEN: ${METRICS_TOKEN:-}
+      VISUAL_SEARCH_CACHE: /app/backend/api/.cache/visual-search
+      VISUAL_SEARCH_VISION_MODEL: ${VISUAL_SEARCH_VISION_MODEL:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://127.0.0.1:11434}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
       SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0}
@@ -70,6 +73,7 @@ services:
       - '${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-3000}:3000'
     volumes:
       - backend_uploads:/app/backend/api/uploads
+      - backend_visual_models:/app/backend/api/.cache/visual-search
     read_only: true
     tmpfs:
       - /tmp:size=256m,mode=1777
@@ -215,6 +219,8 @@ services:
     logging: *default-logging
 
 volumes:
+  backend_visual_models:
+
   jano_pgdata:
     external: true
     name: ${POSTGRES_VOLUME:?POSTGRES_VOLUME is required}

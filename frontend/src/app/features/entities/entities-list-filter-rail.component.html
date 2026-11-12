@@ -2,47 +2,55 @@
   class="entities-filter-rail ds-panel"
   [class.is-collapsed]="collapsed"
   [class.is-simple]="simple"
+  [class.is-layered]="!simple"
   [attr.aria-hidden]="collapsed"
 >
-  <div class="entities-filter-rail__section">
-    <label class="entities-filter-rail__label" for="entities-search-main">{{
-      i18n.t('explorer.search.label')
-    }}</label>
-    <input
-      id="entities-search-main"
-      class="ds-input entities-search entities-filter-rail__search"
-      type="search"
-      [placeholder]="i18n.t('explorer.search.placeholder')"
-      [attr.aria-label]="i18n.t('explorer.search.aria')"
-      [value]="vm.searchQuery"
-      (input)="searchChange.emit($any($event.target).value)"
-    />
+  <ng-template #searchControls
+    ><div class="entities-filter-rail__section">
+      <label class="entities-filter-rail__label" for="entities-search-main">{{
+        i18n.t('explorer.search.label')
+      }}</label>
+      <input
+        id="entities-search-main"
+        class="ds-input entities-search entities-filter-rail__search"
+        type="search"
+        [placeholder]="i18n.t('explorer.search.placeholder')"
+        [attr.aria-label]="i18n.t('explorer.search.aria')"
+        [value]="vm.searchQuery"
+        (input)="searchChange.emit($any($event.target).value)"
+      />
 
-    @if (vm.searchQuery) {
-      <div class="search-chip search-chip--rail">
-        <span class="search-chip__label">{{ i18n.t('explorer.searching') }}</span>
-        <span class="search-chip__value">“{{ vm.searchQuery }}”</span>
-        <button
-          type="button"
-          class="ds-btn search-chip__clear"
-          (click)="clearSearch.emit()"
-          [attr.aria-label]="i18n.t('explorer.clearSearch')"
-          [title]="i18n.t('explorer.clearSearch')"
-        >
-          ✕
-        </button>
-      </div>
-    }
+      @if (vm.searchQuery) {
+        <div class="search-chip search-chip--rail">
+          <span class="search-chip__label">{{ i18n.t('explorer.searching') }}</span>
+          <span class="search-chip__value">“{{ vm.searchQuery }}”</span>
+          <button
+            type="button"
+            class="ds-btn search-chip__clear"
+            (click)="clearSearch.emit()"
+            [attr.aria-label]="i18n.t('explorer.clearSearch')"
+            [title]="i18n.t('explorer.clearSearch')"
+          >
+            ✕
+          </button>
+        </div>
+      }
 
-    @if (vm.hasVisibleFilterChips) {
-      <app-entities-list-active-filters
-        [chips]="vm.activeFilterChips"
-        (clear)="clearChip.emit($event)"
-      ></app-entities-list-active-filters>
-    }
-  </div>
-
-  @for (select of vm.selects; track select.key) {
+      @if (vm.hasVisibleFilterChips) {
+        <app-entities-list-active-filters
+          [chips]="vm.activeFilterChips"
+          (clear)="clearChip.emit($event)"
+        ></app-entities-list-active-filters>
+      }</div
+  ></ng-template>
+  @if (!simple) {
+    <app-discovery-layers
+      ><div discovery-search><ng-container [ngTemplateOutlet]="searchControls" /></div
+    ></app-discovery-layers>
+  } @else {
+    <ng-container [ngTemplateOutlet]="searchControls" />
+  }
+  @for (select of simple ? vm.selects : []; track select.key) {
     <div class="entities-filter-rail__section">
       <label class="entities-filter-rail__label" [for]="'entities-filter-' + select.key">{{
         select.label
@@ -97,37 +105,21 @@
   }
 
   <div class="entities-filter-rail__section">
-    <div class="entities-filter-rail__label">{{ i18n.t('explorer.sort') }}</div>
-    <div class="entities-filter-rail__chips entities-filter-rail__chips--compact">
-      <button
-        type="button"
-        class="filter-chip"
-        [class.is-active]="vm.sort === 'recent'"
-        (click)="sortChange.emit('recent')"
-      >
-        {{ i18n.t('explorer.sort.recent') }}
-      </button>
-
-      <button
-        type="button"
-        class="filter-chip"
-        [class.is-active]="vm.sort === 'title'"
-        (click)="sortChange.emit('title')"
-      >
-        {{ i18n.t('explorer.sort.title') }}
-      </button>
-
-      <button
-        type="button"
-        class="filter-chip"
-        [class.is-active]="vm.sort === 'relevance'"
-        [disabled]="!vm.canSortByRelevance"
-        (click)="sortChange.emit('relevance')"
-        [title]="i18n.t('explorer.sort.relevanceHint')"
-      >
+    <label class="entities-filter-rail__label" for="discovery-sort">{{
+      i18n.t('explorer.sort')
+    }}</label>
+    <select
+      id="discovery-sort"
+      class="discovery-sort"
+      [value]="vm.sort"
+      (change)="sortChange.emit($any($event.target).value)"
+    >
+      <option value="recent">{{ i18n.t('explorer.sort.recent') }}</option>
+      <option value="title">{{ i18n.t('explorer.sort.title') }}</option>
+      <option value="relevance" [disabled]="!vm.canSortByRelevance">
         {{ i18n.t('explorer.sort.relevance') }}
-      </button>
-    </div>
+      </option>
+    </select>
   </div>
 
   @if (showAdvancedFilters) {

@@ -91,3 +91,13 @@
     flex-shrink: 0;
   }
 }
+
+.entities-hud__filters-icon,
+.entities-feed-renew svg {
+  stroke-width: 2.3;
+}
+.entities-feed-renew {
+  position: static;
+  left: auto;
+  top: auto;
+}

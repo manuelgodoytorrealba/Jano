@@ -1,4 +1,8 @@
 .app-shell {
+  --app-chrome-top: var(--app-page-top);
+  --app-content-height: calc(
+    var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
+  );
   /* Global background system. Tune these tokens instead of editing route screens. */
   --app-background-current: var(--app-background-image, none);
   --app-background-blur: 10px;
@@ -240,7 +244,7 @@ body.jano-artwork-route-graph .explorer-graph-pane {
   }
 
   .app-shell {
-    --app-chrome-top: calc(var(--app-safe-top) + 122px);
+    --app-chrome-top: var(--app-page-top);
     --app-chrome-bottom: calc(var(--app-safe-bottom) + 88px);
     --app-content-height: calc(
       var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
@@ -340,4 +344,11 @@ body.jano-artwork-route-graph .explorer-graph-pane {
     padding-inline: var(--app-safe-left) var(--app-safe-right);
     padding-bottom: calc(var(--app-safe-bottom) + 16px);
   }
+}
+
+/* Collapsing the header releases its space on every route, including immersive shells. */
+.app-shell:has(.app-chrome__header--collapsed) {
+  --app-page-top: calc(
+    var(--app-safe-top) + var(--app-shell-gap) + var(--app-menu-height) + var(--app-page-gap)
+  );
 }

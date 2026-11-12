@@ -82,7 +82,8 @@ const app = express();
 app.set('trust proxy', true);
 app.disable('x-powered-by');
 
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
+  if (req.path === '/search') res.setHeader('Cache-Control', 'private, no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');

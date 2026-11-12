@@ -1,4 +1,6 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { imageOwner } from '../discovery/visual-search.controller';
+import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import type {
   AuthenticatedRequest,
   OptionalAuthenticatedRequest,
@@ -26,10 +28,16 @@ export class SearchController {
   @UseGuards(OptionalJwtAuthGuard)
   @Public()
   @Get()
-  search(@Query() query: SearchQuery, @Req() req: OptionalAuthenticatedRequest) {
+  search(
+    @Query() query: SearchQuery,
+    @Req() req: OptionalAuthenticatedRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    res.setHeader('Cache-Control', 'no-store');
     const includeDrafts = query.includeDrafts === true && req.user?.role === 'ADMIN';
     return this.service.search(query, {
       includeDrafts,
+      imageOwner: imageOwner(req),
       userId: query.recordInterest ? req.user?.userId : undefined,
     });
   }

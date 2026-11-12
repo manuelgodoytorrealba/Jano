@@ -6,6 +6,11 @@ export type KnowledgeEntityKind = (typeof KINDS)[number];
 
 export class ListEntitiesQuery {
   @IsOptional()
+  @IsString()
+  @MaxLength(8000)
+  layers?: string;
+
+  @IsOptional()
   @IsIn(['card', 'options'])
   view?: 'card' | 'options';
 

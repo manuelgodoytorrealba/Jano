@@ -59,10 +59,15 @@ export type SearchSection = {
 
 export type SearchResponse = {
   query: string;
+  page?: number;
+  totalPages?: number;
   total: number;
   items: SearchResult[];
   groups: Record<string, SearchResult[]>;
   sections?: SearchSection[];
+  facets?: { key: string; options: { value: string; label: string; count: number }[] }[];
+  visualCoverage?: { indexed: number; total: number };
+  analysis?: string | null;
   interpretation?: {
     normalizedQuery: string;
     significantTerms: string[];
@@ -82,6 +87,10 @@ export class SearchApi {
 
   search(params: {
     q: string;
+    page?: number;
+    image?: string;
+    colors?: string;
+    layers?: string;
     type?: string;
     kind?: PublicKnowledgeEntityKind;
     tag?: string;
@@ -91,6 +100,9 @@ export class SearchApi {
     locale?: string;
   }) {
     let httpParams = new HttpParams().set('q', params.q ?? '');
+
+    for (const key of ['image', 'colors', 'layers', 'page'] as const)
+      if (params[key]) httpParams = httpParams.set(key, params[key]);
 
     if (params.type) {
       httpParams = httpParams.set('type', params.type);

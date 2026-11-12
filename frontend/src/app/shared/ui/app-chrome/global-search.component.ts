@@ -1,3 +1,4 @@
+import { DiscoveryImageIconComponent } from '../../discovery/discovery-image-icon.component';
 import { entitySymbol } from '../../entity-symbols';
 import { AppLoadingComponent } from '../app-loading/app-loading.component';
 import {
@@ -22,13 +23,7 @@ import { entityTypeLabel } from '../../../core/i18n/domain-labels';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 
 type SearchCategoryType =
-  | 'ARTIST'
-  | 'ARTWORK'
-  | 'MOVEMENT'
-  | 'CONCEPT'
-  | 'ARTICLE'
-  | 'PLACE'
-  | 'PERIOD';
+  'ARTIST' | 'ARTWORK' | 'MOVEMENT' | 'CONCEPT' | 'ARTICLE' | 'PLACE' | 'PERIOD';
 
 const SEARCH_CATEGORIES: Array<{
   type: SearchCategoryType;
@@ -46,7 +41,7 @@ const SEARCH_CATEGORIES: Array<{
 @Component({
   standalone: true,
   selector: 'app-global-search',
-  imports: [AppLoadingComponent, NgTemplateOutlet],
+  imports: [DiscoveryImageIconComponent, AppLoadingComponent, NgTemplateOutlet],
   templateUrl: './global-search.component.html',
   styleUrl: './global-search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -147,6 +142,15 @@ export class GlobalSearchComponent {
   openPreparationCategory(type: SearchCategoryType): void {
     this.closeForNavigation();
     void this.router.navigateByUrl(searchCategoryRoute(type));
+  }
+
+  openVisualSearch(mode: 'image' | 'color'): void {
+    const q = this.searchDraft().trim();
+    this.closeForNavigation();
+    void this.router.navigate([], {
+      queryParams: { mode, ...(q ? { q } : {}) },
+      queryParamsHandling: 'merge',
+    });
   }
 
   openMobileDiscovery(route: string): void {

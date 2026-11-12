@@ -15,6 +15,7 @@ Esta carpeta es la fuente de verdad arquitectónica para el Research Studio. Tod
 6. [Roadmap](./08-implementation-roadmap.md)
 7. [Principios de ingeniería](./09-engineering-principles.md)
 8. [Glosario](./10-glossary.md)
+9. [Búsqueda visual y capas de exploración](./17-visual-discovery.md)
 
 `15-research-studio-experience.md` es la fuente normativa de producto para el flujo editorial de Research Studio. `16-editorial-pipeline.md` es la fuente normativa funcional para el paso de corpus a conocimiento revisado y para Editorial Jobs. Los documentos de dominio conservan ownership e invariantes; no duplican esos flujos.
 

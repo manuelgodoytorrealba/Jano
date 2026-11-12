@@ -23,7 +23,7 @@
   pointer-events: none;
 }
 .archive-page__content {
-  --archive-top: calc(var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 24px);
+  --archive-top: var(--app-page-top);
   --archive-card-height: max(
     180px,
     calc((var(--app-viewport-height) - var(--archive-top) - 120px) / 2)

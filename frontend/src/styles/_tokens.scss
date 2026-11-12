@@ -91,6 +91,11 @@
   --container-content: 820px;
   --app-shell-gap: clamp(14px, 1.6vw, 24px);
   --app-header-height: 74px;
+  --app-menu-height: 60px;
+  --app-page-gap: 12px;
+  --app-page-top: calc(
+    var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + var(--app-page-gap)
+  );
   --app-rail-width: 72px;
   --app-safe-top: env(safe-area-inset-top, 0px);
   --app-safe-right: env(safe-area-inset-right, 0px);
@@ -105,9 +110,7 @@
 
   /* Semantic viewport contract. New pages should consume these first. */
   --app-viewport-height: var(--app-visual-viewport-height);
-  --app-chrome-top: calc(
-    var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px
-  );
+  --app-chrome-top: var(--app-page-top);
   --app-chrome-bottom: calc(var(--app-safe-bottom) + var(--app-shell-gap));
   --app-content-height: calc(
     var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
@@ -180,5 +183,14 @@ html.app-keyboard-open {
     --app-shell-gap: 10px;
     --app-header-height: 68px;
     --app-rail-width: 64px;
+  }
+}
+
+@media (max-width: 860px) {
+  :root {
+    --app-menu-height: 54px;
+    --app-page-top: calc(
+      var(--app-safe-top) + var(--app-shell-gap) + var(--app-menu-height) + var(--app-page-gap)
+    );
   }
 }

@@ -67,7 +67,7 @@ LABEL org.opencontainers.image.revision="$JANO_RELEASE"
 WORKDIR /app/backend/api
 COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --chown=node:node --from=build /app/backend/api/dist ./dist
-RUN mkdir -p uploads && chown node:node uploads
+RUN mkdir -p uploads .cache/visual-search && chown -R node:node uploads .cache
 
 EXPOSE 3000
 USER node

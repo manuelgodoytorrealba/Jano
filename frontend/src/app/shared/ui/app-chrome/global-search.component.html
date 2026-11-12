@@ -30,6 +30,24 @@
       (keydown)="onSearchKeydown($event, searchInput)"
       (keydown.escape)="closeSearchUi()"
     />
+    <div class="search-visual-tools">
+      <button
+        type="button"
+        (click)="openVisualSearch('image')"
+        [attr.aria-label]="i18n.t('discovery.addImage')"
+        [title]="i18n.t('discovery.addImage')"
+      >
+        <app-discovery-image-icon />
+      </button>
+      <button
+        type="button"
+        (click)="openVisualSearch('color')"
+        [attr.aria-label]="i18n.t('discovery.colors')"
+        [title]="i18n.t('discovery.colors')"
+      >
+        <span class="search-color-symbol" aria-hidden="true"></span>
+      </button>
+    </div>
     @if (searchDraft()) {
       <button
         type="button"

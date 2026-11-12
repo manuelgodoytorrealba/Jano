@@ -1,3 +1,6 @@
+import { DiscoveryService } from '../discovery/discovery.service';
+import { VisualSearchService } from '../discovery/visual-search.service';
+import { VISUAL_VERSION } from '../discovery/image-features';
 import { Prisma } from '@prisma/client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
@@ -67,6 +70,68 @@ describe('SearchService', () => {
     }).compile();
 
     service = module.get(SearchService);
+  });
+
+  it('excludes unrelated images before facets, totals and pagination, and refines by text', async () => {
+    const vector = (x: number, y: number) => [x, y, ...Array(510).fill(0)];
+    const entity = (id: string, embedding: number[]) => ({
+      id,
+      slug: id,
+      type: 'ARTWORK',
+      title: id,
+      status: 'PUBLISHED',
+      summary: null,
+      content: null,
+      tags: [],
+      aliases: [],
+      translations: [],
+      mediaLinks: [
+        { media: { visualIndex: { version: VISUAL_VERSION, hash: id, embedding, palette: [] } } },
+      ],
+    });
+    const discovery = {
+      context: jest.fn(async (_query: unknown, ids?: string[]) => ({
+        ids: ids ?? ['match', 'near', 'unrelated'],
+        total: ids?.length ?? 3,
+        facets: [
+          { key: 'type', options: [{ value: 'ARTWORK', label: 'Obra', count: ids?.length ?? 3 }] },
+        ],
+      })),
+    };
+    const visual = { getQuery: jest.fn(() => ({ embedding: vector(1, 0), terms: [] })) };
+    const isolated = new SearchService(
+      prisma as never,
+      searchIntent as never,
+      { search: jest.fn() } as never,
+      discovery as unknown as DiscoveryService,
+      visual as unknown as VisualSearchService,
+    );
+    prisma.entity.findMany.mockResolvedValue([
+      entity('match', vector(1, 0)),
+      entity('near', vector(0.8, 0.6)),
+      entity('unrelated', vector(0.2, 0.98)),
+    ]);
+    const result = await isolated.search(
+      { image: 'private-image', limit: 1, page: 2 },
+      { includeDrafts: false },
+    );
+    expect(result.total).toBe(2);
+    expect(result.items.map((item) => item.id)).toEqual(['near']);
+    expect('facets' in result && result.facets?.[0].options[0].count).toBe(2);
+    expect(discovery.context).toHaveBeenLastCalledWith(expect.anything(), ['match', 'near']);
+    jest
+      .spyOn(isolated as never, 'searchVariantRows' as never)
+      .mockResolvedValue([{ id: 'near' }] as never);
+    const refined = await isolated.search(
+      { image: 'private-image', q: 'near' },
+      { includeDrafts: false },
+    );
+    expect(refined.items.map((item) => item.id)).toEqual(['near']);
+    prisma.entity.findMany.mockResolvedValue([entity('unrelated', vector(0.2, 0.98))]);
+    const empty = await isolated.search({ image: 'private-image' }, { includeDrafts: false });
+    expect(empty.total).toBe(0);
+    expect(empty.sections).toEqual([]);
+    expect(discovery.context).toHaveBeenLastCalledWith(expect.anything(), []);
   });
 
   it('returns locale-resolved titles and summaries for search results', async () => {

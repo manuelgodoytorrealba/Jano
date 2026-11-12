@@ -3,7 +3,7 @@
   display: grid;
   gap: 12px;
   align-content: start;
-  padding: 20px 28px 28px;
+  padding: var(--app-page-gap) 28px 28px;
 }
 
 .profile-surface,

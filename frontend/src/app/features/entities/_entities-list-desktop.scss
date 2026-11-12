@@ -2,7 +2,7 @@
   :host {
     --entities-shell-padding-x: 8px;
     --entities-shell-top-offset: 112px;
-    --entities-rail-width: 218px;
+    --entities-rail-width: 248px;
     --entities-rail-gap: 16px;
     --entities-rail-left: 14px;
     --entities-rail-top: 116px;
@@ -70,7 +70,9 @@
     padding-top: var(--entities-stage-top-padding);
     padding-right: calc(var(--app-shell-gap) + var(--app-rail-width) + 18px);
     padding-bottom: 18px;
-    padding-left: calc(164px + 22px);
+    padding-left: calc(
+      var(--entities-rail-left) + var(--entities-rail-width) + var(--entities-rail-gap)
+    );
   }
 
   .entities-explorer-layout.is-filters-collapsed
@@ -100,5 +102,15 @@
     --entities-explorer-info-top: 128px;
     --entities-explorer-info-right: calc(var(--app-shell-gap) + var(--app-rail-width) + 64px);
     --entities-explorer-info-width: min(320px, calc(100% - 36px));
+  }
+}
+
+@media (min-width: 721px) {
+  :host {
+    --entities-shell-top-offset: var(--app-page-top);
+    --entities-rail-top: var(--app-page-top);
+    --entities-stage-top-padding: var(--app-page-top);
+    --entities-explorer-inner-top: calc(var(--app-page-top) + 40px);
+    --entities-explorer-info-top: var(--app-page-top);
   }
 }

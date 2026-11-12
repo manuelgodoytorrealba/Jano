@@ -74,9 +74,11 @@
     "db:empty:prod": "node scripts/empty-production-db.js",
     "admin:info": "node scripts/admin-info.js",
     "research:benchmark": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/research-benchmark.ts",
-    "research:publication-demo": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/research-publication-demo.ts"
+    "research:publication-demo": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/research-publication-demo.ts",
+    "media:prepare-visual-search": "node --env-file=.env -r ts-node/register scripts/prepare-visual-search.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.2",
     "@nestjs/common": "^11.2.7",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.2.7",

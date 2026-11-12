@@ -1,5 +1,5 @@
 import { buildAdminMediaLibrary } from './media-diagnostics';
-import { buildResolvedMedia, resolveEntityMedia } from './media.resolver';
+import { attachResolvedMedia, buildResolvedMedia, resolveEntityMedia } from './media.resolver';
 
 type MediaLinkOverride = Partial<{
   id: string;
@@ -29,6 +29,18 @@ type MediaLinkOverride = Partial<{
 }>;
 
 describe('media.resolver', () => {
+  it('does not send internal visual embeddings in gallery payloads or mutate the source', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        { media: { id: 'm', url: '/uploads/media/a.jpg', visualIndex: { embedding: [1, 2, 3] } } },
+      ],
+    };
+    const result = attachResolvedMedia(entity);
+    expect(JSON.stringify(result)).not.toContain('visualIndex');
+    expect(entity.mediaLinks[0].media.visualIndex.embedding).toEqual([1, 2, 3]);
+  });
+
   const createLink = (overrides: MediaLinkOverride = {}) => ({
     id: overrides.id ?? 'link-1',
     role: overrides.role ?? 'PRIMARY_LEGACY',

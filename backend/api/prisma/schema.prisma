@@ -741,6 +741,7 @@ model Media {
   focalX           Float?
   focalY           Float?
   variants         Json?
+  visualIndex      Json?
   isVector         Boolean          @default(false)
   provider         MediaProvider    @default(UNKNOWN)
   qualityTier      MediaQualityTier @default(MEDIUM)

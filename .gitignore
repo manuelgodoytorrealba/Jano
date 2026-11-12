@@ -31,3 +31,5 @@ frontend/out-tsc
 
 docs/.DS_Store
 .vscode/
+
+backend/api/.cache/

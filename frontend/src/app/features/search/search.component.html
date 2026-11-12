@@ -1,157 +1,292 @@
 <main class="search-page">
   @if (vm$ | async; as vm) {
-    <header>
-      <span class="eyebrow">{{ i18n.t('search.title') }}</span>
-      <h1>
-        {{
-          vm.query ? i18n.t('search.resultsFor') + ' “' + vm.query + '”' : i18n.t('search.explore')
-        }}
-      </h1>
-    </header>
-    @if (vm.loading) {
-      <app-loading [label]="i18n.t('search.searching') + ' · ' + vm.query" [skeleton]="true" />
-    } @else if (vm.error) {
-      <div role="alert">
-        <p>{{ i18n.t('search.error') }}</p>
-        <button type="button" (click)="retry$.next()">{{ i18n.t('search.retry') }}</button>
+    <header class="result-heading">
+      <div>
+        <span class="eyebrow">{{
+          i18n.t(
+            criteria('image')
+              ? colors().length
+                ? 'discovery.searchByImageColor'
+                : 'discovery.searchByImage'
+              : colors().length
+                ? 'discovery.searchByColor'
+                : 'search.title'
+          )
+        }}</span>
+        <h1>{{ heading(vm.query) }}</h1>
       </div>
-    } @else if (!vm.query) {
-      <p>{{ i18n.t('search.empty') }}</p>
-    } @else if (!vm.total) {
-      <p role="status">{{ i18n.t('search.noResults') }}</p>
-    } @else {
-      <nav class="search-filters" [attr.aria-label]="i18n.t('search.filterAria')">
+      <p class="heading-note">{{ i18n.t('discovery.newPaths') }}</p>
+    </header>
+    <div class="query-criteria">
+      @if (criteria('image')) {
+        <button type="button" class="reference" (click)="openVisual('image')">
+          @if (referencePreview()) {
+            <img [src]="referencePreview()" alt="" />
+          } @else {
+            <app-discovery-image-icon />
+          }
+          <span
+            ><small>{{ i18n.t('discovery.yourReference') }}</small
+            >{{ i18n.t('discovery.editImage') }} <span aria-hidden="true">›</span></span
+          >
+        </button>
+        <span class="query-divider" aria-hidden="true"></span>
+      }
+      @for (color of colors(); track color) {
+        <button type="button" class="color-chip" (click)="openVisual('color')">
+          <i [style.background]="color"></i
+          ><span
+            ><small>{{ i18n.t('discovery.selectedColor') }}</small
+            >{{ color }}</span
+          >
+        </button>
+        <button
+          type="button"
+          class="remove-color"
+          (click)="removeColor(color)"
+          [attr.aria-label]="i18n.t('discovery.remove') + ' ' + color"
+        >
+          ×
+        </button>
+      }
+      <form class="refine" (submit)="refine($event, refinement.value)">
+        <input
+          #refinement
+          type="search"
+          [value]="vm.query"
+          [placeholder]="i18n.t(criteria('image') ? 'discovery.imageQuestion' : 'discovery.refine')"
+          [attr.aria-label]="i18n.t('discovery.refine')"
+        />
+      </form>
+    </div>
+    <div class="results-toolbar">
+      <nav
+        class="search-filters"
+        role="tablist"
+        [attr.aria-label]="i18n.t('search.filterAria')"
+        (keydown)="tabKeydown($event)"
+      >
         @for (filter of filters; track filter) {
           @if (count(vm, filter)) {
             <button
               type="button"
-              [attr.aria-pressed]="activeFilter() === filter"
+              role="tab"
+              [id]="'search-tab-' + filter"
+              aria-controls="search-results-page"
+              [attr.aria-selected]="activeFilter() === filter"
+              [attr.tabindex]="activeFilter() === filter ? 0 : -1"
               (click)="setFilter(filter)"
             >
-              {{ filterLabel(filter) }} <span>{{ count(vm, filter) }}</span>
+              {{ filterLabel(filter) }}
             </button>
           }
         }
       </nav>
-      @if (principal(vm); as item) {
-        @if (activeFilter() === 'ALL' || activeFilter() === item.resultType) {
-          <article class="principal">
-            <app-jano-media
-              [media]="item.resolvedMedia?.card ?? item.resolvedMedia?.thumbnail ?? null"
-              usage="card"
-              [alt]="item.title"
-              placeholderMode="auto"
-            />
-            <div>
-              <span class="eyebrow">{{ i18n.t('search.best') }}</span>
-              <p class="metadata">
-                {{ typeLabel(item) }}
-                @if (item.startYear !== null && item.startYear !== undefined) {
-                  · {{ item.startYear }}
-                  @if (
-                    item.endYear !== null &&
-                    item.endYear !== undefined &&
-                    item.endYear !== item.startYear
-                  ) {
-                    –{{ item.endYear }}
-                  }
-                }
-              </p>
-              <h2>
-                <a [routerLink]="resultLink(item)"
-                  >{{ item.title }}
-                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 19 19 5M5 5h14v14" /></svg
-                ></a>
-              </h2>
-              @if (item.summary) {
-                <p class="summary">{{ item.summary }}</p>
-              }
-              <details>
-                <summary>{{ i18n.t('search.why') }}</summary>
-                <p>{{ reason(item) }}</p>
-              </details>
-            </div>
-          </article>
-        }
+      <button
+        type="button"
+        class="filters-toggle"
+        (click)="filtersOpen.set(!filtersOpen())"
+        [attr.aria-expanded]="filtersOpen()"
+        aria-controls="search-discovery-layers"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16M9 3v6M15 9v6M9 15v6" /></svg
+        >{{ i18n.t('discovery.filters') }}
+      </button>
+    </div>
+    <div class="results-layout" [class.has-layers]="filtersOpen()">
+      @if (filtersOpen()) {
+        <aside id="search-discovery-layers" class="discovery-sidebar ds-panel">
+          <app-discovery-layers [facets]="vm.facets" [showVisualCriteria]="false" />
+        </aside>
       }
-      @for (section of sections(vm); track section.key) {
-        @if (section.items?.[0]?.resultType === 'RELATION') {
-          <details class="context" [open]="activeFilter() === 'RELATION'">
-            <summary>{{ i18n.t('search.context') }} · {{ section.total }}</summary>
-            <p>{{ i18n.t('search.contextHint') }}</p>
-            @for (item of section.items; track item.id) {
-              <article class="connection">
-                @if (item.relationType) {
-                  <span class="metadata">{{ item.relationType }}</span>
-                }
-                <a [routerLink]="resultLink(item)" [queryParams]="{ workspace: 'graph' }"
-                  >{{ item.title.split(' → ')[0] }}
-                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 19 19 5M5 5h14v14" /></svg
-                ></a>
-                @if (item.summary) {
-                  <p>{{ item.summary }}</p>
-                }
-                @if (item.toSlug) {
-                  <a class="connection-target" [routerLink]="['/entity', item.toSlug]"
-                    >{{ item.relationWithTitle || item.title.split(' → ')[1] || item.toSlug }}
-                    <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M5 19 19 5M5 5h14v14" /></svg
-                  ></a>
-                }
-              </article>
-            }
-          </details>
+      <div
+        class="discovery-results"
+        id="search-results-page"
+        role="tabpanel"
+        [attr.aria-labelledby]="'search-tab-' + activeFilter()"
+      >
+        @if (vm.loading) {
+          <app-loading [label]="i18n.t('search.searching') + ' · ' + vm.query" [skeleton]="true" />
+        } @else if (vm.error) {
+          <div role="alert">
+            <p>{{ i18n.t(vm.imageExpired ? 'discovery.expired' : 'search.error') }}</p>
+            <button type="button" (click)="retry$.next()">{{ i18n.t('search.retry') }}</button>
+          </div>
+        } @else if (!hasCriteria()) {
+          <p>{{ i18n.t('search.empty') }}</p>
+        } @else if (!vm.total) {
+          <p role="status">{{ i18n.t('search.noResults') }}</p>
         } @else {
-          <section class="search-section">
-            <header>
-              <h2>{{ sectionLabel(section) }}</h2>
-              @if (canExpand(section)) {
-                <button
-                  type="button"
-                  [attr.aria-expanded]="expandedSections().has(section.key)"
-                  (click)="toggleSection(section.key)"
-                >
-                  {{
-                    i18n.t(
-                      expandedSections().has(section.key) ? 'mySpace.showLess' : 'search.viewAll'
-                    )
-                  }}
-                  ({{ section.total }})
-                </button>
-              }
-            </header>
-            @for (item of visibleItems(section, vm); track item.id) {
-              @if (item.id !== principal(vm)?.id) {
-                <a class="search-result" [routerLink]="resultLink(item)">
+          @if (principal(vm); as item) {
+            @if (activeFilter() === 'ALL') {
+              <article class="principal">
+                <div class="artwork-stage">
                   <app-jano-media
-                    [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
-                    usage="thumbnail"
+                    [media]="heroMedia(item)"
+                    usage="card"
                     [alt]="item.title"
                     placeholderMode="auto"
-                  />
-                  <div>
-                    <span class="metadata"
-                      >{{ typeLabel(item) }}
-                      @if (item.startYear !== null && item.startYear !== undefined) {
-                        · {{ item.startYear }}
+                  /><span class="artwork-caption">{{ i18n.t('discovery.archiveImage') }}</span>
+                </div>
+                <div class="artwork-copy">
+                  <span class="eyebrow">{{ i18n.t('search.best') }}</span>
+                  <p class="metadata">
+                    {{ typeLabel(item) }}
+                    @if (item.startYear !== null && item.startYear !== undefined) {
+                      · {{ item.startYear }}
+                      @if (
+                        item.endYear !== null &&
+                        item.endYear !== undefined &&
+                        item.endYear !== item.startYear
+                      ) {
+                        –{{ item.endYear }}
                       }
-                    </span>
-                    <h3>{{ item.title }}</h3>
+                    }
+                  </p>
+                  <h2>
+                    <a [routerLink]="resultLink(item)">{{ item.title }} </a>
+                  </h2>
+                  @if (item.summary) {
+                    <p class="summary">{{ item.summary }}</p>
+                  }
+                  <div class="affinity">
+                    @if (item.matchedFields.includes('image')) {
+                      <span>{{ i18n.t('discovery.visualAffinity') }}</span>
+                    }
+                    @if (item.matchedFields.includes('color')) {
+                      <span>{{ i18n.t('discovery.colorAffinity') }}</span>
+                    }
+                  </div>
+                  <details>
+                    <summary>{{ i18n.t('search.why') }}</summary>
+                    <p>{{ reason(item) }}</p>
+                    @if (vm.analysis) {
+                      <p>{{ i18n.t('discovery.analysis') }}: {{ vm.analysis }}</p>
+                    }
+                  </details>
+                  <div class="principal-actions">
+                    <a class="open-work" [routerLink]="resultLink(item)"
+                      >{{
+                        i18n.t(
+                          item.type === 'ARTWORK'
+                            ? 'discovery.exploreWork'
+                            : 'discovery.exploreEntity'
+                        )
+                      }}
+                      <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 19 19 5M5 5h14v14" /></svg
+                    ></a>
+                    <button type="button" class="similar" (click)="openVisual('image')">
+                      {{ i18n.t('discovery.searchSimilar') }}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            }
+          }
+          @for (section of sections(vm); track section.key) {
+            @if (section.items?.[0]?.resultType === 'RELATION') {
+              <details class="context" [open]="activeFilter() === 'RELATION'">
+                <summary>{{ i18n.t('search.context') }} · {{ section.total }}</summary>
+                <p>{{ i18n.t('search.contextHint') }}</p>
+                @for (item of section.items; track item.id) {
+                  <article class="connection">
+                    @if (item.relationType) {
+                      <span class="metadata">{{ item.relationType }}</span>
+                    }
+                    <a [routerLink]="resultLink(item)" [queryParams]="{ workspace: 'graph' }"
+                      >{{ item.title.split(' → ')[0] }}
+                      <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 19 19 5M5 5h14v14" /></svg
+                    ></a>
                     @if (item.summary) {
                       <p>{{ item.summary }}</p>
                     }
-                  </div>
-                  <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 19 19 5M5 5h14v14" />
-                  </svg>
-                </a>
-              }
+                    @if (item.toSlug) {
+                      <a class="connection-target" [routerLink]="['/entity', item.toSlug]"
+                        >{{ item.relationWithTitle || item.title.split(' → ')[1] || item.toSlug }}
+                        <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M5 19 19 5M5 5h14v14" /></svg
+                      ></a>
+                    }
+                  </article>
+                }
+              </details>
+            } @else {
+              <section class="search-section">
+                <header>
+                  <h2>
+                    {{
+                      activeFilter() === 'ALL' && section.items?.[0]?.resultType === 'ENTITY'
+                        ? i18n.t('discovery.continue')
+                        : sectionLabel(section)
+                    }}
+                  </h2>
+                  @if (activeFilter() === 'ALL') {
+                    <span class="section-note">{{ i18n.t('discovery.fromArchive') }}</span>
+                  }
+                </header>
+                <div class="related-grid">
+                  @for (item of visibleItems(section, vm); track item.id) {
+                    @if (activeFilter() !== 'ALL' || item.id !== principal(vm)?.id) {
+                      <a class="search-result" [routerLink]="resultLink(item)">
+                        <app-jano-media
+                          [media]="
+                            item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null
+                          "
+                          usage="thumbnail"
+                          [alt]="item.title"
+                          placeholderMode="auto"
+                        />
+                        <div>
+                          <span class="metadata"
+                            >{{ typeLabel(item) }}
+                            @if (item.startYear !== null && item.startYear !== undefined) {
+                              · {{ item.startYear }}
+                            }
+                          </span>
+                          <h3>{{ item.title }}</h3>
+                          @if (item.summary) {
+                            <p>{{ item.summary }}</p>
+                          }
+                        </div>
+                        <svg class="result-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M5 19 19 5M5 5h14v14" />
+                        </svg>
+                      </a>
+                    }
+                  }
+                </div>
+              </section>
             }
-          </section>
+          }
         }
-      }
-    }
+        @if (activeFilter() !== 'ALL' && (vm.totalPages ?? 1) > 1) {
+          <nav class="discovery-pagination" [attr.aria-label]="i18n.t('discovery.pages')">
+            <button
+              type="button"
+              class="ds-btn"
+              [disabled]="(vm.page ?? 1) <= 1"
+              (click)="changePage((vm.page ?? 1) - 1)"
+            >
+              {{ i18n.t('discovery.previous') }}
+            </button>
+            <span
+              >{{ vm.page }} / {{ vm.totalPages }} · {{ vm.total }}
+              {{ i18n.t('discovery.results') }}</span
+            >
+            <button
+              type="button"
+              class="ds-btn"
+              [disabled]="(vm.page ?? 1) >= (vm.totalPages ?? 1)"
+              (click)="changePage((vm.page ?? 1) + 1)"
+            >
+              {{ i18n.t('discovery.next') }}
+            </button>
+          </nav>
+        }
+      </div>
+    </div>
   }
 </main>

@@ -1,3 +1,5 @@
+import { NgTemplateOutlet } from '@angular/common';
+import { DiscoveryLayersComponent } from '../../shared/discovery/discovery-layers.component';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
 import {
@@ -14,7 +16,7 @@ import { EntitiesListActiveFiltersComponent } from './entities-list-active-filte
   standalone: true,
   selector: 'app-entities-list-filter-rail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [EntitiesListActiveFiltersComponent],
+  imports: [NgTemplateOutlet, EntitiesListActiveFiltersComponent, DiscoveryLayersComponent],
   templateUrl: './entities-list-filter-rail.component.html',
   styleUrls: ['./entities-list-filter-rail.component.scss'],
 })

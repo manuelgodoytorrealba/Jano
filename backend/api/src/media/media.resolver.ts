@@ -241,10 +241,14 @@ export function resolveEntityMedia(
 export function attachResolvedMedia<T extends EntityWithMediaLinks>(
   entity: T,
 ): T & { resolvedMedia: ResolvedMediaPayload } {
-  return {
-    ...entity,
-    resolvedMedia: buildResolvedMedia(entity),
-  };
+  const presented = { ...entity, resolvedMedia: buildResolvedMedia(entity) };
+  // Embeddings stay on the server; gallery payloads only need display metadata.
+  if (presented.mediaLinks)
+    presented.mediaLinks = presented.mediaLinks.map((link) => ({
+      ...link,
+      media: link.media ? { ...link.media, visualIndex: undefined } : link.media,
+    }));
+  return presented;
 }
 
 export function resolveEntityMediaSlot(

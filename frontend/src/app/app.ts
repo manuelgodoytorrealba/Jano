@@ -1,3 +1,4 @@
+import { VisualSearchInputComponent } from './shared/discovery/visual-search-input.component';
 import { DOCUMENT } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,7 +20,7 @@ import { NavigationMemoryService } from './core/navigation-memory.service';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, AppChromeComponent],
+  imports: [CommonModule, RouterOutlet, AppChromeComponent, VisualSearchInputComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

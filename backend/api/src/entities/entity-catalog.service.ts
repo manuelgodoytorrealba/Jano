@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { DiscoveryService } from '../discovery/discovery.service';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { ContentLevel, EntityStatus, Prisma } from '@prisma/client';
 import { resolveEntityMediaSlot } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,7 +11,10 @@ import { normalizeLocale, translationStatusSummary } from './entity-translation.
 
 @Injectable()
 export class EntityCatalogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly discovery?: DiscoveryService,
+  ) {}
 
   // System types retain the established editorial order; custom active types follow them.
   private readonly HOME_TYPE_ORDER: string[] = [
@@ -247,6 +251,11 @@ export class EntityCatalogService {
           },
         },
       });
+    }
+
+    if (query.layers && options.publicOnly && this.discovery) {
+      const context = await this.discovery.context({ layers: query.layers, locale });
+      and.push({ id: { in: context.ids } });
     }
 
     if (and.length) {

@@ -671,7 +671,7 @@ describe('EntitiesListComponent filters', () => {
     scroll.mockRestore();
   });
 
-  it('resetFilters clears movement and period along with the existing filter params', () => {
+  it('resetFilters clears layers, movement and period along with the existing filter params', () => {
     const fixture = TestBed.createComponent(EntitiesListComponent);
     const component = fixture.componentInstance;
 
@@ -683,6 +683,7 @@ describe('EntitiesListComponent filters', () => {
       type: null,
       status: null,
       contentLevel: null,
+      layers: null,
       movement: null,
       period: null,
       institution: null,
